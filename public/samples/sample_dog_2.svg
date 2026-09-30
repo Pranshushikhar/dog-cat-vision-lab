@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <defs>
+    <radialGradient id="bg_husky" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#1C2430"/>
+      <stop offset="100%" stop-color="#0B0F15"/>
+    </radialGradient>
+    <linearGradient id="grey_fur" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#4A5568"/>
+      <stop offset="100%" stop-color="#2D3748"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="400" fill="url(#bg_husky)"/>
+  <rect x="10" y="10" width="380" height="380" rx="12" fill="none" stroke="#253245" stroke-width="1.5" stroke-dasharray="4 4"/>
+
+  <!-- Husky Erect Ears -->
+  <polygon points="120,180 80,60 165,120" fill="#2D3748"/>
+  <polygon points="115,160 90,80 150,125" fill="#E2E8F0" opacity="0.8"/>
+  <polygon points="280,180 320,60 235,120" fill="#2D3748"/>
+  <polygon points="285,160 310,80 250,125" fill="#E2E8F0" opacity="0.8"/>
+
+  <!-- Neck/Chest -->
+  <path d="M80 380 Q120 280 170 260 Q200 250 230 260 Q280 280 320 380 Z" fill="#E2E8F0"/>
+  <path d="M60 380 Q100 290 140 270 L140 380 Z" fill="#2D3748"/>
+  <path d="M340 380 Q300 290 260 270 L260 380 Z" fill="#2D3748"/>
+
+  <!-- Head Base -->
+  <ellipse cx="200" cy="190" rx="85" ry="80" fill="url(#grey_fur)"/>
+
+  <!-- Facial Mask White Pattern -->
+  <path d="M140 180 Q200 150 260 180 Q250 250 200 260 Q150 250 140 180 Z" fill="#FFFFFF"/>
+  <polygon points="200,135 185,190 215,190" fill="#2D3748"/>
+
+  <!-- Husky Ice-Blue Eyes -->
+  <ellipse cx="160" cy="178" rx="13" ry="10" fill="#EBF8FF"/>
+  <circle cx="160" cy="178" r="7" fill="#3182CE"/>
+  <circle cx="160" cy="178" r="3.5" fill="#0A192F"/>
+  <circle cx="158" cy="175" r="1.5" fill="#FFFFFF"/>
+
+  <ellipse cx="240" cy="178" rx="13" ry="10" fill="#EBF8FF"/>
+  <circle cx="240" cy="178" r="7" fill="#3182CE"/>
+  <circle cx="240" cy="178" r="3.5" fill="#0A192F"/>
+  <circle cx="238" cy="175" r="1.5" fill="#FFFFFF"/>
+
+  <!-- Muzzle & Nose -->
+  <path d="M175 210 Q200 205 225 210 Q225 240 200 252 Q175 240 175 210 Z" fill="#F7FAFC"/>
+  <path d="M185 212 Q200 208 215 212 Q220 224 200 228 Q180 224 185 212 Z" fill="#1A202C"/>
+  <line x1="200" y1="228" x2="200" y2="242" stroke="#1A202C" stroke-width="2"/>
+  <path d="M190 242 Q200 246 210 242" stroke="#1A202C" stroke-width="2" fill="none"/>
+
+  <!-- Metadata Tag -->
+  <rect x="20" y="20" width="105" height="22" rx="4" fill="#0B0D14" opacity="0.85"/>
+  <text x="26" y="35" font-family="JetBrains Mono, monospace" font-size="10" fill="#4DA3FF" letter-spacing="1">SAMPLE: DOG_02</text>
+  <text x="20" y="375" font-family="JetBrains Mono, monospace" font-size="10" fill="#687184">CLASS: CANIS_LUPUS_FAMILIARIS</text>
+</svg>

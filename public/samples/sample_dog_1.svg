@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#2A241A"/>
+      <stop offset="100%" stop-color="#14110C"/>
+    </radialGradient>
+    <linearGradient id="fur" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E5A65E"/>
+      <stop offset="50%" stop-color="#C68237"/>
+      <stop offset="100%" stop-color="#93571A"/>
+    </linearGradient>
+    <linearGradient id="snout" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#F2C288"/>
+      <stop offset="100%" stop-color="#C98845"/>
+    </linearGradient>
+  </defs>
+  <!-- Background -->
+  <rect width="400" height="400" fill="url(#bg)"/>
+  <rect x="10" y="10" width="380" height="380" rx="12" fill="none" stroke="#3A3224" stroke-width="1.5" stroke-dasharray="4 4"/>
+  
+  <!-- Dog Head and Body Silhouette -->
+  <!-- Shoulders -->
+  <path d="M70 380 Q100 290 150 270 Q200 260 250 270 Q300 290 330 380 Z" fill="#844E18"/>
+  <path d="M100 380 Q140 280 200 280 Q260 280 300 380 Z" fill="#A76722"/>
+
+  <!-- Ears (Floppy Retriever Ears) -->
+  <path d="M110 130 C70 140 50 210 65 260 C75 290 115 280 125 240 C130 210 125 160 110 130 Z" fill="#844E18"/>
+  <path d="M290 130 C330 140 350 210 335 260 C325 290 285 280 275 240 C270 210 275 160 290 130 Z" fill="#844E18"/>
+
+  <!-- Head Base -->
+  <ellipse cx="200" cy="180" rx="90" ry="85" fill="url(#fur)"/>
+  
+  <!-- Forehead Fur Structure -->
+  <path d="M160 115 Q200 100 240 115 Q200 135 160 115 Z" fill="#DE9749"/>
+  <path d="M195 120 L205 120 L202 180 L198 180 Z" fill="#B67026" opacity="0.6"/>
+
+  <!-- Snout / Muzzle (Canine Elongated) -->
+  <ellipse cx="200" cy="225" rx="52" ry="42" fill="url(#snout)"/>
+  
+  <!-- Nose (Broad Canine Rhinaris) -->
+  <path d="M178 205 C185 200 215 200 222 205 C228 210 222 225 200 226 C178 225 172 210 178 205 Z" fill="#1A1816"/>
+  <ellipse cx="190" cy="214" rx="4" ry="5" fill="#0D0C0B"/>
+  <ellipse cx="210" cy="214" rx="4" ry="5" fill="#0D0C0B"/>
+  <line x1="200" y1="225" x2="200" y2="242" stroke="#1A1816" stroke-width="2.5"/>
+  <path d="M185 242 Q200 246 215 242" stroke="#1A1816" stroke-width="2.5" fill="none"/>
+
+  <!-- Eyes (Warm Almond Canine Eyes with Catchlight) -->
+  <ellipse cx="155" cy="170" rx="14" ry="11" fill="#2E1C0C"/>
+  <circle cx="155" cy="170" r="8" fill="#120A04"/>
+  <circle cx="153" cy="167" r="2.5" fill="#FFFFFF"/>
+  <ellipse cx="245" cy="170" rx="14" ry="11" fill="#2E1C0C"/>
+  <circle cx="245" cy="170" r="8" fill="#120A04"/>
+  <circle cx="243" cy="167" r="2.5" fill="#FFFFFF"/>
+
+  <!-- Brow Texture -->
+  <path d="M140 155 Q155 150 170 156" stroke="#844E18" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M230 156 Q245 150 260 155" stroke="#844E18" stroke-width="3" fill="none" stroke-linecap="round"/>
+
+  <!-- Scientific Overlay Metadata Tag -->
+  <rect x="20" y="20" width="105" height="22" rx="4" fill="#0B0D14" opacity="0.85"/>
+  <text x="26" y="35" font-family="JetBrains Mono, monospace" font-size="10" fill="#4DA3FF" letter-spacing="1">SAMPLE: DOG_01</text>
+  <text x="20" y="375" font-family="JetBrains Mono, monospace" font-size="10" fill="#687184">CLASS: CANIS_FAMILIARIS</text>
+</svg>

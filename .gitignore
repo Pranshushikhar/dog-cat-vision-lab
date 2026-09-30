@@ -1,0 +1,32 @@
+# Dependencies
+node_modules/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Large ML Datasets & Weights
+data/raw/
+data/processed/
+models/*.keras
+models/*.h5
+models/*.weights.h5
+
+# Build outputs
+dist/
+dist-ssr/
+*.local
+
+# Environment & Credentials
+.env
+.env.local
+.env.*.local
+kaggle.json
+cloudflared.exe
+*.log
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo

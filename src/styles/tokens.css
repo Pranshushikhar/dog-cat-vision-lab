@@ -1,0 +1,59 @@
+:root {
+  /* Color Palette - Technical AI Lab */
+  --bg-primary: #07080D;
+  --bg-secondary: #0B0D14;
+  --bg-elevated: #11141D;
+  --bg-surface: #171B25;
+  --bg-surface-hover: #1E2330;
+  --bg-glass: rgba(17, 20, 29, 0.75);
+
+  /* Borders & Dividers */
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-medium: rgba(255, 255, 255, 0.12);
+  --border-strong: rgba(255, 255, 255, 0.2);
+  --border-accent: rgba(77, 163, 255, 0.3);
+
+  /* Typography Colors */
+  --text-primary: #F5F7FA;
+  --text-secondary: #A8B0BE;
+  --text-muted: #687184;
+  --text-inverse: #07080D;
+
+  /* Accents */
+  --accent-violet: #6C63FF;
+  --accent-blue: #4DA3FF;
+  --accent-cyan: #55E6D0;
+  
+  --accent-gradient: linear-gradient(135deg, #6C63FF 0%, #4DA3FF 50%, #55E6D0 100%);
+  --accent-glow: 0 0 30px rgba(77, 163, 255, 0.2);
+  --violet-glow: 0 0 30px rgba(108, 99, 255, 0.25);
+  --cyan-glow: 0 0 25px rgba(85, 230, 208, 0.2);
+
+  /* Semantic */
+  --status-success: #55E6D0;
+  --status-warning: #FFA24C;
+  --status-error: #FF5C5C;
+  --status-idle: #687184;
+  --status-active: #4DA3FF;
+
+  /* Fonts */
+  --font-display: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-normal: 250ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-slow: 450ms cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Radius */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-pill: 9999px;
+
+  /* Layout */
+  --container-max: 1280px;
+  --container-padding: 24px;
+}

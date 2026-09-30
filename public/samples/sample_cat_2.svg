@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <defs>
+    <radialGradient id="bg_cat2" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#1B222E"/>
+      <stop offset="100%" stop-color="#090D13"/>
+    </radialGradient>
+    <linearGradient id="cream_body" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#F1E7DD"/>
+      <stop offset="100%" stop-color="#DFD0C0"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="400" fill="url(#bg_cat2)"/>
+  <rect x="10" y="10" width="380" height="380" rx="12" fill="none" stroke="#1D2A3B" stroke-width="1.5" stroke-dasharray="4 4"/>
+
+  <!-- Slender Body -->
+  <path d="M110 380 Q145 310 175 290 Q200 285 225 290 Q255 310 290 380 Z" fill="url(#cream_body)"/>
+
+  <!-- Large High-Set Triangular Dark Seal-Point Ears -->
+  <polygon points="120,190 85,80 170,130" fill="#261E1A"/>
+  <polygon points="120,175 95,95 160,135" fill="#3D302A"/>
+
+  <polygon points="280,190 315,80 230,130" fill="#261E1A"/>
+  <polygon points="280,175 305,95 240,135" fill="#3D302A"/>
+
+  <!-- Wedge Head Base -->
+  <ellipse cx="200" cy="205" rx="75" ry="68" fill="url(#cream_body)"/>
+
+  <!-- Dark Seal Facial Mask -->
+  <ellipse cx="200" cy="215" rx="46" ry="40" fill="#261E1A"/>
+  <polygon points="200,165 175,200 225,200" fill="#261E1A"/>
+
+  <!-- Vivid Cyan/Sapphire Deep Almond Eyes -->
+  <path d="M150 196 Q165 186 180 196 Q165 206 150 196 Z" fill="#00D2D3"/>
+  <ellipse cx="165" cy="196" rx="3.5" ry="6.5" fill="#0A1118"/>
+  <circle cx="163" cy="194" r="1.5" fill="#FFFFFF"/>
+
+  <path d="M220 196 Q235 186 250 196 Q235 206 220 196 Z" fill="#00D2D3"/>
+  <ellipse cx="235" cy="196" rx="3.5" ry="6.5" fill="#0A1118"/>
+  <circle cx="233" cy="194" r="1.5" fill="#FFFFFF"/>
+
+  <!-- Nose & Whiskers -->
+  <polygon points="194,224 206,224 200,231" fill="#120D0A"/>
+  <line x1="200" y1="231" x2="200" y2="238" stroke="#120D0A" stroke-width="1.5"/>
+  
+  <line x1="185" y1="235" x2="105" y2="230" stroke="#F1E7DD" stroke-width="1.2" opacity="0.9"/>
+  <line x1="185" y1="238" x2="100" y2="242" stroke="#F1E7DD" stroke-width="1.2" opacity="0.9"/>
+  <line x1="185" y1="242" x2="110" y2="256" stroke="#F1E7DD" stroke-width="1.2" opacity="0.9"/>
+
+  <line x1="215" y1="235" x2="295" y2="230" stroke="#F1E7DD" stroke-width="1.2" opacity="0.9"/>
+  <line x1="215" y1="238" x2="300" y2="242" stroke="#F1E7DD" stroke-width="1.2" opacity="0.9"/>
+  <line x1="215" y1="242" x2="290" y2="256" stroke="#F1E7DD" stroke-width="1.2" opacity="0.9"/>
+
+  <!-- Metadata Tag -->
+  <rect x="20" y="20" width="105" height="22" rx="4" fill="#0B0D14" opacity="0.85"/>
+  <text x="26" y="35" font-family="JetBrains Mono, monospace" font-size="10" fill="#55E6D0" letter-spacing="1">SAMPLE: CAT_02</text>
+  <text x="20" y="375" font-family="JetBrains Mono, monospace" font-size="10" fill="#687184">CLASS: FELIS_CATUS (SIAMESE)</text>
+</svg>
