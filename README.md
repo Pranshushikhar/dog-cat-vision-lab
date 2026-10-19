@@ -1,7 +1,9 @@
 # PawVision AI | Canine & Feline Image Classification Research Lab
 
 A portfolio-grade Machine Learning and Computer Vision system featuring:
-- **Frontend**: Interactive "PawVision AI" laboratory deployed on **Cloudflare Workers / Pages**
+- **Live Cloudflare Pages**: [https://pawvision-ai.pages.dev](https://pawvision-ai.pages.dev)
+- **Cloudflare Worker**: [https://pawvision-ai.26bcs10417.workers.dev](https://pawvision-ai.26bcs10417.workers.dev)
+- **Frontend**: Interactive "PawVision AI" laboratory deployed on **Cloudflare Pages**
 - **Inference API**: **FastAPI** Python backend service
 - **ML Engine**: **Convolutional Neural Network (CNN)** built with **TensorFlow / Keras**
 - **Dataset**: Official **Kaggle Dogs vs Cats** competition benchmark
