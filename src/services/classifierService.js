@@ -9,7 +9,11 @@
  *  - Retains labeled DEMO MODE only as an explicit toggle for UI review
  */
 
-const DEFAULT_API_URL = import.meta.env.VITE_CLASSIFIER_API_URL || 'http://127.0.0.1:8000';
+export const PRODUCTION_BACKEND_URL = 'https://palestinian-soccer-element-comparative.trycloudflare.com';
+
+const DEFAULT_API_URL = (import.meta.env.VITE_CLASSIFIER_API_URL && !import.meta.env.VITE_CLASSIFIER_API_URL.includes('localhost') && !import.meta.env.VITE_CLASSIFIER_API_URL.includes('127.0.0.1'))
+  ? import.meta.env.VITE_CLASSIFIER_API_URL
+  : (import.meta.env.PROD ? PRODUCTION_BACKEND_URL : (import.meta.env.VITE_CLASSIFIER_API_URL || 'http://127.0.0.1:8000'));
 
 export const CLASSIFIER_MODES = {
   REAL_API: 'REAL_API',
@@ -68,7 +72,7 @@ class ClassifierService {
     }
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 3500);
+      const timeoutId = setTimeout(() => controller.abort(), 8000);
       const res = await fetch(`${url.replace(/\/$/, '')}/api/health`, {
         method: 'GET',
         signal: controller.signal

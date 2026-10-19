@@ -113,7 +113,7 @@ export default function ApiConfigModal({ isOpen, onClose }) {
                 )}
               </div>
               <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>
-                Sends raw images to FastAPI backend on port 8000.
+                Sends raw images to the live FastAPI CNN backend.
               </div>
             </div>
 
@@ -153,7 +153,7 @@ export default function ApiConfigModal({ isOpen, onClose }) {
               type="text"
               value={apiUrl}
               onChange={(e) => setApiUrl(e.target.value)}
-              placeholder="http://127.0.0.1:8000"
+              placeholder="https://your-backend.trycloudflare.com"
               style={{
                 flex: 1,
                 background: 'var(--bg-surface)',
