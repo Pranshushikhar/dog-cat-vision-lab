@@ -9,6 +9,7 @@ __pycache__/
 data/raw/
 data/processed/
 models/*.keras
+!models/dog_cat_cnn.keras
 models/*.h5
 models/*.weights.h5
 

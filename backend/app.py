@@ -69,7 +69,7 @@ ALLOWED_ORIGINS = [
 app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,
-    allow_origin_regex=r"^https:\/\/([a-zA-Z0-9-]+\.)*(pages\.dev|workers\.dev|trycloudflare\.com)$",
+    allow_origin_regex=r"^https:\/\/([a-zA-Z0-9-]+\.)*(pages\.dev|workers\.dev|trycloudflare\.com|onrender\.com)$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
