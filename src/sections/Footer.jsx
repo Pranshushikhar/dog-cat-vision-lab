@@ -14,14 +14,14 @@ export default function Footer({ onOpenConfigModal, onSelectTab }) {
           <div style={{ maxWidth: '380px' }}>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '8px' }}>
               <span style={{ fontWeight: 700, fontSize: '1.05rem', color: 'var(--text-primary)' }}>
-                AILAB
+                PawVision AI
               </span>
               <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                · Cat vs Dog Vision AI
+                · Vision Research Lab
               </span>
             </div>
             <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', lineHeight: 1.55, margin: 0 }}>
-              An applied computer vision research laboratory demonstrating binary image classification with MobileNetV2 transfer learning on the Kaggle benchmark.
+              PawVision AI is an applied computer vision research laboratory demonstrating binary image classification with MobileNetV2 transfer learning on the Kaggle benchmark.
             </p>
           </div>
 
@@ -73,7 +73,7 @@ export default function Footer({ onOpenConfigModal, onSelectTab }) {
         {/* Bottom Bar */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', paddingTop: '20px', borderTop: '1px solid var(--border-subtle)', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
           <div>
-            AILAB · Computer Vision Research Laboratory
+            PawVision AI · Computer Vision Research Laboratory
           </div>
           <div>
             Built with React 18, TensorFlow & FastAPI

@@ -41,7 +41,7 @@ export default function AboutTab({ onOpenConfigModal }) {
               }}
             >
               <pre style={{ margin: 0, fontFamily: 'var(--font-mono)', fontSize: '0.78rem', color: 'var(--text-primary)', lineHeight: 1.6 }}>
-{`Client Browser (React 18 + Vite SPA)
+{`Client Browser (PawVision AI SPA)
        │
        │  POST /api/predict (multipart/form-data: image file + threshold)
        ▼

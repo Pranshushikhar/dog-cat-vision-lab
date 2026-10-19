@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://dog-cat-vision-lab.pages.dev/sitemap.xml
+Sitemap: https://pawvision-ai.pages.dev/sitemap.xml

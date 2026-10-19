@@ -57,10 +57,10 @@ export default function Navbar({ onOpenApiModal, activeTab = 'home', onSelectTab
         >
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
             <span style={{ fontSize: '1.1rem', fontWeight: 700, letterSpacing: '-0.02em', color: 'var(--text-primary)' }}>
-              AILAB
+              PawVision AI
             </span>
             <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 400 }}>
-              · Cat vs Dog Vision AI
+              · Cat vs Dog Vision
             </span>
           </div>
         </a>

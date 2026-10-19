@@ -20,7 +20,7 @@ export default function HomeTab({ onNavigate, onSelectSpecimen }) {
         <div style={{ maxWidth: '780px', margin: '16px 0 40px 0' }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
             <span className="section-eyebrow">
-              Vision Research Lab
+              PawVision AI Lab
             </span>
             <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
               Kaggle Dogs vs Cats Benchmark
@@ -48,7 +48,7 @@ export default function HomeTab({ onNavigate, onSelectSpecimen }) {
               marginBottom: '28px'
             }}
           >
-            An applied computer vision project exploring binary image classification across 20,000 photographic samples. Utilizing a fine-tuned MobileNetV2 architecture to learn discriminatory biological features like ear curvature, muzzle geometry, and facial texture.
+            PawVision AI is an applied computer vision research laboratory exploring binary image classification across 20,000 photographic samples. Utilizing a fine-tuned MobileNetV2 architecture to learn discriminatory biological features like ear curvature, muzzle geometry, and facial texture.
           </p>
 
           {/* Primary Action Button */}

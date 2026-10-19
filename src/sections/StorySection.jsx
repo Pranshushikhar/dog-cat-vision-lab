@@ -34,8 +34,8 @@ const TIMELINE_STEPS = [
   {
     num: '06',
     phase: 'Laboratory Deployment',
-    title: 'Interactive Vision Laboratory',
-    desc: 'Exposing the pipeline through an accessible web interface with live client-side simulator, FastAPI inference backend, and Cloudflare Pages hosting.'
+    title: 'PawVision AI Deployment',
+    desc: 'Exposing the PawVision AI pipeline through an accessible web interface with live client-side simulator, FastAPI inference backend, and Cloudflare Worker / Pages hosting.'
   }
 ];
 
