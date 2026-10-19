@@ -20,21 +20,16 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
   background-color: var(--bg-primary);
-  background-image: 
-    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(108, 99, 255, 0.12), transparent),
-    radial-gradient(ellipse 60% 40% at 100% 50%, rgba(77, 163, 255, 0.05), transparent),
-    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-  background-size: 100% 100%, 100% 100%, 64px 64px, 64px 64px;
+  color: var(--text-primary);
   line-height: 1.6;
 }
 
 ::selection {
-  background: rgba(77, 163, 255, 0.35);
-  color: #FFFFFF;
+  background: var(--accent-sage);
+  color: var(--text-primary);
 }
 
-/* Custom Scrollbar */
+/* Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -45,12 +40,12 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1C2333;
+  background: #D8DACF;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #2D374D;
+  background: #BCC0B4;
 }
 
 /* Typography Base */
@@ -58,8 +53,8 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
   font-weight: 600;
   color: var(--text-primary);
-  line-height: 1.15;
-  letter-spacing: -0.02em;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
 }
 
 p {
@@ -71,13 +66,13 @@ code, pre, .mono {
 }
 
 a {
-  color: var(--accent-blue);
+  color: var(--accent-green);
   text-decoration: none;
   transition: color var(--transition-fast);
 }
 
 a:hover {
-  color: var(--accent-cyan);
+  color: var(--accent-green-hover);
 }
 
 /* Container */
@@ -92,97 +87,80 @@ a:hover {
 
 /* Section Wrapper */
 .section {
-  padding-top: 100px;
-  padding-bottom: 100px;
+  padding-top: 64px;
+  padding-bottom: 64px;
   position: relative;
-  border-bottom: 1px solid var(--border-subtle);
 }
 
 .section-header {
-  margin-bottom: 48px;
-  max-width: 760px;
+  margin-bottom: 36px;
+  max-width: 720px;
 }
 
 .section-eyebrow {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   font-family: var(--font-mono);
-  font-size: 0.75rem;
-  letter-spacing: 0.12em;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--accent-blue);
-  margin-bottom: 14px;
-  padding: 4px 10px;
-  background: rgba(77, 163, 255, 0.08);
-  border: 1px solid rgba(77, 163, 255, 0.2);
+  color: var(--accent-green);
+  margin-bottom: 12px;
+  padding: 3px 8px;
+  background: var(--accent-sage);
+  border: 1px solid rgba(85, 116, 92, 0.2);
   border-radius: var(--radius-xs);
 }
 
-.section-eyebrow::before {
-  content: '';
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--accent-cyan);
-  box-shadow: 0 0 8px var(--accent-cyan);
-}
-
 .section-title {
-  font-size: clamp(2rem, 3.8vw, 3rem);
+  font-size: clamp(1.8rem, 3.2vw, 2.5rem);
   font-weight: 700;
-  margin-bottom: 16px;
-  letter-spacing: -0.025em;
+  margin-bottom: 12px;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
 }
 
 .section-subtitle {
-  font-size: clamp(1rem, 1.2vw, 1.125rem);
+  font-size: 1rem;
   color: var(--text-secondary);
   line-height: 1.6;
 }
 
-/* Technical Glass Card */
+/* Editorial Card & Panels */
 .tech-card {
-  background: var(--bg-elevated);
+  background: var(--bg-card);
   border: 1px solid var(--border-medium);
   border-radius: var(--radius-md);
   padding: 24px;
   position: relative;
-  overflow: hidden;
-  transition: border-color var(--transition-normal), transform var(--transition-normal);
-}
-
-.tech-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent);
+  box-shadow: var(--shadow-xs);
+  transition: border-color var(--transition-normal), box-shadow var(--transition-normal);
 }
 
 .tech-card:hover {
   border-color: var(--border-strong);
+  box-shadow: var(--shadow-sm);
 }
 
 /* Grid Layouts */
 .grid-2 {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 24px;
+  gap: 20px;
 }
 
 .grid-3 {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
+  gap: 20px;
 }
 
 .grid-4 {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
+  gap: 16px;
 }
 
 @media (max-width: 1024px) {
@@ -193,8 +171,8 @@ a:hover {
 
 @media (max-width: 768px) {
   .section {
-    padding-top: 60px;
-    padding-bottom: 60px;
+    padding-top: 48px;
+    padding-bottom: 48px;
   }
   .grid-2, .grid-3, .grid-4 {
     grid-template-columns: 1fr;

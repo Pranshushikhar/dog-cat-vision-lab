@@ -1,17 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { Play, RotateCcw, Sliders, Shield, AlertTriangle, ArrowRight } from 'lucide-react';
+import { ArrowRight, RotateCcw, AlertTriangle } from 'lucide-react';
 import ImageDropzone from './ImageDropzone';
 import PipelineVisualizer, { PIPELINE_STAGES } from './PipelineVisualizer';
 import InferenceResult from './InferenceResult';
 import { classifierService, CLASSIFIER_MODES } from '../../services/classifierService';
 
-export default function LiveClassifier({ onOpenConfigModal }) {
-  const [selectedImage, setSelectedImage] = useState(null);
+export default function LiveClassifier({ onOpenConfigModal, initialImage = null }) {
+  const [selectedImage, setSelectedImage] = useState(initialImage);
   const [confidenceThreshold, setConfidenceThreshold] = useState(0.5);
   const [isProcessing, setIsProcessing] = useState(false);
   const [currentStageIndex, setCurrentStageIndex] = useState(-1);
   const [inferenceResult, setInferenceResult] = useState(null);
   const [activeMode, setActiveMode] = useState(classifierService.getMode());
+
+  useEffect(() => {
+    if (initialImage) {
+      setSelectedImage(initialImage);
+      setInferenceResult(null);
+      setCurrentStageIndex(-1);
+    }
+  }, [initialImage]);
 
   useEffect(() => {
     return classifierService.subscribe((state) => {
@@ -37,7 +45,6 @@ export default function LiveClassifier({ onOpenConfigModal }) {
     setIsProcessing(true);
     setCurrentStageIndex(0);
 
-    // Animate through pipeline stages
     const stageInterval = setInterval(() => {
       setCurrentStageIndex((prev) => {
         if (prev < PIPELINE_STAGES.length - 1) {
@@ -45,7 +52,7 @@ export default function LiveClassifier({ onOpenConfigModal }) {
         }
         return prev;
       });
-    }, 180);
+    }, 160);
 
     try {
       const targetPayload = selectedImage.file || selectedImage.url;
@@ -79,90 +86,62 @@ export default function LiveClassifier({ onOpenConfigModal }) {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-      {/* Top Controls Bar */}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      {/* Top Workspace Configuration Bar */}
       <div 
         style={{
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
           flexWrap: 'wrap',
-          gap: '16px',
-          background: 'var(--bg-elevated)',
+          gap: '14px',
+          background: 'var(--bg-card)',
           border: '1px solid var(--border-medium)',
           borderRadius: 'var(--radius-sm)',
-          padding: '14px 20px'
+          padding: '12px 18px'
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-          <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
-            Inference Controller
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+            Threshold: {(confidenceThreshold * 100).toFixed(0)}%
           </span>
-          <div className="badge badge-neutral" style={{ fontSize: '0.7rem' }}>
-            Target: 224 × 224 RGB
-          </div>
+          <input
+            type="range"
+            min="0.1"
+            max="0.9"
+            step="0.05"
+            value={confidenceThreshold}
+            onChange={(e) => setConfidenceThreshold(parseFloat(e.target.value))}
+            style={{
+              width: '120px',
+              accentColor: 'var(--accent-green)',
+              cursor: 'pointer'
+            }}
+            aria-label="Confidence decision threshold"
+          />
+          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+            (Cat ≤ threshold &lt; Dog)
+          </span>
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           {activeMode === CLASSIFIER_MODES.DEMO_MODE ? (
-            <span className="badge badge-warning" style={{ fontSize: '0.68rem' }}>
-              <AlertTriangle size={11} />
-              DEMO SIMULATION ACTIVE
+            <span className="badge badge-warning" style={{ fontSize: '0.72rem' }}>
+              <AlertTriangle size={12} />
+              Demo Simulation Mode
             </span>
           ) : (
-            <span className="badge badge-neutral" style={{ fontSize: '0.68rem' }}>
-              <Shield size={11} />
-              STRICT API INTEGRITY
+            <span className="badge badge-green" style={{ fontSize: '0.72rem' }}>
+              Real Backend Inference
             </span>
           )}
         </div>
-
-        {/* Threshold Slider & Mode Actions */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <Sliders size={14} color="var(--text-muted)" />
-            <label htmlFor="threshold-slider" style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
-              Threshold:
-            </label>
-            <input
-              id="threshold-slider"
-              type="range"
-              min="0.1"
-              max="0.9"
-              step="0.05"
-              value={confidenceThreshold}
-              onChange={(e) => setConfidenceThreshold(parseFloat(e.target.value))}
-              style={{ width: '80px', accentColor: 'var(--accent-blue)', cursor: 'pointer' }}
-              disabled={isProcessing}
-            />
-            <span style={{ fontSize: '0.78rem', fontFamily: 'var(--font-mono)', color: 'var(--text-primary)', minWidth: '32px' }}>
-              {confidenceThreshold.toFixed(2)}
-            </span>
-          </div>
-
-          <button
-            type="button"
-            className="btn btn-secondary btn-sm"
-            onClick={onOpenConfigModal}
-            style={{ fontSize: '0.78rem' }}
-          >
-            Config API
-          </button>
-        </div>
       </div>
 
-      {/* Main Two-Column Interactive Lab */}
-      <div className="grid-2" style={{ alignItems: 'start' }}>
-        {/* Left: Dropzone & Specimen Selector */}
-        <div className="tech-card">
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-            <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--accent-blue)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-              01 // Input Specimen
-            </span>
-            {selectedImage && (
-              <span className="badge badge-cyan" style={{ fontSize: '0.65rem' }}>
-                LOADED
-              </span>
-            )}
-          </div>
-
+      {/* Main Classifier Workspace Grid (Upload Box & Inference Result) */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px', alignItems: 'start' }}>
+        {/* Left: Pure White Dropzone Workspace */}
+        <div className="tech-card" style={{ padding: '20px', background: 'var(--bg-card)' }}>
           <ImageDropzone
             selectedImage={selectedImage}
             onSelectImage={handleSelectImage}
@@ -170,57 +149,59 @@ export default function LiveClassifier({ onOpenConfigModal }) {
             isProcessing={isProcessing}
           />
 
-          {/* Action Trigger Button */}
-          <div style={{ marginTop: '20px', display: 'flex', gap: '12px' }}>
-            <button
-              type="button"
-              className="btn btn-primary"
-              onClick={handleRunClassification}
-              disabled={!selectedImage || isProcessing}
-              style={{
-                flex: 1,
-                opacity: (!selectedImage || isProcessing) ? 0.5 : 1,
-                cursor: (!selectedImage || isProcessing) ? 'not-allowed' : 'pointer'
-              }}
-            >
-              <Play size={16} />
-              <span>{isProcessing ? 'EXTRACTING FEATURES...' : 'RUN CLASSIFICATION'}</span>
-            </button>
+          {/* Action Trigger Row */}
+          {selectedImage && (
+            <div style={{ marginTop: '16px', display: 'flex', gap: '10px' }}>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={handleRunClassification}
+                disabled={isProcessing}
+                style={{ flex: 1 }}
+              >
+                <span>{isProcessing ? 'Analyzing Features...' : 'Classify Photograph'}</span>
+                {!isProcessing && <ArrowRight size={15} />}
+              </button>
 
-            {selectedImage && (
               <button
                 type="button"
                 className="btn btn-secondary"
                 onClick={handleClearImage}
                 disabled={isProcessing}
-                title="Reset Image"
+                title="Clear selected image"
+                style={{ padding: '10px' }}
               >
-                <RotateCcw size={16} />
+                <RotateCcw size={15} />
               </button>
-            )}
-          </div>
+            </div>
+          )}
         </div>
 
-        {/* Right: Inference Output and Analysis */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        {/* Right: Inference Result Panel */}
+        <div>
           <InferenceResult
             result={inferenceResult}
             isProcessing={isProcessing}
-            hasImage={Boolean(selectedImage)}
+            hasImage={!!selectedImage}
             onOpenConfig={onOpenConfigModal}
             onSwitchToDemo={handleSwitchToDemo}
           />
         </div>
       </div>
 
-      {/* Full-Width Visual Pipeline Stages Below */}
-      <div className="tech-card">
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-          <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--accent-cyan)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-            02 // Computer Vision Convolutional Pipeline
-          </span>
-          <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-            Sequential Layer Transformations
+      {/* Pipeline Visualizer (Subtle & Purposeful) */}
+      <div className="tech-card" style={{ padding: '20px', background: 'var(--bg-card)' }}>
+        <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: '14px', flexWrap: 'wrap', gap: '8px' }}>
+          <div>
+            <div style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
+              Transformation Pipeline
+            </div>
+            <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+              Step-by-step tensor processing from raw RGB bytes to decision scalar
+            </div>
+          </div>
+          <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
+            Input: 224 × 224 × 3
           </span>
         </div>
 

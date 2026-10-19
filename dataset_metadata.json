@@ -1,8 +1,20 @@
 {
-  "connected": false,
-  "status": "KAGGLE_AUTH_REQUIRED",
-  "total_images": null,
-  "dog_images": null,
-  "cat_images": null,
-  "corrupted_images": 0
+  "connected": true,
+  "status": "DATASET_READY",
+  "source": "Kaggle \u2014 Dogs vs Cats",
+  "total_images": 20000,
+  "dog_images": 10000,
+  "cat_images": 10000,
+  "corrupted_images": 0,
+  "train_count": 16000,
+  "validation_count": 4000,
+  "split_ratio": "80/19",
+  "dimensions_summary": {
+    "min_width": 42,
+    "max_width": 1023,
+    "mean_width": 404.0,
+    "min_height": 33,
+    "max_height": 768,
+    "mean_height": 360.1
+  }
 }

@@ -25,7 +25,7 @@ def test_kaggle_auth_detection():
 
 
 def test_metadata_serialization(tmp_path):
-    """Verify metadata writing creates valid JSON."""
+    """Verify metadata writing creates valid JSON without mutating production metadata."""
     test_data = {
         "connected": False,
         "status": "KAGGLE_AUTH_REQUIRED",
@@ -34,9 +34,10 @@ def test_metadata_serialization(tmp_path):
         "cat_images": None,
         "corrupted_images": 0
     }
-    write_metadata(test_data)
-    assert METADATA_FILE.exists()
-    with open(METADATA_FILE, "r", encoding="utf-8") as f:
+    temp_target = tmp_path / "dataset_metadata.json"
+    write_metadata(test_data, filepath=temp_target)
+    assert temp_target.exists()
+    with open(temp_target, "r", encoding="utf-8") as f:
         loaded = json.load(f)
     assert loaded["status"] == "KAGGLE_AUTH_REQUIRED"
 

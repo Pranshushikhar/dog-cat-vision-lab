@@ -1,59 +1,70 @@
 :root {
-  /* Color Palette - Technical AI Lab */
-  --bg-primary: #07080D;
-  --bg-secondary: #0B0D14;
-  --bg-elevated: #11141D;
-  --bg-surface: #171B25;
-  --bg-surface-hover: #1E2330;
-  --bg-glass: rgba(17, 20, 29, 0.75);
+  /* Core Light Palette - Editorial Research Lab */
+  --bg-primary: #F8F8F5;          /* Warm off-white main background */
+  --bg-card: #FFFFFF;             /* Pure white for cards, panels, surfaces */
+  --bg-elevated: #FFFFFF;         /* Elevated panels */
+  --bg-surface: #F4F4EE;          /* Subtle warm gray surface for inputs/specimens */
+  --bg-surface-hover: #EAEBE3;    /* Hover surface state */
+  --bg-secondary: #F4F4EE;        /* Secondary background */
+  --bg-cream: #F2EBDD;            /* Pale cream highlight */
+  --bg-sage: #E7EEE5;             /* Soft sage accent background */
+  --bg-glass: rgba(255, 255, 255, 0.92);
 
   /* Borders & Dividers */
-  --border-subtle: rgba(255, 255, 255, 0.06);
-  --border-medium: rgba(255, 255, 255, 0.12);
-  --border-strong: rgba(255, 255, 255, 0.2);
-  --border-accent: rgba(77, 163, 255, 0.3);
+  --border-subtle: #ECECE6;
+  --border-medium: #E5E6DF;        /* Subtle warm gray border */
+  --border-strong: #D5D7CD;        /* Defined border */
+  --border-accent: #55745C;        /* Muted forest green border */
 
   /* Typography Colors */
-  --text-primary: #F5F7FA;
-  --text-secondary: #A8B0BE;
-  --text-muted: #687184;
-  --text-inverse: #07080D;
+  --text-primary: #252821;         /* Charcoal */
+  --text-secondary: #595D54;       /* Readable dark-medium charcoal */
+  --text-muted: #74786F;           /* Muted gray */
+  --text-inverse: #FFFFFF;         /* Inverted text on dark/green buttons */
 
-  /* Accents */
-  --accent-violet: #6C63FF;
-  --accent-blue: #4DA3FF;
-  --accent-cyan: #55E6D0;
+  /* Accent Colors */
+  --accent-green: #55745C;         /* Primary accent: Muted forest green */
+  --accent-green-hover: #45614B;   /* Darker forest green */
+  --accent-green-active: #38503D;  /* Deep forest green */
+  --accent-sage: #E7EEE5;          /* Secondary accent: Soft sage */
+  --accent-cream: #F2EBDD;         /* Optional highlight: Pale cream */
   
-  --accent-gradient: linear-gradient(135deg, #6C63FF 0%, #4DA3FF 50%, #55E6D0 100%);
-  --accent-glow: 0 0 30px rgba(77, 163, 255, 0.2);
-  --violet-glow: 0 0 30px rgba(108, 99, 255, 0.25);
-  --cyan-glow: 0 0 25px rgba(85, 230, 208, 0.2);
+  /* Retain semantic aliases mapped to palette */
+  --accent-blue: #55745C;          /* Aliased to primary accent green */
+  --accent-cyan: #4A6E55;          /* Aliased to deep sage/green */
+  --accent-violet: #55745C;
 
-  /* Semantic */
-  --status-success: #55E6D0;
-  --status-warning: #FFA24C;
-  --status-error: #FF5C5C;
-  --status-idle: #687184;
-  --status-active: #4DA3FF;
+  /* Semantic Status */
+  --status-success: #446E4C;       /* Calm natural green */
+  --status-warning: #B26D1E;       /* Warm amber/ochre */
+  --status-error: #B54242;         /* Restrained brick red */
+  --status-idle: #74786F;          /* Muted gray */
+  --status-active: #55745C;        /* Forest green */
 
-  /* Fonts */
-  --font-display: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  /* Shadows (Subtle, soft, restrained) */
+  --shadow-xs: 0 1px 2px rgba(37, 40, 33, 0.04);
+  --shadow-sm: 0 1px 3px rgba(37, 40, 33, 0.05), 0 1px 2px rgba(37, 40, 33, 0.03);
+  --shadow-md: 0 4px 12px rgba(37, 40, 33, 0.05), 0 1px 3px rgba(37, 40, 33, 0.03);
+  --shadow-lg: 0 12px 28px rgba(37, 40, 33, 0.07), 0 2px 6px rgba(37, 40, 33, 0.03);
+
+  /* Typography Stacks */
+  --font-display: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
 
   /* Transitions */
   --transition-fast: 150ms cubic-bezier(0.16, 1, 0.3, 1);
-  --transition-normal: 250ms cubic-bezier(0.16, 1, 0.3, 1);
-  --transition-slow: 450ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-normal: 220ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-slow: 350ms cubic-bezier(0.16, 1, 0.3, 1);
 
-  /* Radius */
+  /* Restrained Corner Radii */
   --radius-xs: 4px;
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 18px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
   --radius-pill: 9999px;
 
-  /* Layout */
-  --container-max: 1280px;
+  /* Layout Constrains */
+  --container-max: 1180px;
   --container-padding: 24px;
 }

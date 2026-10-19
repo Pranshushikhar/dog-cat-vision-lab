@@ -1,19 +1,19 @@
 {
   "status": "EVALUATION_COMPLETE",
-  "model": "DogCat_CNN_Classifier",
-  "accuracy": 72.0,
-  "precision": 72.38,
-  "recall": 71.15,
-  "f1_score": 71.76,
-  "val_loss": 0.5545,
+  "model": "DogCat_MobileNetV2_Classifier",
+  "accuracy": 98.55,
+  "precision": 97.5,
+  "recall": 99.65,
+  "f1_score": 98.57,
+  "val_loss": 0.0409,
   "confusion_matrix": [
     [
-      1457,
-      543
+      1949,
+      51
     ],
     [
-      577,
-      1423
+      7,
+      1993
     ]
   ],
   "total_evaluated": 4000,

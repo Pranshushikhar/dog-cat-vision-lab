@@ -18,21 +18,24 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 MODEL_PATH = PROJECT_ROOT / "models" / "dog_cat_cnn.keras"
 
 _LOADED_MODEL = None
+_LOADED_MODEL_PATH = None
 
 
 def get_inference_model(model_path=MODEL_PATH):
     """Singleton accessor for the loaded model in memory."""
-    global _LOADED_MODEL
-    if _LOADED_MODEL is not None:
-        return _LOADED_MODEL
+    global _LOADED_MODEL, _LOADED_MODEL_PATH
 
     path = Path(model_path)
     if not path.exists():
         raise FileNotFoundError("MODEL_NOT_TRAINED")
 
+    if _LOADED_MODEL is not None and _LOADED_MODEL_PATH == str(path.resolve()):
+        return _LOADED_MODEL
+
     import tensorflow as tf
     print(f"Loading CNN weights from: {path}...")
     _LOADED_MODEL = tf.keras.models.load_model(str(path))
+    _LOADED_MODEL_PATH = str(path.resolve())
     return _LOADED_MODEL
 
 
@@ -41,14 +44,24 @@ def preprocess_image(image_input, target_size=(224, 224)) -> np.ndarray:
     Standardizes image input (bytes, path, or PIL Image) to float32 tensor
     with shape (1, 224, 224, 3) in RGB color space.
     """
-    if isinstance(image_input, (bytes, bytearray)):
-        img = Image.open(io.BytesIO(image_input))
-    elif isinstance(image_input, (str, Path)):
-        img = Image.open(image_input)
-    elif isinstance(image_input, Image.Image):
-        img = image_input
-    else:
-        raise ValueError(f"Unsupported image input type: {type(image_input)}")
+    try:
+        if isinstance(image_input, (bytes, bytearray)):
+            img = Image.open(io.BytesIO(image_input))
+        elif isinstance(image_input, (str, Path)):
+            img = Image.open(image_input)
+        elif isinstance(image_input, Image.Image):
+            img = image_input
+        else:
+            raise ValueError(f"Unsupported image input type: {type(image_input)}")
+        
+        # Force load to catch truncated or corrupted image data early
+        img.load()
+    except Exception as e:
+        raise ValueError(f"Invalid or unreadable image file: {e}")
+
+    # Validate image dimensions
+    if img.width < 10 or img.height < 10:
+        raise ValueError(f"Image is too small ({img.width}x{img.height}). Minimum dimensions are 10x10 pixels.")
 
     # Ensure RGB
     if img.mode != "RGB":

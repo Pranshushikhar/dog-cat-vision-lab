@@ -17,7 +17,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 
-def run_pipeline(epochs=15, batch_size=32, lr=1e-4, steps_per_epoch=50, val_steps=20, max_samples=None):
+def run_pipeline(epochs=5, batch_size=32, lr=5e-4, steps_per_epoch=80, val_steps=25, max_samples=None, model_type="mobilenet_v2"):
     print("=" * 80, flush=True)
     print("      DOG vs CAT CNN MACHINE LEARNING PIPELINE", flush=True)
     print("=" * 80, flush=True)
@@ -43,7 +43,8 @@ def run_pipeline(epochs=15, batch_size=32, lr=1e-4, steps_per_epoch=50, val_step
             batch_size=batch_size,
             lr=lr,
             steps_per_epoch=steps_per_epoch,
-            val_steps=val_steps
+            val_steps=val_steps,
+            model_type=model_type
         )
     except Exception as e:
         print(f"\n[!] Training encountered an error: {e}", flush=True)
@@ -70,11 +71,12 @@ def run_pipeline(epochs=15, batch_size=32, lr=1e-4, steps_per_epoch=50, val_step
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run complete Dog vs Cat ML Pipeline")
-    parser.add_argument("--epochs", type=int, default=15, help="Number of training epochs")
+    parser.add_argument("--model-type", type=str, default="mobilenet_v2", choices=["mobilenet_v2", "baseline"], help="Model architecture")
+    parser.add_argument("--epochs", type=int, default=5, help="Number of training epochs")
     parser.add_argument("--batch-size", type=int, default=32, help="Batch size")
-    parser.add_argument("--lr", type=float, default=1e-4, help="Learning rate")
-    parser.add_argument("--steps-per-epoch", type=int, default=50, help="Steps per training epoch (0 for full)")
-    parser.add_argument("--val-steps", type=int, default=20, help="Validation steps per epoch (0 for full)")
+    parser.add_argument("--lr", type=float, default=5e-4, help="Learning rate")
+    parser.add_argument("--steps-per-epoch", type=int, default=80, help="Steps per training epoch (0 for full)")
+    parser.add_argument("--val-steps", type=int, default=25, help="Validation steps per epoch (0 for full)")
     parser.add_argument("--max-samples", type=int, default=None, help="Cap dataset samples (e.g. for quick smoke tests)")
     args = parser.parse_args()
 
@@ -87,6 +89,7 @@ if __name__ == "__main__":
         lr=args.lr,
         steps_per_epoch=steps,
         val_steps=val_steps,
-        max_samples=args.max_samples
+        max_samples=args.max_samples,
+        model_type=args.model_type
     )
     sys.exit(0 if success else 1)

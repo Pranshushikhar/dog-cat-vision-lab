@@ -1,6 +1,5 @@
 import React from 'react';
-import { AlertCircle, CheckCircle, Clock, Zap, Cpu, Settings, AlertTriangle, Layers, ArrowRight, Terminal } from 'lucide-react';
-import { CLASSIFIER_MODES } from '../../services/classifierService';
+import { AlertCircle, AlertTriangle, Clock, Settings, Layers } from 'lucide-react';
 
 export default function InferenceResult({ 
   result, 
@@ -20,22 +19,34 @@ export default function InferenceResult({
           alignItems: 'center',
           justifyContent: 'center',
           textAlign: 'center',
-          minHeight: '280px',
-          background: 'var(--bg-secondary)',
+          minHeight: '260px',
+          background: 'var(--bg-card)',
           border: '1px dashed var(--border-medium)'
         }}
       >
-        <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(255,255,255,0.03)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)', marginBottom: '14px' }}>
-          <Layers size={22} />
+        <div 
+          style={{ 
+            width: '40px', 
+            height: '40px', 
+            borderRadius: '50%', 
+            background: 'var(--bg-surface)', 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center', 
+            color: 'var(--text-muted)', 
+            marginBottom: '12px' 
+          }}
+        >
+          <Layers size={20} />
         </div>
-        <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.82rem', letterSpacing: '0.12em', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '6px' }}>
-          IDLE STATE
+        <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', letterSpacing: '0.06em', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '4px' }}>
+          Awaiting Input
         </div>
-        <h4 style={{ fontSize: '1.15rem', color: 'var(--text-primary)', marginBottom: '6px' }}>
-          DROP AN IMAGE TO BEGIN
+        <h4 style={{ fontSize: '1.05rem', color: 'var(--text-primary)', marginBottom: '6px' }}>
+          Select or upload an image
         </h4>
-        <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', maxWidth: '340px' }}>
-          Select a sample specimen above or upload a custom photo to trigger convolutional pattern analysis.
+        <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', maxWidth: '300px', margin: 0 }}>
+          Choose a benchmark specimen or upload a photo to evaluate convolutional features.
         </p>
       </div>
     );
@@ -52,36 +63,30 @@ export default function InferenceResult({
           alignItems: 'center',
           justifyContent: 'center',
           textAlign: 'center',
-          minHeight: '280px',
-          background: 'var(--bg-secondary)',
-          border: '1px solid var(--accent-blue)',
-          boxShadow: '0 0 24px rgba(77, 163, 255, 0.15)'
+          minHeight: '260px',
+          background: 'var(--bg-card)',
+          border: '1px solid var(--accent-green)'
         }}
       >
-        <div style={{ position: 'relative', width: '56px', height: '56px', marginBottom: '18px' }}>
-          <div 
-            style={{
-              position: 'absolute',
-              inset: 0,
-              borderRadius: '50%',
-              border: '2px solid rgba(77, 163, 255, 0.2)',
-              borderTopColor: 'var(--accent-blue)',
-              animation: 'spin 1s linear infinite'
-            }}
-          />
-          <div style={{ position: 'absolute', inset: '8px', borderRadius: '50%', background: 'rgba(77,163,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--accent-cyan)' }}>
-            <Cpu size={20} />
-          </div>
+        <div 
+          className="animate-spin" 
+          style={{ 
+            width: '36px', 
+            height: '36px', 
+            borderRadius: '50%', 
+            border: '3px solid var(--accent-sage)', 
+            borderTopColor: 'var(--accent-green)', 
+            marginBottom: '16px' 
+          }} 
+        />
+        <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', letterSpacing: '0.06em', color: 'var(--accent-green)', textTransform: 'uppercase', marginBottom: '4px' }}>
+          Neural Inference
         </div>
-
-        <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.78rem', letterSpacing: '0.14em', color: 'var(--accent-cyan)', textTransform: 'uppercase', marginBottom: '6px' }}>
-          NEURAL PIPELINE ACTIVE
-        </div>
-        <h4 style={{ fontSize: '1.25rem', color: 'var(--text-primary)', marginBottom: '8px' }}>
-          EXTRACTING VISUAL FEATURES...
+        <h4 style={{ fontSize: '1.1rem', color: 'var(--text-primary)', marginBottom: '6px' }}>
+          Extracting visual features...
         </h4>
-        <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', maxWidth: '380px' }}>
-          Propagating input tensor through 32 filters, spatial pooling reductions, and dense classification nodes.
+        <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', maxWidth: '320px', margin: 0 }}>
+          Processing through 224 × 224 input tensors and convolutional inverted residual blocks.
         </p>
       </div>
     );
@@ -93,47 +98,44 @@ export default function InferenceResult({
       <div 
         className="tech-card"
         style={{
-          background: 'rgba(255, 162, 76, 0.05)',
-          border: '1px solid rgba(255, 162, 76, 0.4)',
-          borderRadius: 'var(--radius-md)',
-          padding: '24px'
+          background: '#F8F1E4',
+          border: '1px solid rgba(178, 109, 30, 0.3)',
+          borderRadius: 'var(--radius-sm)',
+          padding: '20px'
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px' }}>
-          <div style={{ width: '40px', height: '40px', borderRadius: '8px', background: 'rgba(255, 162, 76, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFA24C', flexShrink: 0 }}>
-            <AlertTriangle size={22} />
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+          <div style={{ color: '#8C5212', flexShrink: 0, marginTop: '2px' }}>
+            <AlertTriangle size={20} />
           </div>
           <div style={{ flex: 1 }}>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', letterSpacing: '0.12em', color: '#FFA24C', textTransform: 'uppercase', marginBottom: '4px' }}>
-              CHECKPOINT STATUS
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: '#8C5212', textTransform: 'uppercase', marginBottom: '2px' }}>
+              Checkpoint Status
             </div>
-            <h4 style={{ fontSize: '1.2rem', color: 'var(--text-primary)', marginBottom: '8px' }}>
-              MODEL NOT TRAINED
+            <h4 style={{ fontSize: '1.05rem', color: 'var(--text-primary)', marginBottom: '6px' }}>
+              Model weights not found
             </h4>
-            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: '14px' }}>
-              The FastAPI backend responded, but no trained CNN weights exist in <code>models/dog_cat_cnn.keras</code>.
+            <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: '12px' }}>
+              The backend is running, but no trained weights were found in <code>models/dog_cat_cnn.keras</code>.
             </p>
 
-            <div style={{ background: '#0B0D14', border: '1px solid var(--border-medium)', borderRadius: 'var(--radius-xs)', padding: '12px', marginBottom: '16px' }}>
-              <div style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: 'var(--accent-cyan)', marginBottom: '4px' }}>
-                Run Training Command:
+            <div style={{ background: '#FFFFFF', border: '1px solid var(--border-medium)', borderRadius: 'var(--radius-xs)', padding: '10px', marginBottom: '12px' }}>
+              <div style={{ fontSize: '0.7rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', marginBottom: '2px' }}>
+                Run training pipeline:
               </div>
-              <code style={{ fontSize: '0.8rem', color: '#F5F7FA' }}>
+              <code style={{ fontSize: '0.8rem', color: 'var(--text-primary)' }}>
                 python run_pipeline.py
               </code>
             </div>
 
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
-              <button 
-                type="button" 
-                className="btn btn-secondary btn-sm"
-                onClick={onSwitchToDemo}
-                style={{ borderColor: 'rgba(255, 162, 76, 0.4)', color: '#FFA24C' }}
-              >
-                <AlertTriangle size={14} />
-                <span>Switch to Labeled Demo Mode</span>
-              </button>
-            </div>
+            <button 
+              type="button" 
+              className="btn btn-secondary btn-sm"
+              onClick={onSwitchToDemo}
+            >
+              <AlertTriangle size={13} />
+              <span>Switch to Labeled Demo Mode</span>
+            </button>
           </div>
         </div>
       </div>
@@ -146,54 +148,53 @@ export default function InferenceResult({
       <div 
         className="tech-card"
         style={{
-          background: 'rgba(255, 92, 92, 0.04)',
-          border: '1px solid rgba(255, 92, 92, 0.3)',
-          borderRadius: 'var(--radius-md)',
-          padding: '24px'
+          background: '#FBEBEB',
+          border: '1px solid rgba(181, 66, 66, 0.3)',
+          borderRadius: 'var(--radius-sm)',
+          padding: '20px'
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px' }}>
-          <div style={{ width: '40px', height: '40px', borderRadius: '8px', background: 'rgba(255, 92, 92, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--status-error)', flexShrink: 0 }}>
-            <AlertCircle size={22} />
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+          <div style={{ color: 'var(--status-error)', flexShrink: 0, marginTop: '2px' }}>
+            <AlertCircle size={20} />
           </div>
           <div style={{ flex: 1 }}>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', letterSpacing: '0.12em', color: 'var(--status-error)', textTransform: 'uppercase', marginBottom: '4px' }}>
-              SERVICE STATUS
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--status-error)', textTransform: 'uppercase', marginBottom: '2px' }}>
+              Inference Offline
             </div>
-            <h4 style={{ fontSize: '1.2rem', color: 'var(--text-primary)', marginBottom: '8px' }}>
-              MODEL ENDPOINT OFFLINE
+            <h4 style={{ fontSize: '1.05rem', color: 'var(--text-primary)', marginBottom: '6px' }}>
+              Backend server unavailable
             </h4>
-            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: '14px' }}>
-              The classifier backend is currently unavailable. Start the Python FastAPI server to enable live CNN model inference.
+            <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: '12px' }}>
+              Start the FastAPI backend server to enable real-time convolutional inference.
             </p>
 
-            <div style={{ background: '#0B0D14', border: '1px solid var(--border-medium)', borderRadius: 'var(--radius-xs)', padding: '12px', marginBottom: '16px' }}>
-              <div style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: 'var(--accent-blue)', marginBottom: '4px' }}>
-                Launch Backend Server:
+            <div style={{ background: '#FFFFFF', border: '1px solid var(--border-medium)', borderRadius: 'var(--radius-xs)', padding: '10px', marginBottom: '12px' }}>
+              <div style={{ fontSize: '0.7rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', marginBottom: '2px' }}>
+                Launch command:
               </div>
-              <code style={{ fontSize: '0.8rem', color: '#F5F7FA' }}>
+              <code style={{ fontSize: '0.8rem', color: 'var(--text-primary)' }}>
                 python -m uvicorn backend.app:app --port 8000
               </code>
             </div>
 
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
               <button 
                 type="button" 
                 className="btn btn-secondary btn-sm"
                 onClick={onOpenConfig}
               >
-                <Settings size={14} />
-                <span>Configure Endpoint URL</span>
+                <Settings size={13} />
+                <span>Configure URL</span>
               </button>
               
               <button 
                 type="button" 
                 className="btn btn-secondary btn-sm"
                 onClick={onSwitchToDemo}
-                style={{ borderColor: 'rgba(255, 162, 76, 0.4)', color: '#FFA24C' }}
               >
-                <AlertTriangle size={14} />
-                <span>Switch to Labeled Demo Mode</span>
+                <AlertTriangle size={13} />
+                <span>Use Demo Mode</span>
               </button>
             </div>
           </div>
@@ -202,7 +203,7 @@ export default function InferenceResult({
     );
   }
 
-  // 5. RESULT STATE (Real CNN Model OR Labeled Demo Mode)
+  // 5. RESULT STATE (Real Model OR Labeled Demo Mode)
   if (result && result.success) {
     const isDog = result.prediction === 'DOG';
     const confidencePct = (result.confidence * 100).toFixed(1);
@@ -213,8 +214,8 @@ export default function InferenceResult({
       <div 
         className="tech-card"
         style={{
-          background: 'var(--bg-secondary)',
-          border: '1px solid var(--border-strong)',
+          background: 'var(--bg-card)',
+          border: '1px solid var(--border-medium)',
           borderRadius: 'var(--radius-md)',
           padding: '24px'
         }}
@@ -223,107 +224,110 @@ export default function InferenceResult({
         {result.isDemoMode && (
           <div 
             style={{
-              background: 'rgba(255, 162, 76, 0.1)',
-              border: '1px solid rgba(255, 162, 76, 0.35)',
-              borderRadius: 'var(--radius-sm)',
-              padding: '10px 14px',
+              background: '#F8F1E4',
+              border: '1px solid rgba(178, 109, 30, 0.3)',
+              borderRadius: 'var(--radius-xs)',
+              padding: '8px 12px',
               display: 'flex',
               alignItems: 'center',
-              gap: '10px',
-              marginBottom: '20px'
+              gap: '8px',
+              marginBottom: '18px'
             }}
           >
-            <AlertTriangle size={16} color="#FFA24C" />
-            <div style={{ flex: 1, fontSize: '0.78rem', color: '#FFA24C', fontFamily: 'var(--font-mono)' }}>
-              <strong>DEMO MODE — NOT REAL MODEL INFERENCE</strong>
-              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
-                Visual simulation running client-side for UI review without connected backend weights.
-              </div>
+            <AlertTriangle size={14} color="#8C5212" />
+            <div style={{ fontSize: '0.75rem', color: '#8C5212', fontFamily: 'var(--font-mono)' }}>
+              <strong>Demo Mode:</strong> Client-side simulation running without connected model backend.
             </div>
           </div>
         )}
 
         {/* Prediction Main Block */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '20px', alignItems: 'center' }}>
-          {/* Left: Prediction Class Card */}
-          <div 
-            style={{
-              background: 'var(--bg-elevated)',
-              border: `1px solid ${isDog ? 'rgba(77, 163, 255, 0.4)' : 'rgba(85, 230, 208, 0.4)'}`,
-              borderRadius: 'var(--radius-sm)',
-              padding: '20px',
-              position: 'relative',
-              overflow: 'hidden'
-            }}
-          >
-            <div style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px' }}>
-              PREDICTION
-            </div>
+        <div>
+          {/* Top Label & Timing */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+            <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
+              Prediction Result
+            </span>
+            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+              <Clock size={12} />
+              {result.processingTimeMs} ms
+            </span>
+          </div>
+
+          {/* Large Prediction Wordmark */}
+          <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: '8px' }}>
             <div 
               style={{
-                fontFamily: 'var(--font-display)',
                 fontSize: '2.5rem',
                 fontWeight: 700,
-                color: isDog ? 'var(--accent-blue)' : 'var(--accent-cyan)',
+                color: 'var(--text-primary)',
                 lineHeight: 1,
-                letterSpacing: '-0.02em',
-                marginBottom: '10px'
+                letterSpacing: '-0.02em'
               }}
             >
               {result.prediction}
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span className={`badge ${isDog ? 'badge-blue' : 'badge-cyan'}`}>
-                {isDog ? 'CANINE MORPHOLOGY' : 'FELINE MORPHOLOGY'}
-              </span>
-              <span className="badge badge-neutral" style={{ fontSize: '0.65rem' }}>
-                <Clock size={11} style={{ marginRight: '3px' }} />
-                {result.processingTimeMs} ms
-              </span>
+            <div style={{ textAlign: 'right' }}>
+              <div style={{ fontSize: '1.6rem', fontWeight: 700, color: 'var(--accent-green)', lineHeight: 1 }}>
+                {confidencePct}%
+              </div>
+              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+                Confidence
+              </div>
             </div>
           </div>
 
-          {/* Right: Confidence Metric */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-              <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
-                CONFIDENCE
-              </span>
-              <span style={{ fontSize: '1.75rem', fontFamily: 'var(--font-mono)', fontWeight: 700, color: 'var(--text-primary)' }}>
-                {confidencePct}%
-              </span>
+          <div style={{ marginBottom: '20px' }}>
+            <span className="badge badge-green" style={{ fontSize: '0.75rem' }}>
+              {isDog ? 'Canine Morphology' : 'Feline Morphology'}
+            </span>
+          </div>
+
+          {/* Binary Class Probability Breakdown */}
+          <div style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: '16px' }}>
+            <div style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '10px' }}>
+              Class Probability Distribution
             </div>
 
-            {/* Binary Class Probability Breakdown */}
-            <div style={{ marginTop: '10px' }}>
-              {/* Dog Row */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontFamily: 'var(--font-mono)', marginBottom: '3px' }}>
-                <span style={{ color: isDog ? 'var(--accent-blue)' : 'var(--text-muted)' }}>P(DOG)</span>
-                <span style={{ color: 'var(--text-primary)' }}>{dogProb}%</span>
+            {/* Cat Probability Row */}
+            <div style={{ marginBottom: '12px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', marginBottom: '4px' }}>
+                <span style={{ fontWeight: !isDog ? 600 : 400, color: 'var(--text-primary)' }}>
+                  Cat (P &lt; 0.5)
+                </span>
+                <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 600, color: 'var(--text-primary)' }}>
+                  {catProb}%
+                </span>
               </div>
-              <div style={{ height: '6px', background: 'var(--bg-surface)', borderRadius: '3px', overflow: 'hidden', marginBottom: '10px' }}>
-                <div 
-                  style={{
-                    width: `${dogProb}%`,
-                    height: '100%',
-                    background: 'var(--accent-blue)',
-                    transition: 'width 0.6s cubic-bezier(0.16, 1, 0.3, 1)'
-                  }} 
-                />
-              </div>
-
-              {/* Cat Row */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontFamily: 'var(--font-mono)', marginBottom: '3px' }}>
-                <span style={{ color: !isDog ? 'var(--accent-cyan)' : 'var(--text-muted)' }}>P(CAT)</span>
-                <span style={{ color: 'var(--text-primary)' }}>{catProb}%</span>
-              </div>
-              <div style={{ height: '6px', background: 'var(--bg-surface)', borderRadius: '3px', overflow: 'hidden' }}>
+              <div style={{ height: '7px', background: 'var(--bg-surface)', borderRadius: '3px', overflow: 'hidden' }}>
                 <div 
                   style={{
                     width: `${catProb}%`,
                     height: '100%',
-                    background: 'var(--accent-cyan)',
-                    transition: 'width 0.6s cubic-bezier(0.16, 1, 0.3, 1)'
+                    background: !isDog ? 'var(--accent-green)' : '#A8B09F',
+                    transition: 'width 0.4s ease'
+                  }} 
+                />
+              </div>
+            </div>
+
+            {/* Dog Probability Row */}
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', marginBottom: '4px' }}>
+                <span style={{ fontWeight: isDog ? 600 : 400, color: 'var(--text-primary)' }}>
+                  Dog (P ≥ 0.5)
+                </span>
+                <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 600, color: 'var(--text-primary)' }}>
+                  {dogProb}%
+                </span>
+              </div>
+              <div style={{ height: '7px', background: 'var(--bg-surface)', borderRadius: '3px', overflow: 'hidden' }}>
+                <div 
+                  style={{
+                    width: `${dogProb}%`,
+                    height: '100%',
+                    background: isDog ? 'var(--accent-green)' : '#A8B09F',
+                    transition: 'width 0.4s ease'
                   }} 
                 />
               </div>

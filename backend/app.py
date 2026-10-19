@@ -47,6 +47,11 @@ RESULTS_DIR = Path(os.environ.get("RESULTS_DIR", str(PROJECT_ROOT / "ml" / "resu
 PROCESSED_DIR = Path(os.environ.get("PROCESSED_DIR", str(PROJECT_ROOT / "data" / "processed")))
 
 
+# Mount static files for dataset images securely if processed folder exists
+if PROCESSED_DIR.exists():
+    app.mount("/api/image", StaticFiles(directory=str(PROCESSED_DIR)), name="image")
+
+
 @app.get("/")
 def read_root():
     return {
@@ -57,7 +62,8 @@ def read_root():
             "GET /api/dataset-stats",
             "GET /api/metrics",
             "GET /api/architecture",
-            "GET /api/samples"
+            "GET /api/samples",
+            "GET /api/image/{split}/{class_name}/{filename}"
         ]
     }
 
@@ -97,7 +103,7 @@ async def predict_endpoint(
         )
 
     # Validate file type
-    if not image.content_type.startswith("image/"):
+    if not (image.content_type and image.content_type.startswith("image/")):
         raise HTTPException(
             status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
             detail=f"Unsupported file type: {image.content_type}. Please upload a JPEG, PNG, or WebP image."
@@ -112,6 +118,11 @@ async def predict_endpoint(
         return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
             content={"error": "MODEL_NOT_TRAINED", "message": "Model checkpoint not found."}
+        )
+    except ValueError as ve:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(ve)
         )
     except Exception as e:
         raise HTTPException(

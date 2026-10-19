@@ -14,9 +14,16 @@ def test_architecture_metadata_structure():
     """Verify architecture metadata reports correct layer shapes and non-fabricated specs."""
     meta = get_architecture_metadata(model=None, input_shape=(224, 224, 3))
     assert meta["input_shape"] == [224, 224, 3]
-    assert len(meta["layers"]) >= 10
-    assert any(l["name"] == "conv2d_block1" for l in meta["layers"])
+    assert len(meta["layers"]) >= 6
+    assert any(l["name"] in ["conv2d_block1", "mobilenet_rescaling", "global_avg_pool", "dense_features"] for l in meta["layers"])
     assert any(l["name"] == "binary_output" for l in meta["layers"])
+
+
+def test_label_mapping_consistency():
+    """Verify that label 0 maps to cat and label 1 maps to dog across dataset and metadata."""
+    from ml.dataset import TRAIN_DIR
+    meta = get_architecture_metadata(model=None)
+    assert meta["output_classes"] == ["cat (0)", "dog (1)"]
 
 
 def test_missing_model_safeguard():

@@ -68,6 +68,46 @@ def build_dog_cat_cnn(input_shape=(224, 224, 3), learning_rate=1e-4):
     return model
 
 
+def build_mobilenet_v2_classifier(input_shape=(224, 224, 3), learning_rate=1e-4):
+    """
+    Constructs a transfer-learning classifier using pretrained MobileNetV2.
+    Pretrained on ImageNet (which includes rich feline and canine feature representations).
+    Input: (224, 224, 3) RGB values in [0, 255].
+    Includes internal preprocessing Rescaling(scale=1./127.5, offset=-1) to match MobileNetV2 requirements.
+    """
+    import tensorflow as tf
+    from tensorflow.keras import layers, models, optimizers, losses, metrics
+
+    base_model = tf.keras.applications.MobileNetV2(
+        input_shape=input_shape,
+        include_top=False,
+        weights="imagenet"
+    )
+    base_model.trainable = False
+
+    inputs = layers.Input(shape=input_shape, name="input_tensor")
+    x = layers.Rescaling(scale=1.0 / 127.5, offset=-1.0, name="mobilenet_rescaling")(inputs)
+    x = base_model(x, training=False)
+    x = layers.GlobalAveragePooling2D(name="global_avg_pool")(x)
+    x = layers.Dropout(0.3, name="dropout_regularization")(x)
+    x = layers.Dense(128, activation="relu", name="dense_features")(x)
+    x = layers.Dropout(0.2, name="dropout_head")(x)
+    outputs = layers.Dense(1, activation="sigmoid", name="binary_output")(x)
+
+    model = models.Model(inputs=inputs, outputs=outputs, name="DogCat_MobileNetV2_Classifier")
+
+    model.compile(
+        optimizer=optimizers.Adam(learning_rate=learning_rate),
+        loss=losses.BinaryCrossentropy(),
+        metrics=[
+            metrics.BinaryAccuracy(name="accuracy"),
+            metrics.Precision(name="precision"),
+            metrics.Recall(name="recall")
+        ]
+    )
+    return model
+
+
 def get_architecture_metadata(model=None, input_shape=(224, 224, 3)) -> dict:
     """
     Extracts structured architecture metadata from the CNN model.

@@ -65,11 +65,11 @@ def plot_training_history(history, save_dir=RESULTS_DIR):
     shutil.copy2(chart_path, PUBLIC_DIR / "training_curves.png")
 
 
-def train(epochs=15, batch_size=32, lr=1e-4, patience=4, steps_per_epoch=50, val_steps=20):
+def train(epochs=5, batch_size=32, lr=5e-4, patience=3, steps_per_epoch=80, val_steps=25, model_type="mobilenet_v2"):
     """Main training routine."""
     import tensorflow as tf
     from ml.dataset import get_data_loaders
-    from ml.model import build_dog_cat_cnn, MODEL_PATH
+    from ml.model import build_dog_cat_cnn, build_mobilenet_v2_classifier, MODEL_PATH
     from ml.evaluate import evaluate_model
 
     MODELS_DIR.mkdir(parents=True, exist_ok=True)
@@ -77,6 +77,7 @@ def train(epochs=15, batch_size=32, lr=1e-4, patience=4, steps_per_epoch=50, val
 
     print("=" * 60, flush=True)
     print("STARTING REAL CNN TRAINING PIPELINE", flush=True)
+    print(f"Model Type: {model_type}", flush=True)
     print(f"Target Checkpoint: {MODEL_PATH}", flush=True)
     print(f"Hyperparameters: epochs={epochs}, batch_size={batch_size}, lr={lr}", flush=True)
     if steps_per_epoch:
@@ -90,7 +91,10 @@ def train(epochs=15, batch_size=32, lr=1e-4, patience=4, steps_per_epoch=50, val
     if val_steps and val_ds:
         val_ds = val_ds.repeat()
 
-    model = build_dog_cat_cnn(input_shape=(224, 224, 3), learning_rate=lr)
+    if model_type == "mobilenet_v2":
+        model = build_mobilenet_v2_classifier(input_shape=(224, 224, 3), learning_rate=lr)
+    else:
+        model = build_dog_cat_cnn(input_shape=(224, 224, 3), learning_rate=lr)
     model.summary()
 
     callbacks = [
@@ -141,12 +145,13 @@ def train(epochs=15, batch_size=32, lr=1e-4, patience=4, steps_per_epoch=50, val
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Train Dog vs Cat CNN")
-    parser.add_argument("--epochs", type=int, default=15, help="Number of training epochs")
+    parser.add_argument("--model-type", type=str, default="mobilenet_v2", choices=["mobilenet_v2", "baseline"], help="Model architecture")
+    parser.add_argument("--epochs", type=int, default=5, help="Number of training epochs")
     parser.add_argument("--batch-size", type=int, default=32, help="Batch size")
-    parser.add_argument("--lr", type=float, default=1e-4, help="Learning rate")
-    parser.add_argument("--patience", type=int, default=4, help="Early stopping patience")
-    parser.add_argument("--steps-per-epoch", type=int, default=50, help="Steps per training epoch (0 for full)")
-    parser.add_argument("--val-steps", type=int, default=20, help="Validation steps per epoch (0 for full)")
+    parser.add_argument("--lr", type=float, default=5e-4, help="Learning rate")
+    parser.add_argument("--patience", type=int, default=3, help="Early stopping patience")
+    parser.add_argument("--steps-per-epoch", type=int, default=80, help="Steps per training epoch (0 for full)")
+    parser.add_argument("--val-steps", type=int, default=25, help="Validation steps per epoch (0 for full)")
     args = parser.parse_args()
 
     steps = args.steps_per_epoch if args.steps_per_epoch > 0 else None
@@ -158,5 +163,6 @@ if __name__ == "__main__":
         lr=args.lr,
         patience=args.patience,
         steps_per_epoch=steps,
-        val_steps=val_steps
+        val_steps=val_steps,
+        model_type=args.model_type
     )

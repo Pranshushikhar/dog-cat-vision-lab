@@ -42,14 +42,20 @@ def get_raw_train_dir() -> Path | None:
     return None
 
 
-def write_metadata(data: dict):
+def write_metadata(data: dict, filepath: Path | None = None, public_path: Path | None = None):
     """Save metadata to project root and public folder for frontend consumption."""
-    with open(METADATA_FILE, "w", encoding="utf-8") as f:
+    target = Path(filepath) if filepath else METADATA_FILE
+    target.parent.mkdir(parents=True, exist_ok=True)
+    with open(target, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)
-    PUBLIC_METADATA_FILE.parent.mkdir(parents=True, exist_ok=True)
-    with open(PUBLIC_METADATA_FILE, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2)
-    print(f"[OK] Metadata saved to: {METADATA_FILE}")
+
+    # Only update public metadata if writing to production target
+    if not filepath:
+        target_pub = Path(public_path) if public_path else PUBLIC_METADATA_FILE
+        target_pub.parent.mkdir(parents=True, exist_ok=True)
+        with open(target_pub, "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=2)
+    print(f"[OK] Metadata saved to: {target}")
 
 
 def setup_dataset(max_samples: int | None = None) -> bool:

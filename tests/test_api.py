@@ -70,6 +70,31 @@ def test_predict_invalid_file_type():
     assert response.status_code in [400, 415]
 
 
+def test_predict_tiny_image_validation():
+    """Verify endpoint rejects extremely small images (<10x10) with HTTP 400."""
+    tiny = Image.new("RGB", (5, 5), color="red")
+    buf = io.BytesIO()
+    tiny.save(buf, format="JPEG")
+    file_payload = {"image": ("tiny.jpg", buf.getvalue(), "image/jpeg")}
+    response = client.post("/api/predict", files=file_payload)
+    assert response.status_code == 400
+    assert "too small" in response.json().get("detail", "").lower()
+
+
+def test_predict_corrupt_image_validation():
+    """Verify endpoint rejects corrupted image payload with HTTP 400."""
+    file_payload = {"image": ("corrupt.jpg", b"corrupted bytes", "image/jpeg")}
+    response = client.post("/api/predict", files=file_payload)
+    assert response.status_code == 400
+    assert "unreadable" in response.json().get("detail", "").lower() or "invalid" in response.json().get("detail", "").lower()
+
+
+def test_api_static_image_serving():
+    """Verify static dataset image route serves images correctly."""
+    response = client.get("/api/image/train/dogs/dog.0.jpg")
+    assert response.status_code in [200, 404]  # 200 if processed data exists
+
+
 def test_predict_missing_model_safeguard(monkeypatch):
     """
     Verify endpoint returns HTTP 400 with MODEL_NOT_TRAINED

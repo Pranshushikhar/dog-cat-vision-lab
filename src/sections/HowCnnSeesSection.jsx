@@ -1,49 +1,39 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { CONVOLUTION_FILTERS } from '../data/filterPresets';
-import { Eye, Layers, Cpu, CheckCircle2, Sliders, Sparkles } from 'lucide-react';
 
 const STEPS = [
   {
     step: '01',
-    title: 'INPUT',
-    short: 'The image enters the network',
-    detail: 'Digital images are stored as grids of numbers representing red, green, and blue (RGB) light intensities. For our CNN, each photo is standardized to 224 × 224 pixels with 3 color channels.',
-    icon: Eye,
-    color: '#4DA3FF'
+    title: 'Input Raster',
+    short: 'Standardized RGB pixel arrays',
+    detail: 'Digital images enter as grids of red, green, and blue (RGB) light intensities. Each photo is decoded and normalized to 224 × 224 pixels with 3 color channels.'
   },
   {
     step: '02',
-    title: 'CONVOLUTION',
+    title: 'Spatial Convolution',
     short: 'Filters scan local visual patterns',
-    detail: 'Small mathematical grids called kernels (e.g., 3 × 3 matrix of numbers) slide across the image pixels. By computing element-wise dot products, they react strongly when specific patterns match the filter.',
-    icon: Layers,
-    color: '#6C63FF'
+    detail: 'Mathematical 3 × 3 matrix kernels slide across the pixel grid. Computing element-wise dot products isolates contrast boundaries, gradients, and lines.'
   },
   {
     step: '03',
-    title: 'FEATURE EXTRACTION',
-    short: 'The network learns edges, textures, and shapes',
-    detail: 'Early layers detect elementary lines and contrast boundaries. Intermediate layers combine lines into textures and curves (whiskers, fur). Deep layers aggregate curves into complex anatomical shapes (snouts, triangular ears).',
-    icon: Cpu,
-    color: '#55E6D0'
+    title: 'Feature Hierarchy',
+    short: 'Learning edges, textures, and morphology',
+    detail: 'Early layers detect simple lines. Intermediate layers combine lines into fur textures and whisker patterns. Deep layers assemble complex contours into snouts, ears, and facial structures.'
   },
   {
     step: '04',
-    title: 'CLASSIFICATION',
-    short: 'Learned representation distinguishes DOG vs CAT',
-    detail: 'The final dense layers flatten all extracted spatial features into numerical coordinates. A decision function (Sigmoid/Softmax) weighs whether these features are characteristic of a canine or feline.',
-    icon: CheckCircle2,
-    color: '#FFA24C'
+    title: 'Logistic Decision',
+    short: 'Classification scalar distinguishes Dog vs Cat',
+    detail: 'Global average pooling aggregates the 1,280 feature maps into a vector. A sigmoid activation maps the log-odds scalar to the probability interval [0, 1].'
   }
 ];
 
 export default function HowCnnSeesSection() {
   const [selectedFilter, setSelectedFilter] = useState(CONVOLUTION_FILTERS[0]);
-  const [selectedSpecimen, setSelectedSpecimen] = useState('/samples/sample_cat_1.svg');
+  const [selectedSpecimen, setSelectedSpecimen] = useState('/samples/sample_cat_1.jpg');
   const canvasRef = useRef(null);
-  const [isProcessingCanvas, setIsProcessingCanvas] = useState(false);
 
-  // Apply real 3x3 convolution kernel onto canvas
+  // Apply real 3x3 convolution kernel onto HTML5 canvas
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -98,206 +88,187 @@ export default function HowCnnSeesSection() {
   }, [selectedFilter, selectedSpecimen]);
 
   return (
-    <section id="how-it-sees" className="section" style={{ background: 'var(--bg-secondary)' }}>
-      <div className="container">
-        {/* Section Header */}
-        <div className="section-header">
-          <div className="section-eyebrow">
-            EDUCATIONAL FOUNDATION
-          </div>
-          <h2 className="section-title">
-            HOW THE CNN SEES
-          </h2>
-          <p className="section-subtitle">
-            How a convolutional neural network breaks down photographs into numerical representations to distinguish dogs from cats.
-          </p>
+    <div style={{ marginBottom: '32px' }}>
+      {/* Section Header */}
+      <div style={{ marginBottom: '28px' }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+          <span className="section-eyebrow">
+            Educational Foundations
+          </span>
+          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+            Mathematical Convolution & Feature Learning
+          </span>
         </div>
+        <h2 style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '8px', letterSpacing: '-0.02em' }}>
+          How the Neural Network Sees
+        </h2>
+        <p style={{ fontSize: '0.95rem', color: 'var(--text-secondary)', lineHeight: 1.5, maxWidth: '680px' }}>
+          How convolutional layers break down high-resolution photographs into spatial feature maps to distinguish feline from canine morphology.
+        </p>
+      </div>
 
-        {/* 4 Architectural Stages Cards */}
-        <div className="grid-4" style={{ marginBottom: '48px' }}>
-          {STEPS.map((s) => {
-            const Icon = s.icon;
-            return (
-              <div 
-                key={s.step} 
-                className="tech-card"
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '12px',
-                  background: 'var(--bg-elevated)',
-                  borderTop: `2px solid ${s.color}`
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <span style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: s.color, fontWeight: 700 }}>
-                    STAGE {s.step}
-                  </span>
-                  <div style={{ width: '28px', height: '28px', borderRadius: '6px', background: 'rgba(255,255,255,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: s.color }}>
-                    <Icon size={15} />
-                  </div>
-                </div>
-
-                <div>
-                  <h4 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '4px' }}>
-                    {s.title}
-                  </h4>
-                  <div style={{ fontSize: '0.78rem', color: s.color, fontWeight: 500, marginBottom: '8px' }}>
-                    {s.short}
-                  </div>
-                </div>
-
-                <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: 1.55 }}>
-                  {s.detail}
-                </p>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Interactive Kernel Convolution Playground */}
-        <div className="tech-card" style={{ background: 'var(--bg-primary)', border: '1px solid var(--border-medium)', padding: '32px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px', marginBottom: '24px' }}>
+      {/* 4 Architectural Stages (Numbered Steps) */}
+      <div className="grid-4" style={{ marginBottom: '36px' }}>
+        {STEPS.map((s) => (
+          <div 
+            key={s.step} 
+            className="tech-card"
+            style={{
+              padding: '20px',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between'
+            }}
+          >
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Sparkles size={16} color="var(--accent-cyan)" />
-                <h3 style={{ fontSize: '1.25rem', color: 'var(--text-primary)' }}>
-                  Interactive 3×3 Convolution Kernel Simulator
-                </h3>
+              <div style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--accent-green)', fontWeight: 600, marginBottom: '6px' }}>
+                Stage {s.step}
               </div>
-              <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', margin: '4px 0 0 0' }}>
-                Live in-browser mathematical convolution showing how spatial filters transform pixel matrices into feature maps.
-              </p>
+              <h3 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '4px' }}>
+                {s.title}
+              </h3>
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '10px' }}>
+                {s.short}
+              </div>
             </div>
 
-            {/* Specimen Picker */}
-            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-              <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>Target:</span>
-              <button
-                type="button"
-                className={`btn btn-sm ${selectedSpecimen === '/samples/sample_cat_1.svg' ? 'btn-primary' : 'btn-secondary'}`}
-                onClick={() => setSelectedSpecimen('/samples/sample_cat_1.svg')}
-                style={{ fontSize: '0.75rem', padding: '6px 12px' }}
-              >
-                Cat (Whiskers)
-              </button>
-              <button
-                type="button"
-                className={`btn btn-sm ${selectedSpecimen === '/samples/sample_dog_1.svg' ? 'btn-primary' : 'btn-secondary'}`}
-                onClick={() => setSelectedSpecimen('/samples/sample_dog_1.svg')}
-                style={{ fontSize: '0.75rem', padding: '6px 12px' }}
-              >
-                Dog (Muzzle)
-              </button>
+            <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', lineHeight: 1.5, margin: 0 }}>
+              {s.detail}
+            </p>
+          </div>
+        ))}
+      </div>
+
+      {/* Interactive 3x3 Convolution Simulator */}
+      <div className="tech-card" style={{ padding: '24px' }}>
+        <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px', marginBottom: '20px' }}>
+          <div>
+            <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+              Interactive 3 × 3 Convolution Kernel Simulator
+            </div>
+            <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+              Live in-browser spatial convolution calculating discrete cross-correlation on real test pixels
             </div>
           </div>
 
-          <div className="grid-2" style={{ alignItems: 'center' }}>
-            {/* Filter Buttons & Kernel Matrix */}
-            <div>
-              <div style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '10px' }}>
-                Select Convolution Filter:
+          {/* Specimen Picker */}
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>Specimen:</span>
+            <button
+              type="button"
+              className={`btn btn-sm ${selectedSpecimen === '/samples/sample_cat_1.jpg' ? 'btn-primary' : 'btn-secondary'}`}
+              onClick={() => setSelectedSpecimen('/samples/sample_cat_1.jpg')}
+              style={{ fontSize: '0.75rem', padding: '5px 10px' }}
+            >
+              Cat (Whiskers)
+            </button>
+            <button
+              type="button"
+              className={`btn btn-sm ${selectedSpecimen === '/samples/sample_dog_1.jpg' ? 'btn-primary' : 'btn-secondary'}`}
+              onClick={() => setSelectedSpecimen('/samples/sample_dog_1.jpg')}
+              style={{ fontSize: '0.75rem', padding: '5px 10px' }}
+            >
+              Dog (Muzzle)
+            </button>
+          </div>
+        </div>
+
+        <div className="grid-2" style={{ alignItems: 'start' }}>
+          {/* Left: Filter Buttons & Kernel Weights Matrix */}
+          <div>
+            <div style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '8px' }}>
+              Select Convolution Filter:
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '6px', marginBottom: '18px' }}>
+              {CONVOLUTION_FILTERS.map((f) => {
+                const isSelected = selectedFilter.id === f.id;
+                return (
+                  <button
+                    key={f.id}
+                    type="button"
+                    onClick={() => setSelectedFilter(f)}
+                    style={{
+                      padding: '8px 10px',
+                      background: isSelected ? 'var(--accent-sage)' : 'var(--bg-surface)',
+                      border: isSelected ? '1px solid var(--accent-green)' : '1px solid var(--border-medium)',
+                      borderRadius: 'var(--radius-xs)',
+                      textAlign: 'left',
+                      cursor: 'pointer',
+                      transition: 'all var(--transition-fast)'
+                    }}
+                  >
+                    <div style={{ fontSize: '0.78rem', fontWeight: 600, color: isSelected ? 'var(--accent-green)' : 'var(--text-primary)' }}>
+                      {f.name}
+                    </div>
+                    <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>
+                      {f.category}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* 3x3 Kernel Matrix Display */}
+            <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-medium)', borderRadius: 'var(--radius-sm)', padding: '14px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+                <span style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: 'var(--accent-green)', textTransform: 'uppercase', fontWeight: 600 }}>
+                  Active 3 × 3 Kernel Weights (W)
+                </span>
+                <span style={{ fontSize: '0.68rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
+                  Divisor: {selectedFilter.divisor || 1} • Offset: {selectedFilter.offset || 0}
+                </span>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px', marginBottom: '20px' }}>
-                {CONVOLUTION_FILTERS.map((f) => {
-                  const isSelected = selectedFilter.id === f.id;
-                  return (
-                    <button
-                      key={f.id}
-                      type="button"
-                      onClick={() => setSelectedFilter(f)}
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px', maxWidth: '240px', margin: '0 auto 10px auto' }}>
+                {selectedFilter.kernel.map((row, rIdx) =>
+                  row.map((val, cIdx) => (
+                    <div
+                      key={`${rIdx}-${cIdx}`}
                       style={{
-                        padding: '10px 12px',
-                        background: isSelected ? 'rgba(77, 163, 255, 0.15)' : 'var(--bg-surface)',
-                        border: isSelected ? '1px solid var(--accent-blue)' : '1px solid var(--border-medium)',
-                        borderRadius: 'var(--radius-xs)',
-                        textAlign: 'left',
-                        cursor: 'pointer',
-                        transition: 'all var(--transition-fast)'
+                        background: '#FFFFFF',
+                        border: '1px solid var(--border-medium)',
+                        borderRadius: '3px',
+                        padding: '6px',
+                        textAlign: 'center',
+                        fontFamily: 'var(--font-mono)',
+                        fontSize: '0.78rem',
+                        fontWeight: 600,
+                        color: val !== 0 ? 'var(--text-primary)' : 'var(--text-muted)'
                       }}
                     >
-                      <div style={{ fontSize: '0.78rem', fontWeight: 600, color: isSelected ? 'var(--accent-blue)' : 'var(--text-primary)' }}>
-                        {f.name}
-                      </div>
-                      <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-                        {f.category}
-                      </div>
-                    </button>
-                  );
-                })}
+                      {val}
+                    </div>
+                  ))
+                )}
               </div>
 
-              {/* 3x3 Kernel Matrix Display */}
-              <div style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-sm)', padding: '16px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-                  <span style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: 'var(--accent-cyan)', textTransform: 'uppercase' }}>
-                    Active 3 × 3 Kernel Weights (W)
-                  </span>
-                  <span style={{ fontSize: '0.68rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
-                    Divisor: {selectedFilter.divisor || 1} • Offset: {selectedFilter.offset || 0}
-                  </span>
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px', maxWidth: '240px', margin: '0 auto 12px auto' }}>
-                  {selectedFilter.kernel.flatMap((row, rIdx) =>
-                    row.map((val, cIdx) => (
-                      <div
-                        key={`${rIdx}-${cIdx}`}
-                        style={{
-                          background: val !== 0 ? 'rgba(77, 163, 255, 0.12)' : 'var(--bg-surface)',
-                          border: val !== 0 ? '1px solid rgba(77, 163, 255, 0.3)' : '1px solid var(--border-subtle)',
-                          borderRadius: '4px',
-                          padding: '8px 0',
-                          textAlign: 'center',
-                          fontFamily: 'var(--font-mono)',
-                          fontSize: '0.85rem',
-                          fontWeight: 600,
-                          color: val > 0 ? 'var(--accent-cyan)' : val < 0 ? '#FF7A7A' : 'var(--text-muted)'
-                        }}
-                      >
-                        {val > 0 ? `+${val}` : val}
-                      </div>
-                    ))
-                  )}
-                </div>
-
-                <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', margin: 0, textAlign: 'center' }}>
-                  {selectedFilter.description}
-                </p>
+              <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', textAlign: 'center', lineHeight: 1.4 }}>
+                {selectedFilter.description}
               </div>
             </div>
+          </div>
 
-            {/* Visual Canvas Result */}
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
-              <div 
-                style={{
-                  width: '224px',
-                  height: '224px',
-                  borderRadius: 'var(--radius-sm)',
-                  overflow: 'hidden',
-                  background: '#030407',
-                  border: '2px solid var(--border-strong)',
-                  boxShadow: '0 0 24px rgba(0, 0, 0, 0.7)'
-                }}
-              >
-                <canvas 
-                  ref={canvasRef} 
-                  style={{ width: '100%', height: '100%', display: 'block' }} 
-                />
-              </div>
+          {/* Right: Real Canvas Feature Map Output */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', background: 'var(--bg-surface)', border: '1px solid var(--border-medium)', borderRadius: 'var(--radius-sm)', padding: '16px' }}>
+            <div style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '10px' }}>
+              Transformed Feature Activation Map
+            </div>
 
-              <div style={{ textAlign: 'center' }}>
-                <span className="badge badge-cyan" style={{ fontSize: '0.7rem' }}>
-                  CONVOLUTION ACTIVATION MAP
-                </span>
-                <div style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', marginTop: '4px' }}>
-                  224 × 224 Matrix • {selectedFilter.category}
-                </div>
-              </div>
+            <div style={{ width: '224px', height: '224px', border: '1px solid var(--border-strong)', borderRadius: 'var(--radius-xs)', overflow: 'hidden', background: '#FFFFFF', boxShadow: 'var(--shadow-xs)' }}>
+              <canvas
+                ref={canvasRef}
+                width={224}
+                height={224}
+                style={{ display: 'block', width: '100%', height: '100%' }}
+              />
+            </div>
+
+            <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '10px', textAlign: 'center' }}>
+              Computed in real time via JavaScript 2D context array buffers
             </div>
           </div>
         </div>
       </div>
-    </section>
+    </div>
   );
 }

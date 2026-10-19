@@ -1,130 +1,88 @@
 import React from 'react';
-import { Code, Terminal, CheckCircle2, AlertCircle } from 'lucide-react';
 
 const TECHNOLOGIES = [
   {
     name: 'Python',
-    role: 'Language & Model Runtime',
-    status: 'Planned / optional (Backend)',
-    statusType: 'optional',
-    desc: 'Core environment for neural network modeling, training scripts, and batch data loaders.'
+    role: 'Language & Backend Runtime',
+    status: 'FastAPI Service',
+    desc: 'Core environment for data loading, inference endpoints, tensor transformations, and training scripts.'
   },
   {
-    name: 'CNN (Convolutional Neural Network)',
-    role: 'Core ML Technique',
-    status: 'Architected / Modeled',
-    statusType: 'confirmed',
-    desc: 'Hierarchical feature learning architecture utilizing Conv2D, ReLU non-linearities, and spatial pooling.'
+    name: 'TensorFlow & Keras',
+    role: 'Deep Learning Engine',
+    status: 'Trained Weights Active',
+    desc: 'Framework used for transfer learning, layer definition, loss backpropagation, and serializing weights.'
   },
   {
-    name: 'Computer Vision',
-    role: 'Domain Methodology',
-    status: 'Core Implementation',
-    statusType: 'confirmed',
-    desc: 'Image preprocessing, 2D matrix spatial convolution, normalization, and visual feature extraction.'
+    name: 'MobileNetV2',
+    role: 'Convolutional Backbone',
+    status: '2.26M Parameters',
+    desc: 'Inverted residual bottleneck architecture optimized for high visual accuracy with minimal computational overhead.'
   },
   {
-    name: 'TensorFlow / Keras',
-    role: 'Deep Learning Framework',
-    status: 'Planned / optional (Backend)',
-    statusType: 'optional',
-    desc: 'Framework for definition, loss backpropagation, and weight serialization (.keras / .h5).'
+    name: 'Pillow (PIL)',
+    role: 'Image Decoding & Verification',
+    status: 'Validation Gate',
+    desc: 'Decodes JPEG/PNG buffers, validates image dimensions, and guards against corrupt payloads.'
   },
   {
-    name: 'NumPy',
-    role: 'Tensor & Matrix Computing',
-    status: 'Planned / optional (Backend)',
-    statusType: 'optional',
-    desc: 'High-performance n-dimensional array manipulation for batch image vectorization.'
-  },
-  {
-    name: 'OpenCV',
-    role: 'Image Preprocessing',
-    status: 'Planned / optional (Backend)',
-    statusType: 'optional',
-    desc: 'Spatial transforms, bilinear interpolation, color space conversions, and geometric resizing.'
+    name: 'React 18 + Vite',
+    role: 'Frontend Research Lab',
+    status: 'Static SPA',
+    desc: 'Responsive user interface with client-side hash routing, interactive canvas simulator, and API integration.'
   },
   {
     name: 'Kaggle Dataset',
-    role: 'Training Corpus',
-    status: 'Benchmark Source',
-    statusType: 'confirmed',
-    desc: 'Canonical Dogs vs Cats dataset providing balanced binary labeled photographic examples.'
-  },
-  {
-    name: 'React + Vite',
-    role: 'Frontend & UI Lab',
-    status: 'Active Implementation',
-    statusType: 'confirmed',
-    desc: 'High-performance static SPA client deployed to Cloudflare Pages with live pipeline simulator.'
+    role: 'Benchmark Corpus',
+    status: '20,000 Images',
+    desc: 'Canonical Dogs vs. Cats dataset providing 10,000 canine and 10,000 feline photographic samples.'
   }
 ];
 
 export default function TechStackSection() {
   return (
-    <section id="tech-stack" className="section" style={{ background: 'var(--bg-secondary)' }}>
-      <div className="container">
-        {/* Section Header */}
-        <div className="section-header">
-          <div className="section-eyebrow">
-            SYSTEM ARCHITECTURE & TOOLING
-          </div>
-          <h2 className="section-title">
-            TECH STACK
-          </h2>
-          <p className="section-subtitle">
-            Technology ecosystem supporting model training, computer vision pipelines, and web deployment.
-          </p>
+    <div>
+      {/* Section Header */}
+      <div style={{ marginBottom: '24px' }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+          <span className="section-eyebrow">
+            Engineering Foundations
+          </span>
+          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+            System Architecture
+          </span>
         </div>
-
-        {/* Stack Grid */}
-        <div className="grid-4">
-          {TECHNOLOGIES.map((tech) => {
-            const isConfirmed = tech.statusType === 'confirmed';
-            return (
-              <div 
-                key={tech.name}
-                className="tech-card"
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
-                  background: 'var(--bg-elevated)',
-                  border: '1px solid var(--border-medium)',
-                  padding: '20px'
-                }}
-              >
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
-                    <span 
-                      className={`badge ${isConfirmed ? 'badge-cyan' : 'badge-neutral'}`}
-                      style={{ fontSize: '0.62rem' }}
-                    >
-                      {tech.status}
-                    </span>
-                  </div>
-
-                  <h4 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '4px' }}>
-                    {tech.name}
-                  </h4>
-                  <div style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: 'var(--accent-blue)', marginBottom: '10px' }}>
-                    {tech.role}
-                  </div>
-                </div>
-
-                <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', lineHeight: 1.5, margin: 0 }}>
-                  {tech.desc}
-                </p>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Technical Integrity Footnote */}
-        <div style={{ marginTop: '24px', textAlign: 'center', fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-          * Technologies marked "Planned / optional" represent candidate training dependencies for the backend service, not active dependencies of the static web frontend.
-        </div>
+        <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '6px', letterSpacing: '-0.02em' }}>
+          Technology Stack
+        </h2>
+        <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: 1.5, maxWidth: '640px' }}>
+          The computational tools, frameworks, and datasets supporting end-to-end model training and inference.
+        </p>
       </div>
-    </section>
+
+      {/* Technology Grid */}
+      <div className="grid-3" style={{ gap: '16px' }}>
+        {TECHNOLOGIES.map((tech) => (
+          <div key={tech.name} className="tech-card" style={{ padding: '20px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '8px' }}>
+              <h3 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+                {tech.name}
+              </h3>
+              <span className="badge badge-green" style={{ fontSize: '0.68rem' }}>
+                {tech.status}
+              </span>
+            </div>
+
+            <div style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--accent-green)', marginBottom: '8px' }}>
+              {tech.role}
+            </div>
+
+            <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: 1.5, margin: 0 }}>
+              {tech.desc}
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
