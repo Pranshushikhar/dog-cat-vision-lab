@@ -9,7 +9,7 @@
  *  - Retains labeled DEMO MODE only as an explicit toggle for UI review
  */
 
-export const PRODUCTION_BACKEND_URL = 'https://palestinian-soccer-element-comparative.trycloudflare.com';
+export const PRODUCTION_BACKEND_URL = 'https://pawvision-ai-backend.onrender.com';
 
 const DEFAULT_API_URL = (import.meta.env.VITE_CLASSIFIER_API_URL && !import.meta.env.VITE_CLASSIFIER_API_URL.includes('localhost') && !import.meta.env.VITE_CLASSIFIER_API_URL.includes('127.0.0.1'))
   ? import.meta.env.VITE_CLASSIFIER_API_URL

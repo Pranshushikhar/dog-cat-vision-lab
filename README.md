@@ -2,7 +2,7 @@
 
 A portfolio-grade Machine Learning and Computer Vision system featuring:
 - **Live Cloudflare Pages**: [https://pawvision-ai.pages.dev](https://pawvision-ai.pages.dev)
-- **Live Production Inference Backend**: [https://palestinian-soccer-element-comparative.trycloudflare.com](https://palestinian-soccer-element-comparative.trycloudflare.com)
+- **Live Production Inference Backend**: [https://pawvision-ai-backend.onrender.com](https://pawvision-ai-backend.onrender.com)
 - **Cloudflare Worker**: [https://pawvision-ai.26bcs10417.workers.dev](https://pawvision-ai.26bcs10417.workers.dev)
 - **Frontend**: Interactive "PawVision AI" laboratory deployed on **Cloudflare Pages**
 - **Inference API**: **FastAPI** Python backend service

@@ -54,7 +54,7 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# Enable CORS for Cloudflare Pages, Workers, trycloudflare, and local development
+# Enable CORS for Cloudflare Pages, Workers, Render, and local development
 ALLOWED_ORIGINS = [
     "https://pawvision-ai.pages.dev",
     "https://pawvision-ai.26bcs10417.workers.dev",
@@ -69,7 +69,7 @@ ALLOWED_ORIGINS = [
 app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,
-    allow_origin_regex=r"^https:\/\/([a-zA-Z0-9-]+\.)*(pages\.dev|workers\.dev|trycloudflare\.com|onrender\.com)$",
+    allow_origin_regex=r"^https:\/\/([a-zA-Z0-9-]+\.)*(pages\.dev|workers\.dev|onrender\.com)$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

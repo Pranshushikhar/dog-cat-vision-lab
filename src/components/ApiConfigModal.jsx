@@ -153,7 +153,7 @@ export default function ApiConfigModal({ isOpen, onClose }) {
               type="text"
               value={apiUrl}
               onChange={(e) => setApiUrl(e.target.value)}
-              placeholder="https://your-backend.trycloudflare.com"
+              placeholder="https://pawvision-ai-backend.onrender.com"
               style={{
                 flex: 1,
                 background: 'var(--bg-surface)',
