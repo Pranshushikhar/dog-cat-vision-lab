@@ -49,7 +49,7 @@ export default function Navbar({ onOpenApiModal, activeTab = 'home', onSelectTab
   return (
     <nav className="navbar" role="navigation" aria-label="Main Navigation">
       <div className="container navbar-inner" style={{ flexWrap: 'wrap', gap: '14px' }}>
-        {/* Simple AILAB Wordmark */}
+        {/* PawVision AI Wordmark & Team Credit */}
         <a 
           href="#/home" 
           className="navbar-brand"
@@ -62,6 +62,9 @@ export default function Navbar({ onOpenApiModal, activeTab = 'home', onSelectTab
             <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 400 }}>
               · Cat vs Dog Vision
             </span>
+          </div>
+          <div className="navbar-team-credit">
+            Developed by <span className="team-lead">Pranshu Shikhar &amp; Team</span> — Rishabh Vaish and Ankit Raj
           </div>
         </a>
 

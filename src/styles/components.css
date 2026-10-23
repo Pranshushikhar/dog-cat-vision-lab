@@ -162,10 +162,26 @@
 
 .navbar-brand {
   display: flex;
-  align-items: center;
-  gap: 10px;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 2px;
   color: var(--text-primary);
   text-decoration: none;
+}
+
+.navbar-team-credit {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  white-space: normal;
+}
+
+.navbar-team-credit .team-lead {
+  color: var(--accent-green);
+  font-weight: 600;
 }
 
 .brand-icon {
@@ -253,5 +269,13 @@
   }
   .nav-tabs::-webkit-scrollbar {
     display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .navbar-team-credit {
+    font-size: 0.65rem;
+    line-height: 1.2;
+    max-width: 290px;
   }
 }
