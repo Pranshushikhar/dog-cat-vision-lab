@@ -15,14 +15,29 @@ export default function ApiConfigModal({ isOpen, onClose }) {
   const [testingHealth, setTestingHealth] = useState(false);
   const [testResult, setTestResult] = useState(null);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [initialStatusChecked, setInitialStatusChecked] = useState(false);
 
   useEffect(() => {
+    let isMounted = true;
     if (isOpen) {
-      setApiUrl(classifierService.getApiUrl());
+      const activeUrl = classifierService.getApiUrl();
+      setApiUrl(activeUrl);
       setCurrentMode(classifierService.getMode());
-      setTestResult(null);
       setSaveSuccess(false);
+
+      // Auto-check connection status on open if not checked yet
+      setTestingHealth(true);
+      classifierService.checkEndpointHealth(activeUrl, 8000).then((res) => {
+        if (isMounted) {
+          setTestResult(res);
+          setTestingHealth(false);
+          setInitialStatusChecked(true);
+        }
+      });
     }
+    return () => {
+      isMounted = false;
+    };
   }, [isOpen]);
 
   if (!isOpen) return null;
@@ -109,7 +124,7 @@ export default function ApiConfigModal({ isOpen, onClose }) {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: '14px', borderBottom: '1px solid var(--border-subtle)' }}>
           <div>
             <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
-              Backend Inference Endpoint
+              Backend Settings & Connection
             </h3>
             <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: '2px 0 0 0' }}>
               Connection configuration for Python FastAPI CNN inference backend
@@ -124,6 +139,51 @@ export default function ApiConfigModal({ isOpen, onClose }) {
           >
             <X size={18} />
           </button>
+        </div>
+
+        {/* Live Backend Connection Status Banner (Transferred from Navbar) */}
+        <div 
+          style={{ 
+            margin: '16px 0',
+            padding: '14px 16px', 
+            borderRadius: 'var(--radius-sm)', 
+            background: testResult?.ok ? 'var(--accent-sage)' : '#FBF2F2',
+            border: `1px solid ${testResult?.ok ? 'rgba(85, 116, 92, 0.35)' : 'rgba(181, 66, 66, 0.25)'}`,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '8px'
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span className={`pulse-dot ${testingHealth ? 'warning' : testResult?.ok ? 'success' : 'error'}`} />
+              <span style={{ fontSize: '0.85rem', fontWeight: 600, color: testResult?.ok ? '#314E38' : '#9E3333' }}>
+                {testingHealth ? 'Checking Backend Health...' : testResult?.ok ? 'Backend Operational · Model Ready' : 'Backend Status: Offline / Dormant'}
+              </span>
+            </div>
+            <button
+              type="button"
+              className="btn btn-secondary btn-sm"
+              onClick={handleTestHealth}
+              disabled={testingHealth}
+              style={{ padding: '3px 10px', fontSize: '0.72rem', height: '26px', display: 'inline-flex', alignItems: 'center', gap: '5px' }}
+            >
+              <RefreshCw size={12} className={testingHealth ? 'spin' : ''} />
+              <span>{testingHealth ? 'Pinging...' : 'Wake / Test Ping'}</span>
+            </button>
+          </div>
+
+          <div style={{ fontSize: '0.76rem', color: 'var(--text-secondary)', lineHeight: 1.45 }}>
+            {testingHealth ? (
+              <span>Sending health check ping to <code>{apiUrl || classifierService.getApiUrl()}</code>...</span>
+            ) : testResult?.ok ? (
+              <span>Connected to FastAPI endpoint. MobileNetV2 weights active with 98.55% validation accuracy. Latency: {testResult.latencyMs !== undefined ? `${testResult.latencyMs} ms` : 'healthy'}.</span>
+            ) : (
+              <span>
+                Render free-tier instances sleep after 15 minutes of inactivity. Click <strong>Wake / Test Ping</strong> to trigger a wake-up request (cold starts take ~30–45s), or run local Uvicorn on <code>127.0.0.1:8000</code>.
+              </span>
+            )}
+          </div>
         </div>
 
         {/* Operating Mode Selector */}

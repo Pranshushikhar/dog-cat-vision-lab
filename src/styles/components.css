@@ -261,6 +261,20 @@
   animation: fadeIn 0.18s ease-out;
 }
 
+/* Hero Showcase Grid */
+.hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.95fr);
+  gap: 32px;
+}
+
+@media (max-width: 880px) {
+  .hero-grid {
+    grid-template-columns: 1fr !important;
+    gap: 24px;
+  }
+}
+
 @media (max-width: 1024px) {
   .nav-tabs {
     overflow-x: auto;

@@ -89,36 +89,16 @@ export default function Navbar({ onOpenApiModal, activeTab = 'home', onSelectTab
 
         {/* Right Status & Configuration */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          {isLiveModel ? (
+          {isLiveModel && (
             <div 
               className="badge badge-green nav-status-badge" 
               style={{ cursor: 'pointer', padding: '4px 10px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
               onClick={onOpenApiModal}
-              title="Real CNN Model Online (MobileNetV2, 98.55% Validation Accuracy)"
+              title="Real CNN Model Online (MobileNetV2, 98.55% Validation Accuracy) — Click for Settings"
               aria-label="Model status: Online, Validation Accuracy: 98.55%"
             >
               <span className="pulse-dot success" />
               <span>Model Online · Validation Accuracy 98.55%</span>
-            </div>
-          ) : serviceState.mode === CLASSIFIER_MODES.DEMO_MODE ? (
-            <div 
-              className="badge badge-warning" 
-              style={{ cursor: 'pointer', padding: '4px 9px' }}
-              onClick={onOpenApiModal}
-              title="Demo Mode Active — Click to Configure Backend"
-            >
-              <AlertTriangle size={12} />
-              <span>Demo Mode</span>
-            </div>
-          ) : (
-            <div 
-              className="badge badge-error" 
-              style={{ cursor: 'pointer', padding: '4px 9px' }}
-              onClick={onOpenApiModal}
-              title="Backend Endpoint Offline — Click to Configure"
-            >
-              <span className="pulse-dot idle" />
-              <span>Offline</span>
             </div>
           )}
 
@@ -126,11 +106,11 @@ export default function Navbar({ onOpenApiModal, activeTab = 'home', onSelectTab
             type="button" 
             className="btn btn-secondary btn-sm"
             onClick={onOpenApiModal}
-            aria-label="Configure API Endpoint"
-            style={{ padding: '5px 10px', fontSize: '0.78rem' }}
+            aria-label="Settings and Backend Inference Configuration"
+            style={{ padding: '6px 12px', fontSize: '0.8rem', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
           >
-            <Settings size={13} />
-            <span>API</span>
+            <Settings size={14} />
+            <span>Settings</span>
           </button>
         </div>
       </div>
