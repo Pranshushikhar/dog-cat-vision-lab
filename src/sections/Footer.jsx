@@ -14,14 +14,14 @@ export default function Footer({ onOpenConfigModal, onOpenFeedbackModal, onSelec
           {/* Project Identity */}
           <div style={{ maxWidth: '380px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '9px', marginBottom: '10px' }}>
-              <div 
-                style={{ 
-                  width: '28px', 
-                  height: '28px', 
-                  borderRadius: '6px', 
-                  background: 'var(--accent-teal)', 
-                  display: 'flex', 
-                  alignItems: 'center', 
+              <div
+                style={{
+                  width: '28px',
+                  height: '28px',
+                  borderRadius: '6px',
+                  background: 'var(--accent-teal)',
+                  display: 'flex',
+                  alignItems: 'center',
                   justifyContent: 'center',
                   color: '#FFFFFF'
                 }}
@@ -73,9 +73,9 @@ export default function Footer({ onOpenConfigModal, onOpenFeedbackModal, onSelec
             </div>
             <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.82rem' }}>
               <li>
-                <button 
-                  type="button" 
-                  onClick={onOpenConfigModal} 
+                <button
+                  type="button"
+                  onClick={onOpenConfigModal}
                   style={{ background: 'none', border: 'none', color: 'var(--accent-teal)', cursor: 'pointer', padding: 0, font: 'inherit', textAlign: 'left', display: 'inline-flex', alignItems: 'center', gap: '5px' }}
                 >
                   <Code2 size={13} />
@@ -83,9 +83,9 @@ export default function Footer({ onOpenConfigModal, onOpenFeedbackModal, onSelec
                 </button>
               </li>
               <li>
-                <button 
-                  type="button" 
-                  onClick={onOpenFeedbackModal} 
+                <button
+                  type="button"
+                  onClick={onOpenFeedbackModal}
                   style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', padding: 0, font: 'inherit', textAlign: 'left', display: 'inline-flex', alignItems: 'center', gap: '5px' }}
                 >
                   <MessageSquare size={13} />
@@ -93,10 +93,10 @@ export default function Footer({ onOpenConfigModal, onOpenFeedbackModal, onSelec
                 </button>
               </li>
               <li>
-                <a 
-                  href="https://www.kaggle.com/c/dogs-vs-cats" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
+                <a
+                  href="https://www.kaggle.com/c/dogs-vs-cats"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="navbar-link"
                   style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}
                 >

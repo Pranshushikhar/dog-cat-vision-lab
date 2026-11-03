@@ -109,9 +109,10 @@ def format_category_name(raw_name: str) -> str:
     return cleaned.capitalize()
 
 
-def validate_image_is_cat_or_dog(image_input: Union[bytes, bytearray, str, Path, Image.Image]) -> Dict[str, Any]:
+def validate_image_is_cat_or_dog(image_input: Union[bytes, bytearray, str, Path, Image.Image, np.ndarray]) -> Dict[str, Any]:
     """
     Independent OOD screening: evaluates whether the image contains a cat or dog subject.
+    Accepts raw images or pre-extracted (1, 224, 224, 3) numpy arrays for maximum performance.
     
     Returns:
       {
@@ -125,32 +126,39 @@ def validate_image_is_cat_or_dog(image_input: Union[bytes, bytearray, str, Path,
       }
     """
     try:
-        # Load and normalize image to RGB (224, 224)
-        if isinstance(image_input, (bytes, bytearray)):
-            img = Image.open(io.BytesIO(image_input))
-        elif isinstance(image_input, (str, Path)):
-            img = Image.open(image_input)
-        elif isinstance(image_input, Image.Image):
-            img = image_input
+        # Fast path if input is already a pre-processed (1, 224, 224, 3) or (224, 224, 3) numpy tensor
+        if isinstance(image_input, np.ndarray):
+            arr = image_input
+            if arr.ndim == 3:
+                arr = np.expand_dims(arr, axis=0)
+            # MobileNetV2 scaling: maps [0, 255] to [-1, 1]
+            tensor = (arr / 127.5) - 1.0
         else:
-            raise ValueError(f"Unsupported image type: {type(image_input)}")
+            # Load and normalize image to RGB (224, 224)
+            if isinstance(image_input, (bytes, bytearray)):
+                img = Image.open(io.BytesIO(image_input))
+            elif isinstance(image_input, (str, Path)):
+                img = Image.open(image_input)
+            elif isinstance(image_input, Image.Image):
+                img = image_input
+            else:
+                raise ValueError(f"Unsupported image type: {type(image_input)}")
 
-        img.load()
-        if img.width < 10 or img.height < 10:
-            raise ValueError(f"Image is too small ({img.width}x{img.height}). Minimum dimensions are 10x10 pixels.")
+            img.load()
+            if img.width < 10 or img.height < 10:
+                raise ValueError(f"Image is too small ({img.width}x{img.height}). Minimum dimensions are 10x10 pixels.")
 
-        if img.mode != "RGB":
-            img = img.convert("RGB")
+            if img.mode != "RGB":
+                img = img.convert("RGB")
 
-        img_resized = img.resize((224, 224), Image.Resampling.BILINEAR)
-        arr = np.array(img_resized, dtype=np.float32)
-
-        # Preprocess input using MobileNetV2 scaling (maps [0, 255] to [-1, 1])
-        from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
-        tensor = preprocess_input(np.expand_dims(arr, axis=0))
+            img_resized = img.resize((224, 224), Image.Resampling.BILINEAR)
+            arr = np.array(img_resized, dtype=np.float32)
+            tensor = (np.expand_dims(arr, axis=0) / 127.5) - 1.0
 
         model = get_ood_detector()
-        raw_preds = model.predict(tensor, verbose=0)[0]
+        # Direct callable tensor evaluation is 2-3x faster than model.predict(tensor)
+        preds_tensor = model(tensor, training=False)
+        raw_preds = preds_tensor.numpy()[0]
 
         # Calculate accumulated feline & canine probability across all 143 classes
         cat_dog_score = float(np.sum(raw_preds[CANINE_START_IDX:FELINE_END_IDX + 1]))

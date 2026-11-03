@@ -37,21 +37,26 @@ PROCESSED_DIR = Path(os.environ.get("PROCESSED_DIR", str(PROJECT_ROOT / "data" /
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Pre-warm model on startup to eliminate cold-start delay
+    # Pre-warm models and execute forward pass to compile TF execution graphs on startup
+    dummy_tensor = np.zeros((1, 224, 224, 3), dtype=np.float32)
     if MODEL_PATH.exists():
         try:
             from ml.predict import get_inference_model
             print(f"[Lifespan] Pre-warming CNN model from {MODEL_PATH}...")
-            get_inference_model(MODEL_PATH)
-            print("[Lifespan] Model pre-loaded and ready for real-time inference.")
+            cnn = get_inference_model(MODEL_PATH)
+            # Forward pass compiles TensorFlow C++ graph ahead of time
+            _ = cnn(dummy_tensor, training=False)
+            print("[Lifespan] CNN model pre-loaded and graph compiled for real-time inference.")
         except Exception as e:
             print(f"[Lifespan] Warning during CNN pre-warming: {e}")
 
     try:
-        from ml.ood_detector import get_ood_detector
+        from ml.ood_detector import get_ood_detector, get_class_index
         print("[Lifespan] Pre-warming OOD screening detector...")
-        get_ood_detector()
-        print("[Lifespan] OOD detector pre-loaded and ready.")
+        ood_model = get_ood_detector()
+        _ = ood_model(dummy_tensor, training=False)
+        get_class_index()
+        print("[Lifespan] OOD detector pre-loaded, graph compiled, and ready.")
     except Exception as e:
         print(f"[Lifespan] Warning during OOD detector pre-warming: {e}")
 

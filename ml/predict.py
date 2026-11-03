@@ -111,20 +111,28 @@ def predict_image(image_input, threshold=0.5, model_path=MODEL_PATH, validate_oo
     """
     Executes real inference pipeline on an image:
     1. Input validation & corrupt file check (<10x10 px raises ValueError).
-    2. Independent Out-of-Distribution (OOD) screening stage.
+    2. Single-pass fast resize to 224x224 tensor.
+    3. Independent Out-of-Distribution (OOD) screening stage.
        If unrelated (non-cat/non-dog), safely rejects without binary classification.
-    3. Real binary CNN prediction on verified feline/canine images.
+    4. Fast compiled binary CNN prediction on verified feline/canine images.
     
     Returns structured result dict.
     """
-    # 1. Validation gate
+    # 1. Validation gate & single-pass RGB normalization
     validated_img = load_and_validate_image(image_input)
+    if validated_img.mode != "RGB":
+        validated_img = validated_img.convert("RGB")
 
-    # 2. OOD Screening gate
+    # Single-pass resize: shared by both OOD detector and CNN classifier
+    img_resized = validated_img.resize((224, 224), Image.Resampling.BILINEAR)
+    arr_224 = np.array(img_resized, dtype=np.float32)
+    tensor = np.expand_dims(arr_224, axis=0)  # Shape (1, 224, 224, 3) in [0, 255]
+
+    # 2. OOD Screening gate (reuses the 224x224 tensor directly)
     ood_result = None
     if validate_ood:
         from ml.ood_detector import validate_image_is_cat_or_dog
-        ood_result = validate_image_is_cat_or_dog(validated_img)
+        ood_result = validate_image_is_cat_or_dog(tensor)
 
         if not ood_result.get("is_cat_or_dog", True):
             # Safe rejection: never output CAT or DOG, never return misleading binary confidence
@@ -147,11 +155,10 @@ def predict_image(image_input, threshold=0.5, model_path=MODEL_PATH, validate_oo
             }
 
     # 3. Binary classifier stage (only executed for supported images)
-    model = get_inference_model(model_path=model_path)
-    tensor = preprocess_image(validated_img)
-
     # Model includes internal Rescaling layer (1./255.)
-    raw_pred = model.predict(tensor, verbose=0)
+    model = get_inference_model(model_path=model_path)
+    # Direct callable tensor evaluation is 2-3x faster than model.predict(tensor)
+    raw_pred = model(tensor, training=False).numpy()
     dog_prob = float(raw_pred[0][0])
     cat_prob = float(1.0 - dog_prob)
 

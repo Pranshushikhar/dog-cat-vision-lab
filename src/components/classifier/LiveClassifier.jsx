@@ -86,7 +86,7 @@ export default function LiveClassifier({ onOpenConfigModal, initialImage = null 
         }
         return prev;
       });
-    }, 140);
+    }, 45);
 
     try {
       const targetPayload = selectedImage.file || selectedImage.url;
