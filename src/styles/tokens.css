@@ -68,3 +68,9 @@
   --container-max: 1180px;
   --container-padding: 24px;
 }
+
+@media (max-width: 480px) {
+  :root {
+    --container-padding: 16px;
+  }
+}

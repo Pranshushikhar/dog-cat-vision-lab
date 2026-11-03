@@ -7,6 +7,11 @@
   padding: 0;
 }
 
+img {
+  max-width: 100%;
+  height: auto;
+}
+
 html {
   font-family: var(--font-body);
   background-color: var(--bg-primary);
@@ -166,6 +171,12 @@ a:hover {
 @media (max-width: 1024px) {
   .grid-3, .grid-4 {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 860px) {
+  .grid-2 {
+    grid-template-columns: 1fr;
   }
 }
 

@@ -21,7 +21,9 @@ export default function InferenceResult({
           textAlign: 'center',
           minHeight: '260px',
           background: 'var(--bg-card)',
-          border: '1px dashed var(--border-medium)'
+          border: '1px dashed var(--border-medium)',
+          boxSizing: 'border-box',
+          maxWidth: '100%'
         }}
       >
         <div 
@@ -65,7 +67,9 @@ export default function InferenceResult({
           textAlign: 'center',
           minHeight: '260px',
           background: 'var(--bg-card)',
-          border: '1px solid var(--accent-green)'
+          border: '1px solid var(--accent-green)',
+          boxSizing: 'border-box',
+          maxWidth: '100%'
         }}
       >
         <div 
@@ -101,7 +105,9 @@ export default function InferenceResult({
           background: '#F8F1E4',
           border: '1px solid rgba(178, 109, 30, 0.3)',
           borderRadius: 'var(--radius-sm)',
-          padding: '20px'
+          padding: '20px',
+          boxSizing: 'border-box',
+          maxWidth: '100%'
         }}
       >
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
@@ -151,7 +157,9 @@ export default function InferenceResult({
           background: '#FBEBEB',
           border: '1px solid rgba(181, 66, 66, 0.3)',
           borderRadius: 'var(--radius-sm)',
-          padding: '20px'
+          padding: '20px',
+          boxSizing: 'border-box',
+          maxWidth: '100%'
         }}
       >
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
@@ -206,9 +214,20 @@ export default function InferenceResult({
   // 5. RESULT STATE (Real Model OR Labeled Demo Mode)
   if (result && result.success) {
     const isDog = result.prediction === 'DOG';
-    const confidencePct = (result.confidence * 100).toFixed(1);
-    const dogProb = ((result.rawProbabilities?.dog ?? (isDog ? result.confidence : 1 - result.confidence)) * 100).toFixed(1);
-    const catProb = ((result.rawProbabilities?.cat ?? (isDog ? 1 - result.confidence : result.confidence)) * 100).toFixed(1);
+    const confVal = typeof result.confidence === 'number' ? result.confidence : parseFloat(result.confidence) || 0;
+    const confidencePct = (confVal * 100).toFixed(1);
+
+    const dogRaw = result.rawProbabilities?.dog !== undefined
+      ? (typeof result.rawProbabilities.dog === 'number' ? result.rawProbabilities.dog : parseFloat(result.rawProbabilities.dog))
+      : (isDog ? confVal : 1 - confVal);
+    const catRaw = result.rawProbabilities?.cat !== undefined
+      ? (typeof result.rawProbabilities.cat === 'number' ? result.rawProbabilities.cat : parseFloat(result.rawProbabilities.cat))
+      : (isDog ? 1 - confVal : confVal);
+
+    const dogProbPct = (dogRaw * 100).toFixed(1);
+    const catProbPct = (catRaw * 100).toFixed(1);
+    const dogBarWidth = Math.min(100, Math.max(0, parseFloat(dogProbPct)));
+    const catBarWidth = Math.min(100, Math.max(0, parseFloat(catProbPct)));
 
     return (
       <div 
@@ -217,7 +236,9 @@ export default function InferenceResult({
           background: 'var(--bg-card)',
           border: '1px solid var(--border-medium)',
           borderRadius: 'var(--radius-md)',
-          padding: '24px'
+          padding: '24px',
+          boxSizing: 'border-box',
+          maxWidth: '100%'
         }}
       >
         {/* Labeled Demo Mode Banner */}
@@ -244,14 +265,30 @@ export default function InferenceResult({
         {/* Prediction Main Block */}
         <div>
           {/* Top Label & Timing */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginBottom: '12px' }}>
             <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
               Prediction Result
             </span>
-            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-              <Clock size={12} />
-              {result.processingTimeMs} ms
-            </span>
+            {result.processingTimeMs !== undefined && result.processingTimeMs !== null && (
+              <div 
+                style={{ 
+                  fontSize: '0.75rem', 
+                  fontFamily: 'var(--font-mono)', 
+                  color: 'var(--accent-green)', 
+                  background: 'var(--accent-sage)', 
+                  padding: '3px 8px', 
+                  borderRadius: 'var(--radius-xs)', 
+                  display: 'inline-flex', 
+                  alignItems: 'center', 
+                  gap: '5px',
+                  fontWeight: 600
+                }}
+                title="Measured inference execution latency"
+              >
+                <Clock size={12} />
+                <span>Inference Time: {result.processingTimeMs} ms</span>
+              </div>
+            )}
           </div>
 
           {/* Large Prediction Wordmark */}
@@ -290,21 +327,21 @@ export default function InferenceResult({
             </div>
 
             {/* Cat Probability Row */}
-            <div style={{ marginBottom: '12px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', marginBottom: '4px' }}>
+            <div style={{ marginBottom: '14px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', marginBottom: '5px' }}>
                 <span style={{ fontWeight: !isDog ? 600 : 400, color: 'var(--text-primary)' }}>
-                  Cat (P &lt; 0.5)
+                  Cat (Class 0)
                 </span>
                 <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 600, color: 'var(--text-primary)' }}>
-                  {catProb}%
+                  {catProbPct}%
                 </span>
               </div>
-              <div style={{ height: '7px', background: 'var(--bg-surface)', borderRadius: '3px', overflow: 'hidden' }}>
+              <div style={{ height: '8px', background: 'var(--bg-surface)', border: '1px solid var(--border-subtle)', borderRadius: '4px', overflow: 'hidden' }}>
                 <div 
                   style={{
-                    width: `${catProb}%`,
+                    width: `${catBarWidth}%`,
                     height: '100%',
-                    background: !isDog ? 'var(--accent-green)' : '#A8B09F',
+                    background: !isDog ? 'var(--accent-green)' : '#B3BAAA',
                     transition: 'width 0.4s ease'
                   }} 
                 />
@@ -313,20 +350,20 @@ export default function InferenceResult({
 
             {/* Dog Probability Row */}
             <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', marginBottom: '4px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', marginBottom: '5px' }}>
                 <span style={{ fontWeight: isDog ? 600 : 400, color: 'var(--text-primary)' }}>
-                  Dog (P ≥ 0.5)
+                  Dog (Class 1)
                 </span>
                 <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 600, color: 'var(--text-primary)' }}>
-                  {dogProb}%
+                  {dogProbPct}%
                 </span>
               </div>
-              <div style={{ height: '7px', background: 'var(--bg-surface)', borderRadius: '3px', overflow: 'hidden' }}>
+              <div style={{ height: '8px', background: 'var(--bg-surface)', border: '1px solid var(--border-subtle)', borderRadius: '4px', overflow: 'hidden' }}>
                 <div 
                   style={{
-                    width: `${dogProb}%`,
+                    width: `${dogBarWidth}%`,
                     height: '100%',
-                    background: isDog ? 'var(--accent-green)' : '#A8B09F',
+                    background: isDog ? 'var(--accent-green)' : '#B3BAAA',
                     transition: 'width 0.4s ease'
                   }} 
                 />

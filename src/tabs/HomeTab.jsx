@@ -94,10 +94,19 @@ export default function HomeTab({ onNavigate, onSelectSpecimen }) {
             </span>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '20px' }}>
             {/* Real Cat Specimen */}
             <div 
+              role="button"
+              tabIndex={0}
+              aria-label="Select Felis catus (Domestic Cat) benchmark specimen"
               onClick={() => handleSelectSample(sampleCat)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  handleSelectSample(sampleCat);
+                }
+              }}
               style={{
                 background: 'var(--bg-surface)',
                 border: '1px solid var(--border-medium)',
@@ -132,7 +141,16 @@ export default function HomeTab({ onNavigate, onSelectSpecimen }) {
 
             {/* Real Dog Specimen */}
             <div 
+              role="button"
+              tabIndex={0}
+              aria-label="Select Canis familiaris (Golden Retriever) benchmark specimen"
               onClick={() => handleSelectSample(sampleDog)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  handleSelectSample(sampleDog);
+                }
+              }}
               style={{
                 background: 'var(--bg-surface)',
                 border: '1px solid var(--border-medium)',
@@ -178,7 +196,7 @@ export default function HomeTab({ onNavigate, onSelectSpecimen }) {
         >
           <div className="tech-card" style={{ padding: '20px' }}>
             <div style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '4px' }}>
-              Accuracy
+              Validation Accuracy
             </div>
             <div style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--accent-green)', lineHeight: 1.1 }}>
               98.55%

@@ -112,10 +112,12 @@ export default function LiveClassifier({ onOpenConfigModal, initialImage = null 
             step="0.05"
             value={confidenceThreshold}
             onChange={(e) => setConfidenceThreshold(parseFloat(e.target.value))}
+            disabled={isProcessing}
             style={{
               width: '120px',
               accentColor: 'var(--accent-green)',
-              cursor: 'pointer'
+              cursor: isProcessing ? 'not-allowed' : 'pointer',
+              opacity: isProcessing ? 0.6 : 1
             }}
             aria-label="Confidence decision threshold"
           />
@@ -139,9 +141,9 @@ export default function LiveClassifier({ onOpenConfigModal, initialImage = null 
       </div>
 
       {/* Main Classifier Workspace Grid (Upload Box & Inference Result) */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px', alignItems: 'start' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '20px', alignItems: 'start', width: '100%' }}>
         {/* Left: Pure White Dropzone Workspace */}
-        <div className="tech-card" style={{ padding: '20px', background: 'var(--bg-card)' }}>
+        <div className="tech-card" style={{ padding: '20px', background: 'var(--bg-card)', minWidth: 0, width: '100%', boxSizing: 'border-box' }}>
           <ImageDropzone
             selectedImage={selectedImage}
             onSelectImage={handleSelectImage}
@@ -157,10 +159,35 @@ export default function LiveClassifier({ onOpenConfigModal, initialImage = null 
                 className="btn btn-primary"
                 onClick={handleRunClassification}
                 disabled={isProcessing}
-                style={{ flex: 1 }}
+                aria-busy={isProcessing}
+                style={{ 
+                  flex: 1,
+                  cursor: isProcessing ? 'not-allowed' : 'pointer',
+                  pointerEvents: isProcessing ? 'none' : 'auto'
+                }}
               >
-                <span>{isProcessing ? 'Analyzing Features...' : 'Classify Photograph'}</span>
-                {!isProcessing && <ArrowRight size={15} />}
+                {isProcessing ? (
+                  <>
+                    <span 
+                      className="animate-spin" 
+                      style={{ 
+                        width: '14px', 
+                        height: '14px', 
+                        borderRadius: '50%', 
+                        border: '2px solid rgba(255, 255, 255, 0.35)', 
+                        borderTopColor: '#FFFFFF',
+                        display: 'inline-block',
+                        flexShrink: 0
+                      }} 
+                    />
+                    <span>Analyzing Features...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Classify Photograph</span>
+                    <ArrowRight size={15} />
+                  </>
+                )}
               </button>
 
               <button
@@ -178,7 +205,7 @@ export default function LiveClassifier({ onOpenConfigModal, initialImage = null 
         </div>
 
         {/* Right: Inference Result Panel */}
-        <div>
+        <div style={{ minWidth: 0, width: '100%' }}>
           <InferenceResult
             result={inferenceResult}
             isProcessing={isProcessing}

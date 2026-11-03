@@ -10,20 +10,80 @@
  */
 
 export const PRODUCTION_BACKEND_URL = 'https://pawvision-ai-backend.onrender.com';
+export const LOCAL_BACKEND_URL = 'http://127.0.0.1:8000';
+export const WORKER_BACKEND_URL = 'https://pawvision-ai.26bcs10417.workers.dev';
 
-const DEFAULT_API_URL = (import.meta.env.VITE_CLASSIFIER_API_URL && !import.meta.env.VITE_CLASSIFIER_API_URL.includes('localhost') && !import.meta.env.VITE_CLASSIFIER_API_URL.includes('127.0.0.1'))
-  ? import.meta.env.VITE_CLASSIFIER_API_URL
-  : (import.meta.env.PROD ? PRODUCTION_BACKEND_URL : (import.meta.env.VITE_CLASSIFIER_API_URL || 'http://127.0.0.1:8000'));
+export const STORAGE_KEY_API_URL = 'pawvision_backend_url';
+export const STORAGE_KEY_MODE = 'pawvision_classifier_mode';
+
+/**
+ * Safely normalize a backend API base URL:
+ * - Trims whitespace
+ * - Adds protocol (http:// for localhost, https:// for remote domains)
+ * - Strips accidental /api/health, /api/predict, /api suffixes
+ * - Strips trailing slashes
+ */
+export function normalizeBackendUrl(rawUrl) {
+  if (!rawUrl || typeof rawUrl !== 'string') return '';
+  let url = rawUrl.trim().replace(/^["']|["']$/g, '');
+  if (!url) return '';
+
+  // Prepend protocol if omitted
+  if (!/^https?:\/\//i.test(url)) {
+    if (/^(localhost|127\.0\.0\.1)(:\d+)?/i.test(url)) {
+      url = `http://${url}`;
+    } else {
+      url = `https://${url}`;
+    }
+  }
+
+  // Remove common endpoint suffixes if user pasted a specific route
+  url = url.replace(/\/api\/(health|predict|dataset-stats|metrics|architecture|samples)\/?$/i, '');
+  url = url.replace(/\/api\/?$/i, '');
+
+  // Strip trailing slashes
+  url = url.replace(/\/+$/, '');
+
+  return url;
+}
 
 export const CLASSIFIER_MODES = {
   REAL_API: 'REAL_API',
   DEMO_MODE: 'DEMO_MODE'
 };
 
+function getInitialApiUrl() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY_API_URL);
+    if (saved && saved.trim()) {
+      return normalizeBackendUrl(saved);
+    }
+  } catch (e) {
+    // localStorage might be disabled
+  }
+
+  const envUrl = typeof import.meta !== 'undefined' && import.meta?.env ? import.meta.env.VITE_CLASSIFIER_API_URL : undefined;
+  if (envUrl && envUrl.trim()) {
+    return normalizeBackendUrl(envUrl);
+  }
+
+  return PRODUCTION_BACKEND_URL;
+}
+
+function getInitialMode() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY_MODE);
+    if (saved && (saved === CLASSIFIER_MODES.REAL_API || saved === CLASSIFIER_MODES.DEMO_MODE)) {
+      return saved;
+    }
+  } catch (e) {}
+  return CLASSIFIER_MODES.REAL_API;
+}
+
 class ClassifierService {
   constructor() {
-    this.apiUrl = DEFAULT_API_URL;
-    this.mode = CLASSIFIER_MODES.REAL_API;
+    this.apiUrl = getInitialApiUrl();
+    this.mode = getInitialMode();
     this.listeners = new Set();
   }
 
@@ -31,8 +91,18 @@ class ClassifierService {
     return this.apiUrl;
   }
 
-  setApiUrl(url) {
-    this.apiUrl = url ? url.trim() : '';
+  setApiUrl(url, persist = true) {
+    const normalized = normalizeBackendUrl(url);
+    this.apiUrl = normalized;
+    if (persist) {
+      try {
+        if (normalized) {
+          localStorage.setItem(STORAGE_KEY_API_URL, normalized);
+        } else {
+          localStorage.removeItem(STORAGE_KEY_API_URL);
+        }
+      } catch (e) {}
+    }
     this.notifyListeners();
   }
 
@@ -40,9 +110,19 @@ class ClassifierService {
     return this.mode;
   }
 
-  setMode(mode) {
+  setMode(mode, persist = true) {
     this.mode = mode;
+    if (persist) {
+      try {
+        localStorage.setItem(STORAGE_KEY_MODE, mode);
+      } catch (e) {}
+    }
     this.notifyListeners();
+  }
+
+  resetToDefault() {
+    this.setApiUrl(PRODUCTION_BACKEND_URL, true);
+    this.setMode(CLASSIFIER_MODES.REAL_API, true);
   }
 
   isConfigured() {
@@ -60,34 +140,79 @@ class ClassifierService {
       mode: this.mode,
       isConfigured: this.isConfigured()
     };
-    this.listeners.forEach(cb => cb(state));
+    this.listeners.forEach(cb => {
+      try {
+        cb(state);
+      } catch (err) {
+        console.error('[ClassifierService] Listener error:', err);
+      }
+    });
   }
 
   /**
    * Check backend health and model loading status
    */
-  async checkEndpointHealth(url = this.apiUrl) {
-    if (!url) {
-      return { ok: false, error: 'No endpoint URL configured.' };
+  async checkEndpointHealth(url = this.apiUrl, timeoutMs = 20000) {
+    const targetUrl = normalizeBackendUrl(url || this.apiUrl);
+    if (!targetUrl) {
+      return { 
+        ok: false, 
+        error: 'No endpoint URL configured. Please enter a valid backend URL.', 
+        testedUrl: '' 
+      };
     }
+
+    const startTime = performance.now();
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 8000);
-      const res = await fetch(`${url.replace(/\/$/, '')}/api/health`, {
+      const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+      const endpoint = `${targetUrl}/api/health`;
+      const res = await fetch(endpoint, {
         method: 'GET',
+        headers: {
+          'Accept': 'application/json'
+        },
         signal: controller.signal
       });
       clearTimeout(timeoutId);
+      const latencyMs = Math.round(performance.now() - startTime);
 
       if (res.ok) {
         const data = await res.json();
-        return { ok: true, data, modelLoaded: data.model_loaded };
+        const modelLoaded = Boolean(data.model_loaded || data.model_ready);
+        return { 
+          ok: true, 
+          status: res.status,
+          data, 
+          modelLoaded,
+          modelReady: modelLoaded,
+          latencyMs,
+          testedUrl: targetUrl
+        };
       }
-      return { ok: false, status: res.status, error: `HTTP ${res.status}: ${res.statusText}` };
+
+      return { 
+        ok: false, 
+        status: res.status, 
+        testedUrl: targetUrl,
+        latencyMs,
+        error: `HTTP ${res.status}: ${res.statusText || 'Endpoint returned error'}` 
+      };
     } catch (err) {
+      const latencyMs = Math.round(performance.now() - startTime);
+      let errorMsg = err.message;
+      if (err.name === 'AbortError') {
+        errorMsg = `Connection timed out (${Math.round(timeoutMs / 1000)}s). Note: Render free tier services may take 30-60s to wake from cold sleep.`;
+      } else if (err.name === 'TypeError' || err.message?.includes('Failed to fetch')) {
+        errorMsg = `Unable to reach ${targetUrl}. Check internet connectivity, server availability, or CORS configuration.`;
+      }
       return {
         ok: false,
-        error: err.name === 'AbortError' ? 'Connection timed out (3.5s)' : err.message
+        status: 0,
+        testedUrl: targetUrl,
+        latencyMs,
+        error: errorMsg
       };
     }
   }

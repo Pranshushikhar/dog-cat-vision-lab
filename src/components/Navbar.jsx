@@ -64,7 +64,7 @@ export default function Navbar({ onOpenApiModal, activeTab = 'home', onSelectTab
             </span>
           </div>
           <div className="navbar-team-credit">
-            Developed by <span className="team-lead">Pranshu Shikhar &amp; Team</span> — Rishabh Vaish and Ankit Raj
+            Developed by <span className="team-lead">Pranshu Shikhar &amp; Team</span> — Rishabh Vaish, Ankit Raj, Kanika Rani and Ishita Goel
           </div>
         </a>
 
@@ -91,13 +91,14 @@ export default function Navbar({ onOpenApiModal, activeTab = 'home', onSelectTab
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           {isLiveModel ? (
             <div 
-              className="badge badge-green" 
-              style={{ cursor: 'pointer', padding: '4px 9px' }}
+              className="badge badge-green nav-status-badge" 
+              style={{ cursor: 'pointer', padding: '4px 10px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
               onClick={onOpenApiModal}
               title="Real CNN Model Online (MobileNetV2, 98.55% Validation Accuracy)"
+              aria-label="Model status: Online, Validation Accuracy: 98.55%"
             >
               <span className="pulse-dot success" />
-              <span>Model Online · 98.5%</span>
+              <span>Model Online · Validation Accuracy 98.55%</span>
             </div>
           ) : serviceState.mode === CLASSIFIER_MODES.DEMO_MODE ? (
             <div 

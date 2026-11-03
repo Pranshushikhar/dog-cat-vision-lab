@@ -106,6 +106,15 @@ def test_predict_missing_model_safeguard(monkeypatch):
     # Temporarily point MODEL_PATH to a non-existent file
     monkeypatch.setattr(backend_module, "MODEL_PATH", Path("models/does_not_exist.keras"))
 
+    # Also test health check reports model_loaded: False while service is ok
+    health_resp = client.get("/api/health")
+    assert health_resp.status_code == 200
+    h_data = health_resp.json()
+    assert h_data["status"] == "ok"
+    assert h_data["service"] == "operational"
+    assert h_data["model_loaded"] is False
+    assert h_data["model_ready"] is False
+
     img = Image.new("RGB", (224, 224), color=(100, 150, 200))
     buf = io.BytesIO()
     img.save(buf, format="JPEG")
@@ -117,3 +126,27 @@ def test_predict_missing_model_safeguard(monkeypatch):
     assert response.status_code == 400
     data = response.json()
     assert data.get("error") == "MODEL_NOT_TRAINED"
+
+
+def test_cors_headers_and_origins():
+    """Verify CORS headers allow configured frontend origins."""
+    headers = {"Origin": "https://pawvision-ai.pages.dev"}
+    response = client.get("/api/health", headers=headers)
+    assert response.status_code == 200
+    assert response.headers.get("access-control-allow-origin") == "https://pawvision-ai.pages.dev"
+
+    worker_headers = {"Origin": "https://pawvision-ai.26bcs10417.workers.dev"}
+    worker_resp = client.get("/api/health", headers=worker_headers)
+    assert worker_resp.status_code == 200
+    assert worker_resp.headers.get("access-control-allow-origin") == "https://pawvision-ai.26bcs10417.workers.dev"
+
+
+def test_architecture_naming_compatibility():
+    """Verify architecture endpoint exposes both architecture_name and model_name."""
+    response = client.get("/api/architecture")
+    assert response.status_code == 200
+    data = response.json()
+    assert "architecture_name" in data
+    assert "model_name" in data
+    assert data["model_name"] == data["architecture_name"]
+

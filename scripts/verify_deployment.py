@@ -25,8 +25,14 @@ def main():
         if "trycloudflare" in content:
             print(f"[WARNING] Found trycloudflare in: {js_path}")
             found_trycloudflare = True
-        if "Pranshu Shikhar" in content and "Rishabh Vaish" in content and "Ankit Raj" in content:
-            print(f"[SUCCESS] Found team credit line in: {js_path}")
+        if (
+            "Pranshu Shikhar" in content
+            and "Rishabh Vaish" in content
+            and "Ankit Raj" in content
+            and "Kanika Rani" in content
+            and "Ishita Goel" in content
+        ):
+            print(f"[SUCCESS] Found complete team credit line in: {js_path}")
             found_team_credit = True
 
     found_team_css = False

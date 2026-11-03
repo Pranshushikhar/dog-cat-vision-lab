@@ -168,6 +168,7 @@
   gap: 2px;
   color: var(--text-primary);
   text-decoration: none;
+  max-width: 100%;
 }
 
 .navbar-team-credit {
@@ -273,9 +274,19 @@
 }
 
 @media (max-width: 640px) {
+  .navbar-inner {
+    gap: 10px;
+  }
+  .nav-status-badge {
+    font-size: 0.68rem;
+    padding: 3px 8px;
+    letter-spacing: 0.02em;
+  }
   .navbar-team-credit {
     font-size: 0.65rem;
-    line-height: 1.2;
-    max-width: 290px;
+    line-height: 1.25;
+    max-width: 100%;
+    word-break: normal;
+    overflow-wrap: break-word;
   }
 }

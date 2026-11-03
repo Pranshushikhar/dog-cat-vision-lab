@@ -39,6 +39,25 @@ def get_inference_model(model_path=MODEL_PATH):
     return _LOADED_MODEL
 
 
+def is_model_ready(model_path=MODEL_PATH) -> tuple[bool, str]:
+    """
+    Checks whether the CNN model is loaded or ready to be loaded.
+    Returns (is_ready, status_message).
+    """
+    global _LOADED_MODEL, _LOADED_MODEL_PATH
+    path = Path(model_path)
+    if not path.exists():
+        return False, "Model weights not found. Execute 'python run_pipeline.py' or 'python ml/train.py' to generate checkpoint."
+
+    if _LOADED_MODEL is not None and _LOADED_MODEL_PATH == str(path.resolve()):
+        return True, "CNN model is loaded in memory and ready for real-time inference."
+
+    if path.stat().st_size < 1024:
+        return False, f"Model checkpoint at {path} is suspiciously small ({path.stat().st_size} bytes)."
+
+    return True, f"CNN model checkpoint found at {path} ({path.stat().st_size / 1024 / 1024:.2f} MB)."
+
+
 def preprocess_image(image_input, target_size=(224, 224)) -> np.ndarray:
     """
     Standardizes image input (bytes, path, or PIL Image) to float32 tensor

@@ -123,21 +123,34 @@ export default function PerformanceSection() {
           </div>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: '20px', flexWrap: 'wrap' }}>
-          <div 
-            style={{
-              fontSize: 'clamp(2.8rem, 5vw, 4rem)',
-              fontWeight: 700,
-              color: 'var(--accent-green)',
-              lineHeight: 1
-            }}
-          >
-            {metrics.primaryMetric.value !== null ? `${metrics.primaryMetric.value}%` : '98.55%'}
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '24px', flexWrap: 'wrap' }}>
+          <div>
+            <div 
+              style={{
+                fontSize: 'clamp(2.8rem, 5vw, 4rem)',
+                fontWeight: 700,
+                color: 'var(--accent-green)',
+                lineHeight: 1,
+                marginBottom: '4px'
+              }}
+            >
+              {metrics.primaryMetric.value !== null ? `${metrics.primaryMetric.value}%` : '98.55%'}
+            </div>
+            <div style={{ fontSize: '0.78rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
+              Validation Accuracy (4,000 samples)
+            </div>
           </div>
-          <div style={{ maxWidth: '420px', fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+          <div style={{ maxWidth: '480px', fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
             {metrics.statusDescription}
-            <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-              3,942 correct predictions out of 4,000 total validation images (99.0% on test holdout).
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '10px' }}>
+              <div style={{ fontSize: '0.8rem', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span className="pulse-dot success" style={{ width: '6px', height: '6px', flexShrink: 0 }} />
+                <span><strong>Validation Accuracy:</strong> 98.55% (3,942 correct predictions out of 4,000 validation split images)</span>
+              </div>
+              <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span className="pulse-dot idle" style={{ width: '6px', height: '6px', flexShrink: 0 }} />
+                <span><strong>Test-Holdout Accuracy:</strong> 99.0% (evaluated on unseen test holdout split)</span>
+              </div>
             </div>
           </div>
         </div>
@@ -158,7 +171,7 @@ export default function PerformanceSection() {
               {dm.label}
             </div>
             <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--text-primary)', lineHeight: 1.1, marginBottom: '4px' }}>
-              {dm.value !== null ? (typeof dm.value === 'number' ? `${dm.value}%` : dm.value) : '—'}
+              {dm.value !== null ? (typeof dm.value === 'number' ? (dm.id === 'val_loss' ? dm.value : `${dm.value}%`) : dm.value) : '—'}
             </div>
             <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.4 }}>
               {dm.description}
@@ -178,9 +191,9 @@ export default function PerformanceSection() {
           </div>
         </div>
 
-        <div className="grid-2">
+        <div className="grid-2" style={{ alignItems: 'start' }}>
           {/* Training & Validation Curves */}
-          <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-medium)', borderRadius: 'var(--radius-sm)', overflow: 'hidden', padding: '14px' }}>
+          <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-medium)', borderRadius: 'var(--radius-sm)', overflowX: 'auto', WebkitOverflowScrolling: 'touch', padding: '14px', minWidth: 0 }}>
             <div style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--text-primary)', fontWeight: 600, marginBottom: '6px' }}>
               Training & Validation Curves
             </div>
@@ -190,12 +203,12 @@ export default function PerformanceSection() {
             <img 
               src={displayedCharts.training_curves} 
               alt="Training accuracy and loss curves"
-              style={{ width: '100%', borderRadius: '4px', display: 'block', background: '#FFFFFF', border: '1px solid var(--border-subtle)' }}
+              style={{ width: '100%', maxWidth: '100%', height: 'auto', borderRadius: '4px', display: 'block', background: '#FFFFFF', border: '1px solid var(--border-subtle)' }}
             />
           </div>
 
           {/* Confusion Matrix */}
-          <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-medium)', borderRadius: 'var(--radius-sm)', overflow: 'hidden', padding: '14px' }}>
+          <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-medium)', borderRadius: 'var(--radius-sm)', overflowX: 'auto', WebkitOverflowScrolling: 'touch', padding: '14px', minWidth: 0 }}>
             <div style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--text-primary)', fontWeight: 600, marginBottom: '6px' }}>
               Validation Confusion Matrix
             </div>
@@ -205,7 +218,7 @@ export default function PerformanceSection() {
             <img 
               src={displayedCharts.confusion_matrix} 
               alt="Validation confusion matrix heatmap"
-              style={{ width: '100%', borderRadius: '4px', display: 'block', background: '#FFFFFF', border: '1px solid var(--border-subtle)' }}
+              style={{ width: '100%', maxWidth: '100%', height: 'auto', borderRadius: '4px', display: 'block', background: '#FFFFFF', border: '1px solid var(--border-subtle)' }}
             />
           </div>
         </div>

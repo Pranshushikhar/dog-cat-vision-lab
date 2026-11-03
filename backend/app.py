@@ -60,6 +60,8 @@ ALLOWED_ORIGINS = [
     "https://pawvision-ai.26bcs10417.workers.dev",
     "http://localhost:5173",
     "http://127.0.0.1:5173",
+    "http://localhost:4173",
+    "http://127.0.0.1:4173",
     "http://localhost:8000",
     "http://127.0.0.1:8000",
     "http://localhost:3000",
@@ -101,14 +103,18 @@ def read_root():
 def get_health():
     """
     Backend Health Check:
-    Reports whether backend is operational and whether trained CNN weights are present.
+    Clearly distinguishes service availability from model weight readiness.
     """
-    model_exists = MODEL_PATH.exists()
+    from ml.predict import is_model_ready
+    ready, status_msg = is_model_ready(MODEL_PATH)
     return {
         "status": "ok",
-        "model_loaded": model_exists,
-        "model": "dog_cat_cnn" if model_exists else None,
-        "model_path": str(MODEL_PATH) if model_exists else None
+        "service": "operational",
+        "model_loaded": ready,
+        "model_ready": ready,
+        "model_status": status_msg,
+        "model": "dog_cat_cnn" if ready else None,
+        "model_path": str(MODEL_PATH) if MODEL_PATH.exists() else None
     }
 
 
@@ -206,7 +212,10 @@ def get_architecture():
     """Returns the actual layer structure and parameters of the CNN."""
     from ml.model import get_architecture_metadata, load_model_if_exists
     model = load_model_if_exists(MODEL_PATH)
-    return get_architecture_metadata(model)
+    data = get_architecture_metadata(model)
+    if "model_name" not in data and "architecture_name" in data:
+        data["model_name"] = data["architecture_name"]
+    return data
 
 
 @app.get("/api/samples")
@@ -256,4 +265,5 @@ def get_samples():
 if __name__ == "__main__":
     import uvicorn
     port = int(os.environ.get("PORT", 8000))
-    uvicorn.run("backend.app:app", host="127.0.0.1", port=port, reload=True)
+    host = os.environ.get("HOST", "0.0.0.0")
+    uvicorn.run("backend.app:app", host=host, port=port, reload=False)

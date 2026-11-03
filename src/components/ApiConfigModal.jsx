@@ -1,40 +1,78 @@
-import React, { useState } from 'react';
-import { X, Server, Check, AlertCircle, AlertTriangle } from 'lucide-react';
-import { classifierService, CLASSIFIER_MODES } from '../services/classifierService';
+import React, { useState, useEffect } from 'react';
+import { X, Server, Check, AlertCircle, AlertTriangle, RefreshCw, Globe, Laptop } from 'lucide-react';
+import { 
+  classifierService, 
+  CLASSIFIER_MODES, 
+  PRODUCTION_BACKEND_URL, 
+  LOCAL_BACKEND_URL, 
+  WORKER_BACKEND_URL,
+  normalizeBackendUrl 
+} from '../services/classifierService';
 
 export default function ApiConfigModal({ isOpen, onClose }) {
-  const [apiUrl, setApiUrl] = useState(classifierService.getApiUrl());
-  const [currentMode, setCurrentMode] = useState(classifierService.getMode());
+  const [apiUrl, setApiUrl] = useState('');
+  const [currentMode, setCurrentMode] = useState(CLASSIFIER_MODES.REAL_API);
   const [testingHealth, setTestingHealth] = useState(false);
   const [testResult, setTestResult] = useState(null);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      setApiUrl(classifierService.getApiUrl());
+      setCurrentMode(classifierService.getMode());
+      setTestResult(null);
+      setSaveSuccess(false);
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
   const handleSaveUrl = (e) => {
-    e.preventDefault();
-    classifierService.setApiUrl(apiUrl);
-    classifierService.setMode(CLASSIFIER_MODES.REAL_API);
+    if (e) e.preventDefault();
+    const normalized = normalizeBackendUrl(apiUrl);
+    setApiUrl(normalized);
+    classifierService.setApiUrl(normalized, true);
+    classifierService.setMode(CLASSIFIER_MODES.REAL_API, true);
     setCurrentMode(CLASSIFIER_MODES.REAL_API);
-    setTestResult(null);
+    setSaveSuccess(true);
+    setTimeout(() => setSaveSuccess(false), 2500);
   };
 
   const handleTestHealth = async () => {
+    const target = normalizeBackendUrl(apiUrl || classifierService.getApiUrl());
+    if (!target) {
+      setTestResult({
+        ok: false,
+        testedUrl: '',
+        error: 'Please enter a valid backend URL before testing.'
+      });
+      return;
+    }
     setTestingHealth(true);
     setTestResult(null);
-    const res = await classifierService.checkEndpointHealth(apiUrl);
+    const res = await classifierService.checkEndpointHealth(target, 20000);
     setTestingHealth(false);
     setTestResult(res);
   };
 
+  const handleSelectPreset = (url) => {
+    const normalized = normalizeBackendUrl(url);
+    setApiUrl(normalized);
+    setTestResult(null);
+    setSaveSuccess(false);
+  };
+
   const handleEnableDemoMode = () => {
-    classifierService.setMode(CLASSIFIER_MODES.DEMO_MODE);
+    classifierService.setMode(CLASSIFIER_MODES.DEMO_MODE, true);
     setCurrentMode(CLASSIFIER_MODES.DEMO_MODE);
   };
 
   const handleEnableRealMode = () => {
-    classifierService.setMode(CLASSIFIER_MODES.REAL_API);
+    classifierService.setMode(CLASSIFIER_MODES.REAL_API, true);
     setCurrentMode(CLASSIFIER_MODES.REAL_API);
   };
+
+  const isLocalTarget = apiUrl.includes('localhost') || apiUrl.includes('127.0.0.1');
 
   return (
     <div 
@@ -56,7 +94,7 @@ export default function ApiConfigModal({ isOpen, onClose }) {
         className="modal-animate tech-card"
         style={{
           width: '100%',
-          maxWidth: '560px',
+          maxWidth: '580px',
           maxHeight: '90vh',
           overflowY: 'auto',
           background: '#FFFFFF',
@@ -74,7 +112,7 @@ export default function ApiConfigModal({ isOpen, onClose }) {
               Backend Inference Endpoint
             </h3>
             <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', margin: '2px 0 0 0' }}>
-              Connection interface for Python FastAPI server
+              Connection configuration for Python FastAPI CNN inference backend
             </p>
           </div>
           <button 
@@ -142,8 +180,54 @@ export default function ApiConfigModal({ isOpen, onClose }) {
           </div>
         </div>
 
+        {/* Quick Preset Selector */}
+        <div style={{ marginBottom: '14px' }}>
+          <label style={{ display: 'block', fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '6px' }}>
+            Quick Select Preset
+          </label>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              className="btn btn-ghost btn-sm"
+              style={{
+                fontSize: '0.74rem',
+                padding: '4px 10px',
+                background: apiUrl === PRODUCTION_BACKEND_URL ? 'var(--accent-sage)' : 'var(--bg-surface)',
+                border: apiUrl === PRODUCTION_BACKEND_URL ? '1px solid var(--accent-green)' : '1px solid var(--border-medium)',
+                borderRadius: 'var(--radius-xs)',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '5px'
+              }}
+              onClick={() => handleSelectPreset(PRODUCTION_BACKEND_URL)}
+            >
+              <Globe size={13} color="var(--accent-green)" />
+              <span>Production (Render)</span>
+            </button>
+
+            <button
+              type="button"
+              className="btn btn-ghost btn-sm"
+              style={{
+                fontSize: '0.74rem',
+                padding: '4px 10px',
+                background: apiUrl === LOCAL_BACKEND_URL ? 'var(--accent-sage)' : 'var(--bg-surface)',
+                border: apiUrl === LOCAL_BACKEND_URL ? '1px solid var(--accent-green)' : '1px solid var(--border-medium)',
+                borderRadius: 'var(--radius-xs)',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '5px'
+              }}
+              onClick={() => handleSelectPreset(LOCAL_BACKEND_URL)}
+            >
+              <Laptop size={13} color="var(--text-secondary)" />
+              <span>Local Dev (127.0.0.1:8000)</span>
+            </button>
+          </div>
+        </div>
+
         {/* API Endpoint Input Form */}
-        <form onSubmit={handleSaveUrl} style={{ marginBottom: '20px' }}>
+        <form onSubmit={handleSaveUrl} style={{ marginBottom: '18px' }}>
           <label htmlFor="api-endpoint-input" style={{ display: 'block', fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '6px' }}>
             FastAPI Base URL
           </label>
@@ -152,7 +236,10 @@ export default function ApiConfigModal({ isOpen, onClose }) {
               id="api-endpoint-input"
               type="text"
               value={apiUrl}
-              onChange={(e) => setApiUrl(e.target.value)}
+              onChange={(e) => {
+                setApiUrl(e.target.value);
+                setSaveSuccess(false);
+              }}
               placeholder="https://pawvision-ai-backend.onrender.com"
               style={{
                 flex: 1,
@@ -165,8 +252,12 @@ export default function ApiConfigModal({ isOpen, onClose }) {
                 fontSize: '0.82rem'
               }}
             />
-            <button type="submit" className="btn btn-secondary btn-sm">
-              Save
+            <button 
+              type="submit" 
+              className="btn btn-secondary btn-sm"
+              title="Save URL to browser settings"
+            >
+              {saveSuccess ? 'Saved!' : 'Save'}
             </button>
             <button 
               type="button" 
@@ -177,13 +268,19 @@ export default function ApiConfigModal({ isOpen, onClose }) {
               {testingHealth ? 'Testing...' : 'Test Connection'}
             </button>
           </div>
+          {saveSuccess && (
+            <div style={{ fontSize: '0.75rem', color: 'var(--accent-green)', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <Check size={13} />
+              <span>Endpoint saved and persisted to browser storage.</span>
+            </div>
+          )}
         </form>
 
         {/* Health Test Result Callout */}
         {testResult && (
           <div 
             style={{
-              padding: '12px',
+              padding: '12px 14px',
               borderRadius: 'var(--radius-sm)',
               background: testResult.ok ? 'var(--accent-sage)' : '#FBEBEB',
               border: `1px solid ${testResult.ok ? 'rgba(85, 116, 92, 0.3)' : 'rgba(181, 66, 66, 0.3)'}`,
@@ -191,14 +288,43 @@ export default function ApiConfigModal({ isOpen, onClose }) {
               fontSize: '0.8rem'
             }}
           >
-            <div style={{ fontWeight: 600, color: testResult.ok ? '#314E38' : '#9E3333', marginBottom: '4px' }}>
-              {testResult.ok ? 'Backend Connected Successfully' : 'Connection Failed'}
+            <div style={{ fontWeight: 600, color: testResult.ok ? '#314E38' : '#9E3333', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              {testResult.ok ? (
+                <>
+                  <Check size={16} />
+                  <span>Backend Connected Successfully</span>
+                </>
+              ) : (
+                <>
+                  <AlertCircle size={16} />
+                  <span>Connection Failed</span>
+                </>
+              )}
             </div>
-            <div style={{ color: 'var(--text-secondary)' }}>
-              {testResult.ok 
-                ? `Model checkpoint loaded: ${testResult.modelLoaded ? 'Yes (MobileNetV2 active)' : 'Weights missing'}. Latency: ${testResult.latencyMs || 0} ms.`
-                : 'Unable to reach backend. Verify server is running on http://127.0.0.1:8000.'
-              }
+            <div style={{ color: 'var(--text-secondary)', lineHeight: 1.45 }}>
+              {testResult.ok ? (
+                <>
+                  <div><strong>Endpoint:</strong> {testResult.testedUrl}/api/health</div>
+                  <div>
+                    <strong>Model Status:</strong> {testResult.modelLoaded ? 'Trained CNN checkpoint loaded & active' : 'Weights missing on server'}.
+                    {testResult.latencyMs !== undefined && ` Latency: ${testResult.latencyMs} ms.`}
+                  </div>
+                </>
+              ) : (
+                <div>
+                  <div style={{ color: '#9E3333', fontWeight: 500, marginBottom: '4px' }}>
+                    {testResult.error || 'Unable to connect to backend.'}
+                  </div>
+                  <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)' }}>
+                    Target attempted: <code>{testResult.testedUrl || apiUrl}/api/health</code>
+                    {isLocalTarget && (
+                      <div style={{ marginTop: '4px' }}>
+                        If developing locally, make sure Uvicorn is running on <code>127.0.0.1:8000</code>.
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -206,9 +332,9 @@ export default function ApiConfigModal({ isOpen, onClose }) {
         {/* Start Server Reminder */}
         <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-medium)', borderRadius: 'var(--radius-xs)', padding: '12px', fontSize: '0.78rem' }}>
           <div style={{ fontSize: '0.7rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', marginBottom: '4px' }}>
-            Terminal command to launch backend:
+            Terminal command to launch local backend:
           </div>
-          <code style={{ color: 'var(--text-primary)', fontSize: '0.8rem' }}>
+          <code style={{ color: 'var(--text-primary)', fontSize: '0.8rem', display: 'block', wordBreak: 'break-all' }}>
             python -m uvicorn backend.app:app --host 127.0.0.1 --port 8000 --reload
           </code>
         </div>

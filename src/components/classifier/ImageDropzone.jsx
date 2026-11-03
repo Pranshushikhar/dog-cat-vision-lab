@@ -136,8 +136,22 @@ export default function ImageDropzone({ selectedImage, onSelectImage, onClearIma
             </div>
 
             {/* Specimen File Information */}
-            <div style={{ marginTop: '12px', textAlign: 'center' }}>
-              <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+            <div style={{ marginTop: '12px', textAlign: 'center', width: '100%', maxWidth: '280px', padding: '0 8px' }}>
+              <div 
+                title={selectedImage.name}
+                aria-label={`Uploaded image filename: ${selectedImage.name}`}
+                tabIndex={0}
+                style={{ 
+                  fontSize: '0.85rem', 
+                  fontWeight: 600, 
+                  color: 'var(--text-primary)',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  maxWidth: '100%',
+                  display: 'block'
+                }}
+              >
                 {selectedImage.name}
               </div>
               <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
@@ -200,7 +214,8 @@ export default function ImageDropzone({ selectedImage, onSelectImage, onClearIma
                   gap: '6px',
                   cursor: isProcessing ? 'not-allowed' : 'pointer',
                   transition: 'all var(--transition-fast)',
-                  textAlign: 'center'
+                  textAlign: 'center',
+                  minWidth: 0
                 }}
               >
                 <div 
@@ -218,7 +233,19 @@ export default function ImageDropzone({ selectedImage, onSelectImage, onClearIma
                     style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                   />
                 </div>
-                <div style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--text-primary)', lineHeight: 1.2 }}>
+                <div 
+                  title={sample.name}
+                  style={{ 
+                    fontSize: '0.72rem', 
+                    fontWeight: 600, 
+                    color: 'var(--text-primary)', 
+                    lineHeight: 1.2,
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    maxWidth: '100%'
+                  }}
+                >
                   {sample.name}
                 </div>
               </button>

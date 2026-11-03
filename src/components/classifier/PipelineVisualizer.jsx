@@ -74,10 +74,11 @@ export default function PipelineVisualizer({ currentStageIndex = -1, isProcessin
       <div 
         style={{
           display: 'grid',
-          gridTemplateColumns: `repeat(${PIPELINE_STAGES.length}, 1fr)`,
+          gridTemplateColumns: `repeat(${PIPELINE_STAGES.length}, minmax(130px, 1fr))`,
           gap: '8px',
           overflowX: 'auto',
-          paddingBottom: '4px'
+          WebkitOverflowScrolling: 'touch',
+          paddingBottom: '6px'
         }}
       >
         {PIPELINE_STAGES.map((stage, idx) => {
