@@ -8,17 +8,20 @@ import HowItWorksTab from './tabs/HowItWorksTab';
 import AboutTab from './tabs/AboutTab';
 import Footer from './sections/Footer';
 import ApiConfigModal from './components/ApiConfigModal';
+import FeedbackModal from './components/FeedbackModal';
 
-const VALID_TABS = ['home', 'classifier', 'dataset', 'model-lab', 'how-it-works', 'about'];
+const VALID_TABS = ['home', 'classifier', 'dataset', 'model-lab', 'model-info', 'how-it-works', 'about'];
 
 function getTabFromHash() {
   const hash = window.location.hash.replace(/^#\/?/, '').trim().toLowerCase();
+  if (hash === 'model-info') return 'model-info';
   return VALID_TABS.includes(hash) ? hash : 'home';
 }
 
 export default function App() {
   const [activeTab, setActiveTab] = useState(getTabFromHash);
   const [isApiModalOpen, setIsApiModalOpen] = useState(false);
+  const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
   const [preselectedImage, setPreselectedImage] = useState(null);
 
   // Sync tab with browser hash and history navigation
@@ -56,9 +59,10 @@ export default function App() {
     <div className="app-container" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       {/* Top Header & Tab Navigation Bar */}
       <Navbar 
-        activeTab={activeTab}
+        activeTab={activeTab === 'model-lab' ? 'model-info' : activeTab}
         onSelectTab={handleTabChange}
         onOpenApiModal={() => setIsApiModalOpen(true)} 
+        onOpenFeedbackModal={() => setIsFeedbackModalOpen(true)}
       />
 
       {/* Main Tab Content View */}
@@ -81,7 +85,7 @@ export default function App() {
           <DatasetTab />
         )}
 
-        {activeTab === 'model-lab' && (
+        {(activeTab === 'model-lab' || activeTab === 'model-info') && (
           <ModelLabTab 
             onOpenConfigModal={() => setIsApiModalOpen(true)} 
           />
@@ -102,12 +106,19 @@ export default function App() {
       <Footer 
         onSelectTab={handleTabChange}
         onOpenConfigModal={() => setIsApiModalOpen(true)} 
+        onOpenFeedbackModal={() => setIsFeedbackModalOpen(true)}
       />
 
       {/* API / Backend Config Modal */}
       <ApiConfigModal 
         isOpen={isApiModalOpen} 
         onClose={() => setIsApiModalOpen(false)} 
+      />
+
+      {/* Feedback & Contact Modal */}
+      <FeedbackModal
+        isOpen={isFeedbackModalOpen}
+        onClose={() => setIsFeedbackModalOpen(false)}
       />
     </div>
   );

@@ -10,6 +10,87 @@ export default function AboutTab({ onOpenConfigModal }) {
         {/* 1. Project Background and Research Narrative */}
         <StorySection />
 
+        {/* 1.5 Research & Engineering Team Credits */}
+        <div style={{ marginTop: '40px' }}>
+          <div className="tech-card" style={{ padding: '28px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px', marginBottom: '20px' }}>
+              <div>
+                <div style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--accent-teal)', textTransform: 'uppercase', marginBottom: '4px' }}>
+                  Research &amp; Engineering Team
+                </div>
+                <h3 style={{ fontSize: '1.3rem', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
+                  Developed by Pranshu Shikhar &amp; Team
+                </h3>
+              </div>
+              <span className="badge badge-green" style={{ fontSize: '0.74rem' }}>
+                PAWVISION AI CORE TEAM
+              </span>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: '14px' }}>
+              <div style={{ background: 'var(--bg-surface)', padding: '16px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-medium)' }}>
+                <div style={{ fontSize: '0.92rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '4px' }}>
+                  Pranshu Shikhar
+                </div>
+                <div style={{ fontSize: '0.74rem', fontFamily: 'var(--font-mono)', color: 'var(--accent-teal)', fontWeight: 600, marginBottom: '6px' }}>
+                  Project Lead &amp; ML Architecture
+                </div>
+                <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.45 }}>
+                  Model design, MobileNetV2 fine-tuning, OOD screening architecture, and full-stack integration.
+                </p>
+              </div>
+
+              <div style={{ background: 'var(--bg-surface)', padding: '16px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-medium)' }}>
+                <div style={{ fontSize: '0.92rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '4px' }}>
+                  Rishabh Vaish
+                </div>
+                <div style={{ fontSize: '0.74rem', fontFamily: 'var(--font-mono)', color: 'var(--accent-teal)', fontWeight: 600, marginBottom: '6px' }}>
+                  Deep Learning Engineer
+                </div>
+                <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.45 }}>
+                  Dataset curation, pipeline optimization, training script stabilization, and hyperparameter tuning.
+                </p>
+              </div>
+
+              <div style={{ background: 'var(--bg-surface)', padding: '16px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-medium)' }}>
+                <div style={{ fontSize: '0.92rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '4px' }}>
+                  Ankit Raj
+                </div>
+                <div style={{ fontSize: '0.74rem', fontFamily: 'var(--font-mono)', color: 'var(--accent-teal)', fontWeight: 600, marginBottom: '6px' }}>
+                  Backend &amp; API Engineer
+                </div>
+                <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.45 }}>
+                  FastAPI service architecture, tensor preprocessing validation, latency optimization, and endpoints.
+                </p>
+              </div>
+
+              <div style={{ background: 'var(--bg-surface)', padding: '16px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-medium)' }}>
+                <div style={{ fontSize: '0.92rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '4px' }}>
+                  Kanika Rani
+                </div>
+                <div style={{ fontSize: '0.74rem', fontFamily: 'var(--font-mono)', color: 'var(--accent-teal)', fontWeight: 600, marginBottom: '6px' }}>
+                  QA &amp; Evaluation Specialist
+                </div>
+                <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.45 }}>
+                  Model validation, confusion matrix analytics, classification threshold tests, and holdout verification.
+                </p>
+              </div>
+
+              <div style={{ background: 'var(--bg-surface)', padding: '16px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-medium)' }}>
+                <div style={{ fontSize: '0.92rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '4px' }}>
+                  Ishita Goel
+                </div>
+                <div style={{ fontSize: '0.74rem', fontFamily: 'var(--font-mono)', color: 'var(--accent-teal)', fontWeight: 600, marginBottom: '6px' }}>
+                  UI/UX &amp; Research Analyst
+                </div>
+                <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.45 }}>
+                  Frontend visualization design, user experience flow, research documentation, and presentation materials.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* 2. Full Technology Stack */}
         <div style={{ marginTop: '40px' }}>
           <TechStackSection />

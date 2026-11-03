@@ -8,6 +8,7 @@ __pycache__/
 # Large ML Datasets & Weights
 data/raw/
 data/processed/
+data/feedback.json
 models/*.keras
 !models/dog_cat_cnn.keras
 !models/ood_mobilenet_v2.keras

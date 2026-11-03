@@ -389,6 +389,35 @@ export default function ApiConfigModal({ isOpen, onClose }) {
           </div>
         )}
 
+        {/* Documented API Endpoints Reference */}
+        <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-medium)', borderRadius: 'var(--radius-sm)', padding: '14px', marginBottom: '16px' }}>
+          <div style={{ fontSize: '0.74rem', fontFamily: 'var(--font-mono)', fontWeight: 600, color: 'var(--accent-teal)', textTransform: 'uppercase', marginBottom: '8px' }}>
+            FastAPI Endpoints Reference (v2.0)
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.78rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '4px' }}>
+              <code>GET /health</code>
+              <span style={{ color: 'var(--text-muted)' }}>Status &amp; model load verification</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '4px' }}>
+              <code>GET /api/info</code>
+              <span style={{ color: 'var(--text-muted)' }}>App metadata &amp; team credits</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '4px' }}>
+              <code>GET /api/model-info</code>
+              <span style={{ color: 'var(--text-muted)' }}>MobileNetV2 specifications &amp; metrics</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '4px' }}>
+              <code>POST /api/predict</code>
+              <span style={{ color: 'var(--text-muted)' }}>Image inference with latency &amp; OOD screening</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+              <code>POST /api/feedback</code>
+              <span style={{ color: 'var(--text-muted)' }}>Research feedback &amp; ratings submission</span>
+            </div>
+          </div>
+        </div>
+
         {/* Start Server Reminder */}
         <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-medium)', borderRadius: 'var(--radius-xs)', padding: '12px', fontSize: '0.78rem' }}>
           <div style={{ fontSize: '0.7rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', marginBottom: '4px' }}>

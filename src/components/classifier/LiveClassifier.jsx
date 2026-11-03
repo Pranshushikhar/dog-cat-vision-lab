@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { ArrowRight, RotateCcw, AlertTriangle, History, Clock, Check, Sliders } from 'lucide-react';
+import { ArrowRight, RotateCcw, AlertTriangle, History, Clock, Check, Sliders, Trash2, X } from 'lucide-react';
 import ImageDropzone from './ImageDropzone';
 import PipelineVisualizer, { PIPELINE_STAGES } from './PipelineVisualizer';
 import InferenceResult from './InferenceResult';
 import { classifierService, CLASSIFIER_MODES } from '../../services/classifierService';
+
+const HISTORY_STORAGE_KEY = 'pawvision_prediction_history';
 
 export default function LiveClassifier({ onOpenConfigModal, initialImage = null }) {
   const [selectedImage, setSelectedImage] = useState(initialImage);
@@ -12,7 +14,14 @@ export default function LiveClassifier({ onOpenConfigModal, initialImage = null 
   const [currentStageIndex, setCurrentStageIndex] = useState(-1);
   const [inferenceResult, setInferenceResult] = useState(null);
   const [activeMode, setActiveMode] = useState(classifierService.getMode());
-  const [sessionHistory, setSessionHistory] = useState([]);
+  const [sessionHistory, setSessionHistory] = useState(() => {
+    try {
+      const saved = localStorage.getItem(HISTORY_STORAGE_KEY);
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      return [];
+    }
+  });
 
   useEffect(() => {
     if (initialImage) {
@@ -21,6 +30,14 @@ export default function LiveClassifier({ onOpenConfigModal, initialImage = null 
       setCurrentStageIndex(-1);
     }
   }, [initialImage]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(sessionHistory));
+    } catch (e) {
+      // Ignore localStorage quote limits
+    }
+  }, [sessionHistory]);
 
   useEffect(() => {
     return classifierService.subscribe((state) => {
@@ -85,12 +102,16 @@ export default function LiveClassifier({ onOpenConfigModal, initialImage = null 
       if (result && result.success) {
         const historyItem = {
           id: Date.now(),
-          image: selectedImage,
+          image: {
+            url: selectedImage.url,
+            name: selectedImage.name,
+            size: selectedImage.size
+          },
           result: { ...result },
           threshold: confidenceThreshold,
           timeStr: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
         };
-        setSessionHistory((prev) => [historyItem, ...prev.filter((h) => h.image.url !== selectedImage.url).slice(0, 4)]);
+        setSessionHistory((prev) => [historyItem, ...prev.filter((h) => h.image.url !== selectedImage.url).slice(0, 11)]);
       }
     } catch (err) {
       clearInterval(stageInterval);
@@ -110,6 +131,20 @@ export default function LiveClassifier({ onOpenConfigModal, initialImage = null 
     setInferenceResult(item.result);
     setConfidenceThreshold(item.threshold || 0.5);
     setCurrentStageIndex(PIPELINE_STAGES.length - 1);
+  };
+
+  const handleDeleteHistoryItem = (id, e) => {
+    e.stopPropagation();
+    setSessionHistory((prev) => prev.filter((item) => item.id !== id));
+  };
+
+  const handleClearAllHistory = () => {
+    setSessionHistory([]);
+    try {
+      localStorage.removeItem(HISTORY_STORAGE_KEY);
+    } catch (e) {
+      // Ignore
+    }
   };
 
   const handleSwitchToDemo = () => {
@@ -266,26 +301,46 @@ export default function LiveClassifier({ onOpenConfigModal, initialImage = null 
             hasImage={!!selectedImage}
             onOpenConfig={onOpenConfigModal}
             onSwitchToDemo={handleSwitchToDemo}
+            onClassifyAnother={handleClearImage}
           />
         </div>
       </div>
 
       {/* Session Test History / Quick Comparison Tray */}
-      {sessionHistory.length > 0 && (
-        <div className="tech-card" style={{ padding: '16px 20px', background: 'var(--bg-card)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <History size={14} color="var(--accent-green)" />
-              <span style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                Session Test History ({sessionHistory.length})
-              </span>
-            </div>
-            <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
-              Click any past specimen to reload & inspect
+      <div className="tech-card" style={{ padding: '18px 20px', background: 'var(--bg-card)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px', flexWrap: 'wrap', gap: '8px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <History size={15} color="var(--accent-teal)" />
+            <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              Prediction History {sessionHistory.length > 0 && `(${sessionHistory.length})`}
             </span>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(170px, 1fr))', gap: '10px' }}>
+          {sessionHistory.length > 0 ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+                Click specimen to inspect · Saved locally
+              </span>
+              <button
+                type="button"
+                className="btn btn-ghost btn-sm"
+                onClick={handleClearAllHistory}
+                style={{ padding: '3px 8px', fontSize: '0.72rem', color: 'var(--accent-red)' }}
+                title="Clear all stored test history"
+              >
+                <Trash2 size={12} />
+                <span>Clear All</span>
+              </button>
+            </div>
+          ) : (
+            <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+              Saved automatically in browser storage
+            </span>
+          )}
+        </div>
+
+        {sessionHistory.length > 0 ? (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '10px' }}>
             {sessionHistory.map((item) => {
               const isCurrent = selectedImage?.url === item.image.url;
               const isUnsupported = !item.result.isSupported;
@@ -303,11 +358,13 @@ export default function LiveClassifier({ onOpenConfigModal, initialImage = null 
                     gap: '10px',
                     padding: '8px 10px',
                     borderRadius: 'var(--radius-xs)',
-                    background: isCurrent ? 'var(--accent-sage)' : 'var(--bg-surface)',
-                    border: isCurrent ? '1px solid var(--accent-green)' : '1px solid var(--border-medium)',
+                    background: isCurrent ? 'var(--accent-teal-subtle)' : 'var(--bg-surface)',
+                    border: isCurrent ? '1px solid var(--accent-teal)' : '1px solid var(--border-medium)',
                     cursor: 'pointer',
-                    transition: 'all var(--transition-fast)'
+                    position: 'relative',
+                    transition: 'all 0.2s ease'
                   }}
+                  className="hover-card"
                 >
                   <img
                     src={item.image.url}
@@ -318,7 +375,7 @@ export default function LiveClassifier({ onOpenConfigModal, initialImage = null 
                       borderRadius: '4px',
                       objectFit: 'cover',
                       flexShrink: 0,
-                      background: '#EAEBE3'
+                      background: 'var(--bg-surface)'
                     }}
                   />
                   <div style={{ minWidth: 0, flex: 1 }}>
@@ -327,7 +384,7 @@ export default function LiveClassifier({ onOpenConfigModal, initialImage = null 
                         style={{
                           fontSize: '0.72rem',
                           fontWeight: 700,
-                          color: isUnsupported ? '#8C5212' : 'var(--accent-green)',
+                          color: isUnsupported ? 'var(--accent-amber)' : 'var(--accent-teal)',
                           fontFamily: 'var(--font-mono)'
                         }}
                       >
@@ -352,12 +409,36 @@ export default function LiveClassifier({ onOpenConfigModal, initialImage = null 
                       {item.image.name}
                     </div>
                   </div>
+
+                  <button
+                    type="button"
+                    onClick={(e) => handleDeleteHistoryItem(item.id, e)}
+                    title="Remove from history"
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: 'var(--text-muted)',
+                      cursor: 'pointer',
+                      padding: '2px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      opacity: 0.6
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.color = 'var(--accent-red)'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.opacity = '0.6'; e.currentTarget.style.color = 'var(--text-muted)'; }}
+                  >
+                    <X size={13} />
+                  </button>
                 </div>
               );
             })}
           </div>
-        </div>
-      )}
+        ) : (
+          <div style={{ textAlign: 'center', padding: '24px 16px', color: 'var(--text-muted)', fontSize: '0.82rem' }}>
+            No past classifications in this session. Classify a photograph above to start tracking history.
+          </div>
+        )}
+      </div>
 
       {/* Pipeline Visualizer (Subtle & Purposeful) */}
       <div className="tech-card" style={{ padding: '20px', background: 'var(--bg-card)' }}>

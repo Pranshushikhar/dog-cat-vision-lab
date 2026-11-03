@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { AlertCircle, AlertTriangle, Clock, Settings, Layers, ShieldAlert, Eye, Copy, Check, Sparkles, Sliders } from 'lucide-react';
+import { AlertCircle, AlertTriangle, Clock, Settings, Layers, ShieldAlert, Eye, Copy, Check, Sparkles, Sliders, Download, RefreshCw, Info } from 'lucide-react';
 
 export default function InferenceResult({ 
   result, 
@@ -7,7 +7,8 @@ export default function InferenceResult({
   isProcessing, 
   hasImage, 
   onOpenConfig, 
-  onSwitchToDemo 
+  onSwitchToDemo,
+  onClassifyAnother
 }) {
   const [showAttentionLens, setShowAttentionLens] = useState(false);
   const [activeLandmark, setActiveLandmark] = useState(null);
@@ -16,12 +17,40 @@ export default function InferenceResult({
   const handleCopyResult = () => {
     if (!result) return;
     const text = result.isSupported === false
-      ? `[PawVision AI] Unsupported Image — ${result.detectedCategory || 'Non-pet object'} detected. (Latency: ${result.processingTimeMs || 0}ms)`
-      : `[PawVision AI] Prediction: ${result.prediction} | Confidence: ${((result.confidence || 0) * 100).toFixed(1)}% | Cat: ${((result.rawProbabilities?.cat || 0) * 100).toFixed(1)}% | Dog: ${((result.rawProbabilities?.dog || 0) * 100).toFixed(1)}% | Latency: ${result.processingTimeMs || 0}ms`;
+      ? `[PAWVISION AI] Unsupported Image — ${result.detectedCategory || 'Non-pet object'} detected. (Latency: ${result.processingTimeMs || 0}ms)`
+      : `[PAWVISION AI] Prediction: ${result.prediction} | Confidence: ${((result.confidence || 0) * 100).toFixed(1)}% | Cat: ${((result.rawProbabilities?.cat || 0) * 100).toFixed(1)}% | Dog: ${((result.rawProbabilities?.dog || 0) * 100).toFixed(1)}% | Latency: ${result.processingTimeMs || 0}ms`;
     
     navigator.clipboard?.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleExportSummary = () => {
+    if (!result) return;
+    const summaryData = {
+      platform: "PAWVISION AI v2.0",
+      tagline: "See the Difference. Let AI Decide.",
+      timestamp: new Date().toISOString(),
+      imageName: selectedImage?.name || "Uploaded Image",
+      isSupported: result.isSupported !== false,
+      prediction: result.prediction,
+      confidence: result.confidence ? `${(result.confidence * 100).toFixed(2)}%` : null,
+      probabilities: result.rawProbabilities ? {
+        cat: `${(result.rawProbabilities.cat * 100).toFixed(2)}%`,
+        dog: `${(result.rawProbabilities.dog * 100).toFixed(2)}%`
+      } : null,
+      latencyMs: result.processingTimeMs || null,
+      modelArchitecture: "MobileNetV2 (2.26M Parameters)",
+      validationAccuracy: "98.55%",
+      disclaimer: "Confidence indicates model activation magnitude on the Kaggle Dogs vs Cats benchmark distribution, and should not be confused with formal biological certainty."
+    };
+    const blob = new Blob([JSON.stringify(summaryData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `pawvision-prediction-${Date.now()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
   // 1. IDLE STATE: No image uploaded yet
   if (!hasImage && !isProcessing && !result) {
@@ -378,6 +407,21 @@ export default function InferenceResult({
         >
           <strong style={{ color: 'var(--text-primary)' }}>Integrity Safeguard:</strong> Binary cat/dog classification and confidence scoring were withheld to prevent arbitrary forced projection on an out-of-domain input.
         </div>
+
+        {/* Actions for Unsupported Image */}
+        {onClassifyAnother && (
+          <div style={{ marginTop: '16px', display: 'flex', gap: '10px' }}>
+            <button
+              type="button"
+              className="btn btn-secondary btn-sm"
+              onClick={onClassifyAnother}
+              style={{ flex: 1, justifyContent: 'center' }}
+            >
+              <RefreshCw size={13} />
+              <span>Classify Another Image</span>
+            </button>
+          </div>
+        )}
       </div>
     );
   }
@@ -738,11 +782,58 @@ export default function InferenceResult({
                 }}
               >
                 <span>Decision Cutoff: {(result.effectiveThreshold * 100).toFixed(0)}%</span>
-                <span style={{ color: isDog ? 'var(--accent-green)' : 'var(--text-primary)', fontWeight: 600 }}>
+                <span style={{ color: isDog ? 'var(--accent-teal)' : 'var(--text-primary)', fontWeight: 600 }}>
                   P(Dog) = {dogProbPct}% {isDog ? '≥' : '<'} {(result.effectiveThreshold * 100).toFixed(0)}% → {result.prediction}
                 </span>
               </div>
             )}
+
+            {/* Action Buttons: Classify Another Image & Export Prediction Summary */}
+            <div style={{ marginTop: '20px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+              {onClassifyAnother && (
+                <button
+                  type="button"
+                  className="btn btn-primary btn-sm"
+                  onClick={onClassifyAnother}
+                  style={{ flex: 1, minWidth: '160px', justifyContent: 'center' }}
+                >
+                  <RefreshCw size={13} />
+                  <span>Classify Another Image</span>
+                </button>
+              )}
+
+              <button
+                type="button"
+                className="btn btn-secondary btn-sm"
+                onClick={handleExportSummary}
+                style={{ flex: 1, minWidth: '160px', justifyContent: 'center' }}
+              >
+                <Download size={13} />
+                <span>Export Prediction Summary</span>
+              </button>
+            </div>
+
+            {/* Confidence Disclaimer */}
+            <div 
+              style={{
+                marginTop: '16px',
+                padding: '10px 12px',
+                borderRadius: 'var(--radius-xs)',
+                background: 'var(--bg-surface)',
+                border: '1px solid var(--border-subtle)',
+                fontSize: '0.74rem',
+                color: 'var(--text-muted)',
+                lineHeight: 1.45,
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: '8px'
+              }}
+            >
+              <Info size={14} style={{ flexShrink: 0, marginTop: '2px', color: 'var(--accent-teal)' }} />
+              <span>
+                <strong>Confidence Disclaimer:</strong> Probability indicates convolutional activation certainty on the Kaggle benchmark distribution and reflects visual morphological affinity, not absolute biological guarantee.
+              </span>
+            </div>
           </div>
         </div>
       </div>

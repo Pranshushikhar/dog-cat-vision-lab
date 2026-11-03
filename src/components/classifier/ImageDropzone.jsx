@@ -1,10 +1,11 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { UploadCloud, Image as ImageIcon, X, Clipboard, Sparkles, Filter } from 'lucide-react';
+import { UploadCloud, Image as ImageIcon, X, Clipboard, Sparkles, Filter, AlertCircle } from 'lucide-react';
 import { SAMPLE_IMAGES } from '../../services/sampleData';
 
 export default function ImageDropzone({ selectedImage, onSelectImage, onClearImage, isProcessing }) {
   const [isDragOver, setIsDragOver] = useState(false);
   const [activeCategory, setActiveCategory] = useState('all');
+  const [uploadError, setUploadError] = useState(null);
   const fileInputRef = useRef(null);
 
   // Global Clipboard Paste Support (Ctrl + V to paste any screenshot or image)
@@ -50,26 +51,56 @@ export default function ImageDropzone({ selectedImage, onSelectImage, onClearIma
   };
 
   const processFile = (file) => {
-    if (!file.type.startsWith('image/')) {
-      alert('Please upload a valid image file (JPG, PNG, WebP).');
+    setUploadError(null);
+
+    // Validate mime type
+    const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
+    if (!validTypes.includes(file.type.toLowerCase()) && !file.type.startsWith('image/')) {
+      setUploadError('Unsupported format. Please upload a JPG, PNG, or WebP photograph.');
       return;
     }
+
+    // Validate size (10 MB maximum)
+    const MAX_SIZE = 10 * 1024 * 1024;
+    if (file.size > MAX_SIZE) {
+      setUploadError(`File is too large (${(file.size / (1024 * 1024)).toFixed(1)} MB). Maximum allowed size is 10 MB.`);
+      return;
+    }
+
     const reader = new FileReader();
     reader.onload = (event) => {
-      onSelectImage({
-        file,
-        name: file.name,
-        size: `${(file.size / 1024).toFixed(1)} KB`,
-        type: file.type,
-        url: event.target.result,
-        isSample: false
-      });
+      const dataUrl = event.target.result;
+      const img = new Image();
+      img.onload = () => {
+        if (img.width < 32 || img.height < 32) {
+          setUploadError(`Image resolution is too low (${img.width}×${img.height}). Minimum resolution is 32×32.`);
+          return;
+        }
+
+        onSelectImage({
+          file,
+          name: file.name,
+          size: `${(file.size / 1024).toFixed(1)} KB`,
+          type: file.type,
+          url: dataUrl,
+          dimensions: `${img.width} × ${img.height}`,
+          isSample: false
+        });
+      };
+      img.onerror = () => {
+        setUploadError('Unable to decode image. The file may be corrupted.');
+      };
+      img.src = dataUrl;
+    };
+    reader.onerror = () => {
+      setUploadError('Failed to read image file.');
     };
     reader.readAsDataURL(file);
   };
 
   const handleSelectSample = (sample) => {
     if (isProcessing) return;
+    setUploadError(null);
     onSelectImage({
       file: null,
       name: sample.name,
@@ -91,6 +122,36 @@ export default function ImageDropzone({ selectedImage, onSelectImage, onClearIma
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      {/* Upload Error Banner */}
+      {uploadError && (
+        <div 
+          style={{
+            padding: '10px 14px',
+            borderRadius: 'var(--radius-xs)',
+            background: 'var(--accent-red-subtle)',
+            border: '1px solid rgba(225, 29, 72, 0.25)',
+            color: 'var(--accent-red)',
+            fontSize: '0.82rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '8px'
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <AlertCircle size={15} style={{ flexShrink: 0 }} />
+            <span>{uploadError}</span>
+          </div>
+          <button 
+            type="button" 
+            onClick={() => setUploadError(null)}
+            style={{ background: 'none', border: 'none', color: 'inherit', cursor: 'pointer', padding: 0 }}
+          >
+            <X size={14} />
+          </button>
+        </div>
+      )}
+
       {/* Upload Drop Area */}
       <div
         onDragOver={handleDragOver}

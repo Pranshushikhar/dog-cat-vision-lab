@@ -13,6 +13,7 @@ Provides:
 
 import os
 import sys
+import time
 import json
 from pathlib import Path
 from contextlib import asynccontextmanager
@@ -20,6 +21,7 @@ from fastapi import FastAPI, File, UploadFile, Form, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel, Field, EmailStr
 
 # Add project root to sys.path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -96,9 +98,16 @@ if PROCESSED_DIR.exists():
 def read_root():
     return {
         "service": "PawVision AI CNN Inference Service",
+        "tagline": "See the Difference. Let AI Decide.",
+        "team": "Developed by Pranshu Shikhar & Team",
+        "version": "2.0.0",
         "endpoints": [
+            "GET /health",
             "GET /api/health",
+            "GET /api/info",
+            "GET /api/model-info",
             "POST /api/predict",
+            "POST /api/feedback",
             "GET /api/dataset-stats",
             "GET /api/metrics",
             "GET /api/architecture",
@@ -108,6 +117,7 @@ def read_root():
     }
 
 
+@app.get("/health")
 @app.get("/api/health")
 def get_health():
     """
@@ -126,7 +136,100 @@ def get_health():
         "model": "dog_cat_cnn" if ready else None,
         "ood_screening": "active",
         "ood_model": "mobilenet_v2_imagenet",
-        "model_path": str(MODEL_PATH) if MODEL_PATH.exists() else None
+        "model_path": str(MODEL_PATH) if MODEL_PATH.exists() else None,
+        "api_version": "2.0.0"
+    }
+
+
+@app.get("/api/info")
+def get_info():
+    """Returns general product identity, category, and capability metadata."""
+    return {
+        "app_name": "PAWVISION AI",
+        "tagline": "See the Difference. Let AI Decide.",
+        "category": "Computer Vision / Binary Image Classification",
+        "team": "Developed by Pranshu Shikhar & Team (Rishabh Vaish, Ankit Raj, Kanika Rani, Ishita Goel)",
+        "version": "2.0.0",
+        "classes": ["cat", "dog"],
+        "architecture": "MobileNetV2 Transfer Learning with Inverted Residual Bottlenecks",
+        "input_resolution": "224x224 RGB",
+        "ood_guard": "Active (ImageNet-1K MobileNetV2 with 143 feline/canine domain classes)",
+        "docs_url": "/docs"
+    }
+
+
+@app.get("/api/model-info")
+def get_model_info():
+    """Returns comprehensive verified model architecture and evaluation figures."""
+    from ml.predict import is_model_ready
+    ready, _ = is_model_ready(MODEL_PATH)
+
+    return {
+        "model_name": "PawVision MobileNetV2 Transfer Learning",
+        "architecture": "MobileNetV2 (Depthwise Separable Convolutions)",
+        "framework": "TensorFlow / Keras",
+        "total_parameters": 2257985,
+        "trainable_parameters": 164097,
+        "non_trainable_parameters": 2093888,
+        "input_shape": [224, 224, 3],
+        "loss_function": "Binary Cross-Entropy",
+        "optimizer": "Adam (initial learning_rate=1e-4)",
+        "status": "ready" if ready else "weights_not_found",
+        "reported_metrics": {
+            "validation_accuracy": 98.55,
+            "test_holdout_accuracy": 99.00,
+            "precision": 97.50,
+            "recall": 99.65,
+            "validation_loss": 0.0409,
+            "validation_samples": 4000,
+            "dataset_total_samples": 20000
+        },
+        "ood_screening": {
+            "name": "ImageNet-1K MobileNetV2 Screening Gate",
+            "status": "active",
+            "threshold": 0.15,
+            "domain_classes": 143
+        }
+    }
+
+
+class FeedbackPayload(BaseModel):
+    name: str = Field("", max_length=100)
+    email: str = Field("", max_length=120)
+    category: str = Field("General", max_length=50)
+    message: str = Field(..., min_length=3, max_length=2000)
+    rating: int = Field(5, ge=1, le=5)
+
+
+@app.post("/api/feedback")
+def submit_feedback(payload: FeedbackPayload):
+    """Stores user feedback cleanly in local storage for continuous improvement."""
+    feedback_file = PROJECT_ROOT / "data" / "feedback.json"
+    feedback_file.parent.mkdir(parents=True, exist_ok=True)
+
+    entry = {
+        "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        "name": payload.name.strip() or "Anonymous User",
+        "email": payload.email.strip() or "N/A",
+        "category": payload.category,
+        "message": payload.message.strip(),
+        "rating": payload.rating
+    }
+
+    try:
+        entries = []
+        if feedback_file.exists():
+            with open(feedback_file, "r", encoding="utf-8") as f:
+                entries = json.load(f)
+        entries.append(entry)
+        with open(feedback_file, "w", encoding="utf-8") as f:
+            json.dump(entries, f, indent=2)
+    except Exception as e:
+        print(f"[Feedback] Notice saving feedback: {e}")
+
+    return {
+        "success": True,
+        "message": "Thank you for your feedback! The PawVision AI research team appreciates your input."
     }
 
 
@@ -157,6 +260,7 @@ async def predict_endpoint(
         )
 
     try:
+        start_time = time.perf_counter()
         from ml.predict import predict_image
         contents = await image.read()
         if len(contents) > 15 * 1024 * 1024:
@@ -165,6 +269,10 @@ async def predict_endpoint(
                 detail="Uploaded image exceeds 15MB maximum file size limit."
             )
         result = predict_image(contents, threshold=threshold, model_path=MODEL_PATH)
+        processing_time_ms = round((time.perf_counter() - start_time) * 1000, 1)
+
+        result["success"] = True
+        result["processing_time_ms"] = processing_time_ms
         return result
     except FileNotFoundError:
         return JSONResponse(

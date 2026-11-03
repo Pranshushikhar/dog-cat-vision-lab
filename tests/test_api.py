@@ -150,3 +150,49 @@ def test_architecture_naming_compatibility():
     assert "model_name" in data
     assert data["model_name"] == data["architecture_name"]
 
+
+def test_api_health_alias():
+    """Verify /health is an operational alias for /api/health."""
+    response = client.get("/health")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "ok"
+    assert "model_loaded" in data
+
+
+def test_api_info():
+    """Verify /api/info returns product identity, tagline and team attribution."""
+    response = client.get("/api/info")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["app_name"] == "PAWVISION AI"
+    assert data["tagline"] == "See the Difference. Let AI Decide."
+    assert "Pranshu Shikhar" in data["team"]
+    assert "cat" in data["classes"] and "dog" in data["classes"]
+
+
+def test_api_model_info():
+    """Verify /api/model-info returns verified evaluation metrics and architecture specs."""
+    response = client.get("/api/model-info")
+    assert response.status_code == 200
+    data = response.json()
+    assert "MobileNetV2" in data["architecture"]
+    assert data["reported_metrics"]["validation_accuracy"] == 98.55
+    assert data["reported_metrics"]["test_holdout_accuracy"] == 99.00
+    assert data["reported_metrics"]["validation_loss"] == 0.0409
+
+
+def test_api_feedback():
+    """Verify /api/feedback receives and validates user feedback submissions."""
+    payload = {
+        "name": "Prof. Evaluator",
+        "email": "evaluator@university.edu",
+        "category": "Model Accuracy",
+        "message": "The MobileNetV2 inference latency and OOD screening are remarkably responsive.",
+        "rating": 5
+    }
+    response = client.post("/api/feedback", json=payload)
+    assert response.status_code == 200
+    assert response.json()["success"] is True
+
+
