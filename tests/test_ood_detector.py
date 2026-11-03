@@ -271,3 +271,4 @@ def test_api_predict_accepted_for_real_dog():
     assert isinstance(data["probabilities"], dict)
     assert "dog" in data["probabilities"]
     assert "cat" in data["probabilities"]
+

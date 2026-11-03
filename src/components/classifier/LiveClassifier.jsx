@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { ArrowRight, RotateCcw, AlertTriangle } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { ArrowRight, RotateCcw, AlertTriangle, History, Clock, Check, Sliders } from 'lucide-react';
 import ImageDropzone from './ImageDropzone';
 import PipelineVisualizer, { PIPELINE_STAGES } from './PipelineVisualizer';
 import InferenceResult from './InferenceResult';
@@ -12,6 +12,7 @@ export default function LiveClassifier({ onOpenConfigModal, initialImage = null 
   const [currentStageIndex, setCurrentStageIndex] = useState(-1);
   const [inferenceResult, setInferenceResult] = useState(null);
   const [activeMode, setActiveMode] = useState(classifierService.getMode());
+  const [sessionHistory, setSessionHistory] = useState([]);
 
   useEffect(() => {
     if (initialImage) {
@@ -26,6 +27,22 @@ export default function LiveClassifier({ onOpenConfigModal, initialImage = null 
       setActiveMode(state.mode);
     });
   }, []);
+
+  // Keyboard shortcut listener (Enter = classify, Esc = clear)
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+      if (e.key === 'Enter' && selectedImage && !isProcessing) {
+        e.preventDefault();
+        handleRunClassification();
+      } else if (e.key === 'Escape' && selectedImage && !isProcessing) {
+        e.preventDefault();
+        handleClearImage();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedImage, isProcessing, confidenceThreshold]);
 
   const handleSelectImage = (img) => {
     setSelectedImage(img);
@@ -52,7 +69,7 @@ export default function LiveClassifier({ onOpenConfigModal, initialImage = null 
         }
         return prev;
       });
-    }, 160);
+    }, 140);
 
     try {
       const targetPayload = selectedImage.file || selectedImage.url;
@@ -63,6 +80,18 @@ export default function LiveClassifier({ onOpenConfigModal, initialImage = null 
       clearInterval(stageInterval);
       setCurrentStageIndex(PIPELINE_STAGES.length - 1);
       setInferenceResult(result);
+
+      // Append to session test history
+      if (result && result.success) {
+        const historyItem = {
+          id: Date.now(),
+          image: selectedImage,
+          result: { ...result },
+          threshold: confidenceThreshold,
+          timeStr: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+        };
+        setSessionHistory((prev) => [historyItem, ...prev.filter((h) => h.image.url !== selectedImage.url).slice(0, 4)]);
+      }
     } catch (err) {
       clearInterval(stageInterval);
       setInferenceResult({
@@ -75,6 +104,14 @@ export default function LiveClassifier({ onOpenConfigModal, initialImage = null 
     }
   };
 
+  const handleRestoreHistoryItem = (item) => {
+    if (isProcessing) return;
+    setSelectedImage(item.image);
+    setInferenceResult(item.result);
+    setConfidenceThreshold(item.threshold || 0.5);
+    setCurrentStageIndex(PIPELINE_STAGES.length - 1);
+  };
+
   const handleSwitchToDemo = () => {
     classifierService.setMode(CLASSIFIER_MODES.DEMO_MODE);
     setActiveMode(CLASSIFIER_MODES.DEMO_MODE);
@@ -84,6 +121,22 @@ export default function LiveClassifier({ onOpenConfigModal, initialImage = null 
       }, 50);
     }
   };
+
+  // Real-time reactive decision boundary re-evaluation
+  const effectiveResult = useMemo(() => {
+    if (!inferenceResult || !inferenceResult.success || !inferenceResult.isSupported || !inferenceResult.rawProbabilities) {
+      return inferenceResult;
+    }
+    const dogP = inferenceResult.rawProbabilities.dog;
+    const catP = inferenceResult.rawProbabilities.cat;
+    const isDog = dogP >= confidenceThreshold;
+    return {
+      ...inferenceResult,
+      prediction: isDog ? 'DOG' : 'CAT',
+      confidence: isDog ? dogP : catP,
+      effectiveThreshold: confidenceThreshold
+    };
+  }, [inferenceResult, confidenceThreshold]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -101,9 +154,10 @@ export default function LiveClassifier({ onOpenConfigModal, initialImage = null 
           padding: '12px 18px'
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-primary)' }}>
-            Threshold: {(confidenceThreshold * 100).toFixed(0)}%
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+          <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-primary)', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+            <Sliders size={13} color="var(--accent-green)" />
+            Decision Threshold: {(confidenceThreshold * 100).toFixed(0)}%
           </span>
           <input
             type="range"
@@ -114,16 +168,21 @@ export default function LiveClassifier({ onOpenConfigModal, initialImage = null 
             onChange={(e) => setConfidenceThreshold(parseFloat(e.target.value))}
             disabled={isProcessing}
             style={{
-              width: '120px',
+              width: '130px',
               accentColor: 'var(--accent-green)',
               cursor: isProcessing ? 'not-allowed' : 'pointer',
               opacity: isProcessing ? 0.6 : 1
             }}
             aria-label="Confidence decision threshold"
           />
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-            (Cat ≤ threshold &lt; Dog)
+          <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)' }}>
+            (Cat &lt; {(confidenceThreshold * 100).toFixed(0)}% ≤ Dog)
           </span>
+          {inferenceResult && inferenceResult.isSupported && (
+            <span style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: 'var(--accent-green)', background: 'var(--accent-sage)', padding: '2px 7px', borderRadius: 'var(--radius-xs)' }}>
+              Live boundary active
+            </span>
+          )}
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -142,7 +201,7 @@ export default function LiveClassifier({ onOpenConfigModal, initialImage = null 
 
       {/* Main Classifier Workspace Grid (Upload Box & Inference Result) */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '20px', alignItems: 'start', width: '100%' }}>
-        {/* Left: Pure White Dropzone Workspace */}
+        {/* Left: Dropzone Workspace */}
         <div className="tech-card" style={{ padding: '20px', background: 'var(--bg-card)', minWidth: 0, width: '100%', boxSizing: 'border-box' }}>
           <ImageDropzone
             selectedImage={selectedImage}
@@ -195,7 +254,7 @@ export default function LiveClassifier({ onOpenConfigModal, initialImage = null 
                 className="btn btn-secondary"
                 onClick={handleClearImage}
                 disabled={isProcessing}
-                title="Clear selected image"
+                title="Clear selected image (Esc)"
                 style={{ padding: '10px' }}
               >
                 <RotateCcw size={15} />
@@ -207,7 +266,8 @@ export default function LiveClassifier({ onOpenConfigModal, initialImage = null 
         {/* Right: Inference Result Panel */}
         <div style={{ minWidth: 0, width: '100%' }}>
           <InferenceResult
-            result={inferenceResult}
+            result={effectiveResult}
+            selectedImage={selectedImage}
             isProcessing={isProcessing}
             hasImage={!!selectedImage}
             onOpenConfig={onOpenConfigModal}
@@ -215,6 +275,95 @@ export default function LiveClassifier({ onOpenConfigModal, initialImage = null 
           />
         </div>
       </div>
+
+      {/* Session Test History / Quick Comparison Tray */}
+      {sessionHistory.length > 0 && (
+        <div className="tech-card" style={{ padding: '16px 20px', background: 'var(--bg-card)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <History size={14} color="var(--accent-green)" />
+              <span style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                Session Test History ({sessionHistory.length})
+              </span>
+            </div>
+            <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+              Click any past specimen to reload & inspect
+            </span>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(170px, 1fr))', gap: '10px' }}>
+            {sessionHistory.map((item) => {
+              const isCurrent = selectedImage?.url === item.image.url;
+              const isUnsupported = !item.result.isSupported;
+              const isDog = item.result.prediction === 'DOG';
+
+              return (
+                <div
+                  key={item.id}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => handleRestoreHistoryItem(item)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    padding: '8px 10px',
+                    borderRadius: 'var(--radius-xs)',
+                    background: isCurrent ? 'var(--accent-sage)' : 'var(--bg-surface)',
+                    border: isCurrent ? '1px solid var(--accent-green)' : '1px solid var(--border-medium)',
+                    cursor: 'pointer',
+                    transition: 'all var(--transition-fast)'
+                  }}
+                >
+                  <img
+                    src={item.image.url}
+                    alt={item.image.name}
+                    style={{
+                      width: '38px',
+                      height: '38px',
+                      borderRadius: '4px',
+                      objectFit: 'cover',
+                      flexShrink: 0,
+                      background: '#EAEBE3'
+                    }}
+                  />
+                  <div style={{ minWidth: 0, flex: 1 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '4px' }}>
+                      <span
+                        style={{
+                          fontSize: '0.72rem',
+                          fontWeight: 700,
+                          color: isUnsupported ? '#8C5212' : 'var(--accent-green)',
+                          fontFamily: 'var(--font-mono)'
+                        }}
+                      >
+                        {item.result.prediction}
+                      </span>
+                      {item.result.confidence && (
+                        <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>
+                          {(item.result.confidence * 100).toFixed(0)}%
+                        </span>
+                      )}
+                    </div>
+                    <div
+                      title={item.image.name}
+                      style={{
+                        fontSize: '0.7rem',
+                        color: 'var(--text-secondary)',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis'
+                      }}
+                    >
+                      {item.image.name}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Pipeline Visualizer (Subtle & Purposeful) */}
       <div className="tech-card" style={{ padding: '20px', background: 'var(--bg-card)' }}>

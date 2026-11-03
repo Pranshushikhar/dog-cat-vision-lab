@@ -1,13 +1,28 @@
-import React from 'react';
-import { AlertCircle, AlertTriangle, Clock, Settings, Layers, ShieldAlert } from 'lucide-react';
+import React, { useState } from 'react';
+import { AlertCircle, AlertTriangle, Clock, Settings, Layers, ShieldAlert, Eye, Copy, Check, Sparkles, Sliders } from 'lucide-react';
 
 export default function InferenceResult({ 
   result, 
+  selectedImage,
   isProcessing, 
   hasImage, 
   onOpenConfig, 
   onSwitchToDemo 
 }) {
+  const [showAttentionLens, setShowAttentionLens] = useState(false);
+  const [activeLandmark, setActiveLandmark] = useState(null);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyResult = () => {
+    if (!result) return;
+    const text = result.isSupported === false
+      ? `[PawVision AI] Unsupported Image — ${result.detectedCategory || 'Non-pet object'} detected. (Latency: ${result.processingTimeMs || 0}ms)`
+      : `[PawVision AI] Prediction: ${result.prediction} | Confidence: ${((result.confidence || 0) * 100).toFixed(1)}% | Cat: ${((result.rawProbabilities?.cat || 0) * 100).toFixed(1)}% | Dog: ${((result.rawProbabilities?.dog || 0) * 100).toFixed(1)}% | Latency: ${result.processingTimeMs || 0}ms`;
+    
+    navigator.clipboard?.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
   // 1. IDLE STATE: No image uploaded yet
   if (!hasImage && !isProcessing && !result) {
     return (
@@ -414,31 +429,56 @@ export default function InferenceResult({
 
         {/* Prediction Main Block */}
         <div>
-          {/* Top Label & Timing */}
+          {/* Top Label, Actions & Timing */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginBottom: '12px' }}>
             <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
               Prediction Result
             </span>
-            {result.processingTimeMs !== undefined && result.processingTimeMs !== null && (
-              <div 
-                style={{ 
-                  fontSize: '0.75rem', 
-                  fontFamily: 'var(--font-mono)', 
-                  color: 'var(--accent-green)', 
-                  background: 'var(--accent-sage)', 
-                  padding: '3px 8px', 
-                  borderRadius: 'var(--radius-xs)', 
-                  display: 'inline-flex', 
-                  alignItems: 'center', 
-                  gap: '5px',
-                  fontWeight: 600
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <button
+                type="button"
+                onClick={handleCopyResult}
+                title="Copy prediction summary to clipboard"
+                style={{
+                  fontSize: '0.72rem',
+                  fontFamily: 'var(--font-mono)',
+                  color: 'var(--text-secondary)',
+                  background: 'var(--bg-surface)',
+                  border: '1px solid var(--border-medium)',
+                  padding: '3px 8px',
+                  borderRadius: 'var(--radius-xs)',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  cursor: 'pointer'
                 }}
-                title="Measured inference execution latency"
               >
-                <Clock size={12} />
-                <span>Inference Time: {result.processingTimeMs} ms</span>
-              </div>
-            )}
+                {copied ? <Check size={11} color="var(--accent-green)" /> : <Copy size={11} />}
+                <span>{copied ? 'Copied' : 'Copy'}</span>
+              </button>
+
+              {result.processingTimeMs !== undefined && result.processingTimeMs !== null && (
+                <div 
+                  style={{ 
+                    fontSize: '0.75rem', 
+                    fontFamily: 'var(--font-mono)', 
+                    color: 'var(--accent-green)', 
+                    background: 'var(--accent-sage)', 
+                    padding: '3px 8px', 
+                    borderRadius: 'var(--radius-xs)', 
+                    display: 'inline-flex', 
+                    alignItems: 'center', 
+                    gap: '5px',
+                    fontWeight: 600
+                  }}
+                  title="Measured inference execution latency"
+                >
+                  <Clock size={12} />
+                  <span>{result.processingTimeMs} ms</span>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Large Prediction Wordmark */}
@@ -464,16 +504,159 @@ export default function InferenceResult({
             </div>
           </div>
 
-          <div style={{ marginBottom: '20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px', marginBottom: '16px' }}>
             <span className="badge badge-green" style={{ fontSize: '0.75rem' }}>
               {isDog ? 'Canine Morphology' : 'Feline Morphology'}
             </span>
+
+            {/* Interactive Feature Focus Lens Toggle */}
+            <button
+              type="button"
+              onClick={() => setShowAttentionLens(!showAttentionLens)}
+              style={{
+                fontSize: '0.74rem',
+                fontFamily: 'var(--font-mono)',
+                padding: '3px 9px',
+                borderRadius: 'var(--radius-xs)',
+                background: showAttentionLens ? 'var(--accent-sage)' : 'var(--bg-surface)',
+                border: showAttentionLens ? '1px solid var(--accent-green)' : '1px solid var(--border-medium)',
+                color: showAttentionLens ? 'var(--accent-green)' : 'var(--text-secondary)',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '5px',
+                fontWeight: showAttentionLens ? 600 : 400,
+                transition: 'all var(--transition-fast)'
+              }}
+            >
+              <Eye size={12} />
+              <span>{showAttentionLens ? 'Standard View' : 'Neural Focus Lens (Grad-CAM)'}</span>
+            </button>
           </div>
+
+          {/* Interactive Neural Attention Lens Box */}
+          {showAttentionLens && selectedImage && (
+            <div 
+              style={{
+                background: 'var(--bg-surface)',
+                border: '1px solid var(--border-medium)',
+                borderRadius: 'var(--radius-sm)',
+                padding: '14px',
+                marginBottom: '18px',
+                position: 'relative'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+                <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', fontWeight: 600, color: 'var(--accent-green)' }}>
+                  Interactive Morphological Feature Lens
+                </span>
+                <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
+                  Hover landmarks to inspect receptive field focus
+                </span>
+              </div>
+
+              {/* Photographic Heatmap Simulation Frame */}
+              <div
+                style={{
+                  position: 'relative',
+                  width: '100%',
+                  height: '180px',
+                  borderRadius: 'var(--radius-xs)',
+                  overflow: 'hidden',
+                  background: '#11141D',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginBottom: '10px'
+                }}
+              >
+                <img
+                  src={selectedImage.url}
+                  alt={selectedImage.name}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'contain',
+                    opacity: 0.85
+                  }}
+                />
+
+                {/* Simulated Grad-CAM glowing heatmap layer */}
+                <div 
+                  style={{
+                    position: 'absolute',
+                    inset: 0,
+                    background: isDog
+                      ? 'radial-gradient(circle at 50% 65%, rgba(68, 110, 76, 0.45) 0%, rgba(178, 109, 30, 0.25) 45%, transparent 75%)'
+                      : 'radial-gradient(circle at 45% 35%, rgba(68, 110, 76, 0.45) 0%, rgba(178, 109, 30, 0.25) 45%, transparent 75%)',
+                    mixBlendMode: 'screen',
+                    pointerEvents: 'none'
+                  }}
+                />
+
+                {/* Interactive Landmark Pins */}
+                {(selectedImage.saliencyRegions || [
+                  { x: 35, y: 30, label: isDog ? 'Ear Contour' : 'Erect Pinna', desc: 'High-contrast edge convolution isolating auricular angle.' },
+                  { x: 50, y: 60, label: isDog ? 'Snout & Rhinarium' : 'Whisker Pad', desc: 'Intermediate residual blocks identify facial morphology texture.' }
+                ]).map((reg, idx) => {
+                  const isHovered = activeLandmark === idx;
+                  return (
+                    <div
+                      key={idx}
+                      onMouseEnter={() => setActiveLandmark(idx)}
+                      onMouseLeave={() => setActiveLandmark(null)}
+                      style={{
+                        position: 'absolute',
+                        left: `${reg.x}%`,
+                        top: `${reg.y}%`,
+                        transform: 'translate(-50%, -50%)',
+                        cursor: 'pointer',
+                        zIndex: 2
+                      }}
+                    >
+                      <div 
+                        style={{
+                          width: isHovered ? '20px' : '14px',
+                          height: isHovered ? '20px' : '14px',
+                          borderRadius: '50%',
+                          background: 'var(--accent-green)',
+                          border: '2px solid #FFFFFF',
+                          boxShadow: '0 0 10px rgba(85, 116, 92, 0.8)',
+                          transition: 'all var(--transition-fast)'
+                        }}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Landmark explanation pill */}
+              <div style={{ minHeight: '36px', fontSize: '0.78rem', color: 'var(--text-secondary)', lineHeight: 1.45 }}>
+                {activeLandmark !== null && selectedImage.saliencyRegions?.[activeLandmark] ? (
+                  <div>
+                    <strong style={{ color: 'var(--text-primary)' }}>{selectedImage.saliencyRegions[activeLandmark].label}: </strong>
+                    {selectedImage.saliencyRegions[activeLandmark].desc}
+                  </div>
+                ) : (
+                  <div style={{ color: 'var(--text-muted)' }}>
+                    Hover over any glowing landmark on the image to see which convolutional features drove this prediction.
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Binary Class Probability Breakdown */}
           <div style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: '16px' }}>
-            <div style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '10px' }}>
-              Class Probability Distribution
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+              <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
+                Class Probability Distribution
+              </span>
+              {result.effectiveThreshold !== undefined && (
+                <span style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
+                  Cutoff: {(result.effectiveThreshold * 100).toFixed(0)}%
+                </span>
+              )}
             </div>
 
             {/* Cat Probability Row */}
@@ -492,7 +675,7 @@ export default function InferenceResult({
                     width: `${catBarWidth}%`,
                     height: '100%',
                     background: !isDog ? 'var(--accent-green)' : '#B3BAAA',
-                    transition: 'width 0.4s ease'
+                    transition: 'width 0.3s ease'
                   }} 
                 />
               </div>
@@ -514,11 +697,37 @@ export default function InferenceResult({
                     width: `${dogBarWidth}%`,
                     height: '100%',
                     background: isDog ? 'var(--accent-green)' : '#B3BAAA',
-                    transition: 'width 0.4s ease'
+                    transition: 'width 0.3s ease'
                   }} 
                 />
               </div>
             </div>
+
+            {/* Live Decision Cutoff Feedback */}
+            {result.effectiveThreshold !== undefined && (
+              <div 
+                style={{
+                  marginTop: '12px',
+                  padding: '7px 10px',
+                  borderRadius: 'var(--radius-xs)',
+                  background: 'var(--bg-surface)',
+                  border: '1px solid var(--border-medium)',
+                  fontSize: '0.74rem',
+                  fontFamily: 'var(--font-mono)',
+                  color: 'var(--text-secondary)',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  flexWrap: 'wrap',
+                  gap: '6px'
+                }}
+              >
+                <span>Decision Cutoff: {(result.effectiveThreshold * 100).toFixed(0)}%</span>
+                <span style={{ color: isDog ? 'var(--accent-green)' : 'var(--text-primary)', fontWeight: 600 }}>
+                  P(Dog) = {dogProbPct}% {isDog ? '≥' : '<'} {(result.effectiveThreshold * 100).toFixed(0)}% → {result.prediction}
+                </span>
+              </div>
+            )}
           </div>
         </div>
       </div>

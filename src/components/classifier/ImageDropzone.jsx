@@ -1,10 +1,27 @@
-import React, { useRef, useState } from 'react';
-import { UploadCloud, Image as ImageIcon, X } from 'lucide-react';
+import React, { useRef, useState, useEffect } from 'react';
+import { UploadCloud, Image as ImageIcon, X, Clipboard, Sparkles, Filter } from 'lucide-react';
 import { SAMPLE_IMAGES } from '../../services/sampleData';
 
 export default function ImageDropzone({ selectedImage, onSelectImage, onClearImage, isProcessing }) {
   const [isDragOver, setIsDragOver] = useState(false);
+  const [activeCategory, setActiveCategory] = useState('all');
   const fileInputRef = useRef(null);
+
+  // Global Clipboard Paste Support (Ctrl + V to paste any screenshot or image)
+  useEffect(() => {
+    const handlePaste = (e) => {
+      if (isProcessing) return;
+      if (e.clipboardData && e.clipboardData.files && e.clipboardData.files.length > 0) {
+        const file = e.clipboardData.files[0];
+        if (file.type.startsWith('image/')) {
+          e.preventDefault();
+          processFile(file);
+        }
+      }
+    };
+    window.addEventListener('paste', handlePaste);
+    return () => window.removeEventListener('paste', handlePaste);
+  }, [isProcessing]);
 
   const handleDragOver = (e) => {
     e.preventDefault();
@@ -56,14 +73,21 @@ export default function ImageDropzone({ selectedImage, onSelectImage, onClearIma
     onSelectImage({
       file: null,
       name: sample.name,
-      size: 'Benchmark Sample',
+      size: 'Benchmark Specimen',
       type: 'image/jpeg',
       url: sample.url,
       isSample: true,
       species: sample.species,
-      sampleClass: sample.class
+      sampleClass: sample.class,
+      category: sample.category,
+      keyFeatures: sample.keyFeatures,
+      saliencyRegions: sample.saliencyRegions
     });
   };
+
+  const filteredSamples = activeCategory === 'all'
+    ? SAMPLE_IMAGES
+    : SAMPLE_IMAGES.filter((s) => s.category === activeCategory);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -85,7 +109,7 @@ export default function ImageDropzone({ selectedImage, onSelectImage, onClearIma
             : selectedImage
             ? 'var(--bg-card)'
             : 'var(--bg-surface)',
-          padding: selectedImage ? '14px' : '36px 20px',
+          padding: selectedImage ? '14px' : '32px 20px',
           textAlign: 'center',
           cursor: selectedImage ? 'default' : 'pointer',
           transition: 'all var(--transition-fast)',
@@ -107,7 +131,37 @@ export default function ImageDropzone({ selectedImage, onSelectImage, onClearIma
         />
 
         {selectedImage ? (
-          <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
+            {/* Quick Clear Action Button */}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                if (onClearImage) onClearImage();
+              }}
+              disabled={isProcessing}
+              title="Remove this image"
+              style={{
+                position: 'absolute',
+                top: '-4px',
+                right: '4px',
+                background: 'var(--bg-surface)',
+                border: '1px solid var(--border-medium)',
+                borderRadius: '50%',
+                width: '28px',
+                height: '28px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'var(--text-muted)',
+                cursor: isProcessing ? 'not-allowed' : 'pointer',
+                zIndex: 10,
+                transition: 'all var(--transition-fast)'
+              }}
+            >
+              <X size={14} />
+            </button>
+
             {/* Clean Photographic Preview Box */}
             <div
               style={{
@@ -154,7 +208,7 @@ export default function ImageDropzone({ selectedImage, onSelectImage, onClearIma
               >
                 {selectedImage.name}
               </div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '2px' }}>
                 {selectedImage.size} • Standardized to 224 × 224 RGB
               </div>
             </div>
@@ -163,8 +217,8 @@ export default function ImageDropzone({ selectedImage, onSelectImage, onClearIma
           <div>
             <div 
               style={{
-                width: '44px',
-                height: '44px',
+                width: '46px',
+                height: '46px',
                 borderRadius: '50%',
                 background: 'var(--bg-card)',
                 border: '1px solid var(--border-medium)',
@@ -175,53 +229,128 @@ export default function ImageDropzone({ selectedImage, onSelectImage, onClearIma
                 color: 'var(--accent-green)'
               }}
             >
-              <UploadCloud size={20} />
+              <UploadCloud size={22} />
             </div>
 
-            <div style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '4px' }}>
-              Drag and drop an image here, or click to browse
+            <div style={{ fontSize: '0.92rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '4px' }}>
+              Drop an image here, or click to browse
             </div>
-            <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+            <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '12px' }}>
               Supports JPG, PNG, and WebP (minimum 10 × 10 px)
+            </div>
+
+            {/* Quick Interactive Shortcut Hints */}
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+              <span 
+                style={{
+                  fontSize: '0.7rem',
+                  fontFamily: 'var(--font-mono)',
+                  color: 'var(--text-muted)',
+                  background: 'var(--bg-card)',
+                  border: '1px solid var(--border-medium)',
+                  padding: '3px 8px',
+                  borderRadius: 'var(--radius-xs)',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '4px'
+                }}
+              >
+                <Clipboard size={11} />
+                <span>Ctrl + V to paste</span>
+              </span>
+              <span 
+                style={{
+                  fontSize: '0.7rem',
+                  fontFamily: 'var(--font-mono)',
+                  color: 'var(--text-muted)',
+                  background: 'var(--bg-card)',
+                  border: '1px solid var(--border-medium)',
+                  padding: '3px 8px',
+                  borderRadius: 'var(--radius-xs)'
+                }}
+              >
+                Drag & Drop
+              </span>
             </div>
           </div>
         )}
       </div>
 
-      {/* Preset Real Benchmark Specimen Selector */}
+      {/* Preset Benchmark Specimen Selector with Interactive Filter Tabs */}
       <div>
-        <div style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '8px' }}>
-          Or test with a benchmark specimen:
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px', flexWrap: 'wrap', gap: '6px' }}>
+          <div style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
+            Benchmark Test Library:
+          </div>
+
+          {/* Category Filter Tabs */}
+          <div style={{ display: 'flex', gap: '4px' }}>
+            {[
+              { id: 'all', label: 'All (7)' },
+              { id: 'cat', label: '🐱 Cats' },
+              { id: 'dog', label: '🐶 Dogs' },
+              { id: 'unsupported', label: '🚫 Non-Pet' }
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActiveCategory(tab.id)}
+                style={{
+                  fontSize: '0.7rem',
+                  fontFamily: 'var(--font-mono)',
+                  padding: '2px 7px',
+                  borderRadius: 'var(--radius-xs)',
+                  background: activeCategory === tab.id ? 'var(--accent-sage)' : 'transparent',
+                  color: activeCategory === tab.id ? 'var(--accent-green)' : 'var(--text-muted)',
+                  border: activeCategory === tab.id ? '1px solid var(--accent-green)' : '1px solid transparent',
+                  cursor: 'pointer',
+                  fontWeight: activeCategory === tab.id ? 600 : 400,
+                  transition: 'all var(--transition-fast)'
+                }}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
-          {SAMPLE_IMAGES.map((sample) => {
+        {/* Specimen Buttons Grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(76px, 1fr))', gap: '8px' }}>
+          {filteredSamples.map((sample) => {
             const isSelected = selectedImage?.url === sample.url;
+            const isOod = sample.category === 'unsupported';
+
             return (
               <button
                 key={sample.id}
                 type="button"
                 onClick={() => handleSelectSample(sample)}
                 disabled={isProcessing}
+                title={`${sample.name} (${sample.species})`}
                 style={{
                   background: isSelected ? 'var(--accent-sage)' : 'var(--bg-card)',
-                  border: isSelected ? '1px solid var(--accent-green)' : '1px solid var(--border-medium)',
+                  border: isSelected 
+                    ? '1.5px solid var(--accent-green)' 
+                    : isOod 
+                    ? '1px dashed rgba(178, 109, 30, 0.4)' 
+                    : '1px solid var(--border-medium)',
                   borderRadius: 'var(--radius-sm)',
-                  padding: '6px',
+                  padding: '5px',
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center',
-                  gap: '6px',
+                  gap: '4px',
                   cursor: isProcessing ? 'not-allowed' : 'pointer',
                   transition: 'all var(--transition-fast)',
                   textAlign: 'center',
-                  minWidth: 0
+                  minWidth: 0,
+                  position: 'relative'
                 }}
               >
                 <div 
                   style={{ 
                     width: '100%', 
-                    height: '52px', 
+                    height: '48px', 
                     borderRadius: 'var(--radius-xs)', 
                     overflow: 'hidden', 
                     background: '#EAEBE3' 
@@ -234,11 +363,10 @@ export default function ImageDropzone({ selectedImage, onSelectImage, onClearIma
                   />
                 </div>
                 <div 
-                  title={sample.name}
                   style={{ 
-                    fontSize: '0.72rem', 
+                    fontSize: '0.68rem', 
                     fontWeight: 600, 
-                    color: 'var(--text-primary)', 
+                    color: isOod ? '#8C5212' : 'var(--text-primary)', 
                     lineHeight: 1.2,
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
