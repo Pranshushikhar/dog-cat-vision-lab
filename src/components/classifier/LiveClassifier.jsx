@@ -156,31 +156,36 @@ export default function LiveClassifier({ onOpenConfigModal, initialImage = null 
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
           <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-primary)', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-            <Sliders size={13} color="var(--accent-green)" />
-            Decision Threshold: {(confidenceThreshold * 100).toFixed(0)}%
+            <span className="hover-wiggle">🐾</span>
+            <span>Threshold: {(confidenceThreshold * 100).toFixed(0)}%</span>
           </span>
-          <input
-            type="range"
-            min="0.1"
-            max="0.9"
-            step="0.05"
-            value={confidenceThreshold}
-            onChange={(e) => setConfidenceThreshold(parseFloat(e.target.value))}
-            disabled={isProcessing}
-            style={{
-              width: '130px',
-              accentColor: 'var(--accent-green)',
-              cursor: isProcessing ? 'not-allowed' : 'pointer',
-              opacity: isProcessing ? 0.6 : 1
-            }}
-            aria-label="Confidence decision threshold"
-          />
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+            <span style={{ fontSize: '0.78rem' }} title="Feline boundary">🐱</span>
+            <input
+              type="range"
+              min="0.1"
+              max="0.9"
+              step="0.05"
+              value={confidenceThreshold}
+              onChange={(e) => setConfidenceThreshold(parseFloat(e.target.value))}
+              disabled={isProcessing}
+              style={{
+                width: '120px',
+                accentColor: 'var(--accent-green)',
+                cursor: isProcessing ? 'not-allowed' : 'pointer',
+                opacity: isProcessing ? 0.6 : 1
+              }}
+              aria-label="Confidence decision threshold"
+            />
+            <span style={{ fontSize: '0.78rem' }} title="Canine boundary">🐶</span>
+          </div>
           <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)' }}>
             (Cat &lt; {(confidenceThreshold * 100).toFixed(0)}% ≤ Dog)
           </span>
           {inferenceResult && inferenceResult.isSupported && (
-            <span style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: 'var(--accent-green)', background: 'var(--accent-sage)', padding: '2px 7px', borderRadius: 'var(--radius-xs)' }}>
-              Live boundary active
+            <span style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: 'var(--accent-green)', background: 'var(--accent-sage)', padding: '2px 8px', borderRadius: 'var(--radius-pill)', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+              <span className="pulse-dot success" style={{ width: '5px', height: '5px' }} />
+              <span>Live boundary</span>
             </span>
           )}
         </div>
@@ -227,19 +232,8 @@ export default function LiveClassifier({ onOpenConfigModal, initialImage = null 
               >
                 {isProcessing ? (
                   <>
-                    <span 
-                      className="animate-spin" 
-                      style={{ 
-                        width: '14px', 
-                        height: '14px', 
-                        borderRadius: '50%', 
-                        border: '2px solid rgba(255, 255, 255, 0.35)', 
-                        borderTopColor: '#FFFFFF',
-                        display: 'inline-block',
-                        flexShrink: 0
-                      }} 
-                    />
-                    <span>Analyzing Features...</span>
+                    <span className="animate-spin" style={{ display: 'inline-block', fontSize: '1rem' }}>🐾</span>
+                    <span>Sniffing Features...</span>
                   </>
                 ) : (
                   <>

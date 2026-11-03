@@ -171,7 +171,7 @@ export default function ImageDropzone({ selectedImage, onSelectImage, onClearIma
                 height: '210px',
                 borderRadius: 'var(--radius-xs)',
                 overflow: 'hidden',
-                background: '#EAEBE3',
+                background: 'var(--bg-surface)',
                 border: '1px solid var(--border-medium)',
                 display: 'flex',
                 alignItems: 'center',
@@ -187,6 +187,8 @@ export default function ImageDropzone({ selectedImage, onSelectImage, onClearIma
                   objectFit: 'contain'
                 }}
               />
+              {/* Cute Scanning Laser Bar while CNN inference is running */}
+              {isProcessing && <div className="animate-cute-scan" />}
             </div>
 
             {/* Specimen File Information */}
@@ -208,8 +210,9 @@ export default function ImageDropzone({ selectedImage, onSelectImage, onClearIma
               >
                 {selectedImage.name}
               </div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '2px' }}>
-                {selectedImage.size} • Standardized to 224 × 224 RGB
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px' }}>
+                <span className="hover-wiggle">🐾</span>
+                <span>{selectedImage.size} • 224 × 224 RGB Tensor</span>
               </div>
             </div>
           </div>
@@ -217,26 +220,27 @@ export default function ImageDropzone({ selectedImage, onSelectImage, onClearIma
           <div>
             <div 
               style={{
-                width: '46px',
-                height: '46px',
+                width: '52px',
+                height: '52px',
                 borderRadius: '50%',
-                background: 'var(--bg-card)',
-                border: '1px solid var(--border-medium)',
+                background: 'var(--accent-sage)',
+                border: '1px solid rgba(85, 116, 92, 0.35)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 margin: '0 auto 12px auto',
-                color: 'var(--accent-green)'
+                fontSize: '1.4rem'
               }}
+              className="animate-bounce-cute"
             >
-              <UploadCloud size={22} />
+              🐾
             </div>
 
-            <div style={{ fontSize: '0.92rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '4px' }}>
-              Drop an image here, or click to browse
+            <div style={{ fontSize: '0.94rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '4px' }}>
+              Drop your furry friend's photograph here, or click to browse
             </div>
             <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '12px' }}>
-              Supports JPG, PNG, and WebP (minimum 10 × 10 px)
+              Supports cat and dog photos (JPG, PNG, WebP · standardized to 224 × 224 RGB)
             </div>
 
             {/* Quick Interactive Shortcut Hints */}
@@ -327,6 +331,7 @@ export default function ImageDropzone({ selectedImage, onSelectImage, onClearIma
                 onClick={() => handleSelectSample(sample)}
                 disabled={isProcessing}
                 title={`${sample.name} (${sample.species})`}
+                className="specimen-card"
                 style={{
                   background: isSelected ? 'var(--accent-sage)' : 'var(--bg-card)',
                   border: isSelected 
@@ -341,7 +346,6 @@ export default function ImageDropzone({ selectedImage, onSelectImage, onClearIma
                   alignItems: 'center',
                   gap: '4px',
                   cursor: isProcessing ? 'not-allowed' : 'pointer',
-                  transition: 'all var(--transition-fast)',
                   textAlign: 'center',
                   minWidth: 0,
                   position: 'relative'
@@ -353,7 +357,7 @@ export default function ImageDropzone({ selectedImage, onSelectImage, onClearIma
                     height: '48px', 
                     borderRadius: 'var(--radius-xs)', 
                     overflow: 'hidden', 
-                    background: '#EAEBE3' 
+                    background: 'var(--bg-surface)' 
                   }}
                 >
                   <img

@@ -11,7 +11,7 @@
   padding: 10px 18px;
   border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
   border: 1px solid transparent;
   text-decoration: none;
   white-space: nowrap;
@@ -34,13 +34,13 @@
 .btn-primary:hover {
   background: var(--accent-green-hover);
   color: #FFFFFF;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(37, 40, 33, 0.12);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 4px 12px rgba(85, 116, 92, 0.25);
 }
 
 .btn-primary:active {
   background: var(--accent-green-active);
-  transform: translateY(0);
+  transform: translateY(0) scale(0.98);
 }
 
 .btn-secondary {
@@ -54,6 +54,12 @@
   background: var(--bg-surface);
   border-color: var(--border-strong);
   color: var(--text-primary);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 3px 8px rgba(37, 40, 33, 0.08);
+}
+
+.btn-secondary:active {
+  transform: translateY(0) scale(0.98);
 }
 
 .btn-ghost {
@@ -303,4 +309,93 @@
     word-break: normal;
     overflow-wrap: break-word;
   }
+}
+
+/* Cute Specimen Cards & Micro-interactions */
+.specimen-card {
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.specimen-card:hover {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 10px 24px rgba(85, 116, 92, 0.12), 0 2px 6px rgba(37, 40, 33, 0.04);
+  border-color: var(--accent-green) !important;
+}
+
+.specimen-card img {
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.specimen-card:hover img {
+  transform: scale(1.06);
+}
+
+/* Cute Navbar Brand Paw Badge */
+.brand-paw-badge {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--accent-sage);
+  border: 1px solid rgba(85, 116, 92, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.05rem;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(85, 116, 92, 0.15);
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
+}
+
+.brand-paw-badge:hover {
+  transform: scale(1.18) rotate(12deg);
+  box-shadow: 0 4px 14px rgba(85, 116, 92, 0.3);
+}
+
+/* Cute Decorative Floating Paws in Background */
+.floating-paw-bg {
+  position: absolute;
+  pointer-events: none;
+  user-select: none;
+  font-size: 2.4rem;
+  opacity: 0.12;
+  filter: blur(0.3px);
+  z-index: 0;
+}
+
+/* Landmark Pin Interactive Hover */
+.landmark-pin {
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.landmark-pin:hover {
+  transform: translate(-50%, -50%) scale(1.15) !important;
+  background: var(--accent-green) !important;
+  box-shadow: 0 4px 12px rgba(85, 116, 92, 0.4);
+}
+
+/* Cute Pet Button */
+.btn-pet {
+  background: #FFF4E8;
+  border: 1px solid rgba(178, 109, 30, 0.3);
+  color: #8C5212;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.btn-pet:hover {
+  background: #FFE8CC;
+  transform: scale(1.08);
+  box-shadow: 0 3px 10px rgba(178, 109, 30, 0.25);
+}
+
+.btn-pet:active {
+  transform: scale(0.95);
 }

@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { ArrowRight, Check, Copy, ShieldCheck, Cpu, Database, Award, Info } from 'lucide-react';
+import { ArrowRight, Check, Copy, ShieldCheck, Cpu, Database, Award, Info, Heart, Sparkles } from 'lucide-react';
 import { SAMPLE_IMAGES } from '../services/sampleData';
 
 export default function HomeTab({ onNavigate, onSelectSpecimen }) {
   const [activeHeroSpecimen, setActiveHeroSpecimen] = useState('cat');
   const [copiedCitation, setCopiedCitation] = useState(false);
+  const [petsGiven, setPetsGiven] = useState(18);
+  const [floatingPaws, setFloatingPaws] = useState([]);
 
   const handleSelectSample = (sample) => {
     if (onSelectSpecimen) {
@@ -16,6 +18,23 @@ export default function HomeTab({ onNavigate, onSelectSpecimen }) {
   const sampleCat = SAMPLE_IMAGES.find((s) => s.id === 'cat-01') || SAMPLE_IMAGES[2];
   const sampleDog = SAMPLE_IMAGES.find((s) => s.id === 'dog-02') || SAMPLE_IMAGES[1];
   const currentHeroSpecimen = activeHeroSpecimen === 'cat' ? sampleCat : sampleDog;
+
+  const handleGivePet = (e) => {
+    e.stopPropagation();
+    setPetsGiven((p) => p + 1);
+    const newPaw = {
+      id: Date.now() + Math.random(),
+      x: 50 + (Math.random() * 26 - 13),
+      y: 40 + (Math.random() * 16 - 8),
+      emoji: activeHeroSpecimen === 'cat' 
+        ? (Math.random() > 0.4 ? '🐾' : '🐱') 
+        : (Math.random() > 0.4 ? '🐾' : '🐶')
+    };
+    setFloatingPaws((prev) => [...prev.slice(-6), newPaw]);
+    setTimeout(() => {
+      setFloatingPaws((prev) => prev.filter((p) => p.id !== newPaw.id));
+    }, 1000);
+  };
 
   const bibtexText = `@article{shikhar2024pawvision,
   title={PawVision AI: Canine and Feline Morphological Feature Discrimination Using Inverted Residual Convolutions},
@@ -32,9 +51,17 @@ export default function HomeTab({ onNavigate, onSelectSpecimen }) {
   };
 
   return (
-    <div className="tab-pane-container">
-      <div className="container">
-        {/* Balanced Two-Column Hero Showcase — Eliminates Empty Blank Space */}
+    <div className="tab-pane-container" style={{ position: 'relative', overflow: 'hidden' }}>
+      {/* Playful Floating Background Paws */}
+      <div className="floating-paw-bg animate-float-slow" style={{ top: '24px', right: '3%', transform: 'rotate(16deg)' }}>
+        🐾
+      </div>
+      <div className="floating-paw-bg animate-float-opposite" style={{ top: '380px', left: '1.5%', fontSize: '1.9rem', opacity: 0.09, transform: 'rotate(-20deg)' }}>
+        🐾
+      </div>
+
+      <div className="container" style={{ position: 'relative', zIndex: 1 }}>
+        {/* Balanced Two-Column Hero Showcase */}
         <div 
           style={{
             display: 'grid',
@@ -49,8 +76,9 @@ export default function HomeTab({ onNavigate, onSelectSpecimen }) {
           {/* Left Column: Problem Statement & Actions */}
           <div>
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
-              <span className="section-eyebrow">
-                PawVision AI Lab
+              <span className="section-eyebrow" style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+                <span className="animate-wiggle" style={{ display: 'inline-block' }}>🐾</span>
+                <span>PawVision AI Lab</span>
               </span>
               <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
                 Kaggle Dogs vs Cats Benchmark
@@ -106,15 +134,17 @@ export default function HomeTab({ onNavigate, onSelectSpecimen }) {
                 style={{ 
                   display: 'inline-flex', 
                   alignItems: 'center', 
-                  gap: '5px', 
+                  gap: '6px', 
                   fontSize: '0.74rem', 
                   fontFamily: 'var(--font-mono)', 
                   background: 'var(--bg-surface)', 
                   border: '1px solid var(--border-medium)', 
-                  padding: '4px 8px', 
+                  padding: '4px 9px', 
                   borderRadius: 'var(--radius-xs)', 
-                  color: 'var(--text-secondary)' 
+                  color: 'var(--text-secondary)',
+                  transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)'
                 }}
+                className="hover-spring"
               >
                 <Database size={12} color="var(--accent-green)" />
                 <span>20,000 Kaggle Images</span>
@@ -124,16 +154,18 @@ export default function HomeTab({ onNavigate, onSelectSpecimen }) {
                 style={{ 
                   display: 'inline-flex', 
                   alignItems: 'center', 
-                  gap: '5px', 
+                  gap: '6px', 
                   fontSize: '0.74rem', 
                   fontFamily: 'var(--font-mono)', 
                   background: 'var(--accent-sage)', 
                   border: '1px solid rgba(85, 116, 92, 0.3)', 
-                  padding: '4px 8px', 
+                  padding: '4px 9px', 
                   borderRadius: 'var(--radius-xs)', 
                   color: '#314E38',
-                  fontWeight: 600
+                  fontWeight: 600,
+                  transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)'
                 }}
+                className="hover-spring"
               >
                 <Award size={12} color="var(--accent-green)" />
                 <span>98.55% Validation Accuracy</span>
@@ -143,15 +175,17 @@ export default function HomeTab({ onNavigate, onSelectSpecimen }) {
                 style={{ 
                   display: 'inline-flex', 
                   alignItems: 'center', 
-                  gap: '5px', 
+                  gap: '6px', 
                   fontSize: '0.74rem', 
                   fontFamily: 'var(--font-mono)', 
                   background: 'var(--bg-surface)', 
                   border: '1px solid var(--border-medium)', 
-                  padding: '4px 8px', 
+                  padding: '4px 9px', 
                   borderRadius: 'var(--radius-xs)', 
-                  color: 'var(--text-secondary)' 
+                  color: 'var(--text-secondary)',
+                  transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)'
                 }}
+                className="hover-spring"
               >
                 <Cpu size={12} color="var(--accent-green)" />
                 <span>MobileNetV2 (2.26M Params)</span>
@@ -161,15 +195,17 @@ export default function HomeTab({ onNavigate, onSelectSpecimen }) {
                 style={{ 
                   display: 'inline-flex', 
                   alignItems: 'center', 
-                  gap: '5px', 
+                  gap: '6px', 
                   fontSize: '0.74rem', 
                   fontFamily: 'var(--font-mono)', 
                   background: 'var(--bg-surface)', 
                   border: '1px solid var(--border-medium)', 
-                  padding: '4px 8px', 
+                  padding: '4px 9px', 
                   borderRadius: 'var(--radius-xs)', 
-                  color: 'var(--text-secondary)' 
+                  color: 'var(--text-secondary)',
+                  transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)'
                 }}
+                className="hover-spring"
               >
                 <ShieldCheck size={12} color="var(--accent-green)" />
                 <span>ImageNet OOD Screening</span>
@@ -177,63 +213,75 @@ export default function HomeTab({ onNavigate, onSelectSpecimen }) {
             </div>
           </div>
 
-          {/* Right Column: Interactive Live Specimen Inspector — Cures Blank Space */}
+          {/* Right Column: Interactive Cute Specimen Inspector */}
           <div 
             className="tech-card" 
             style={{ 
               padding: '18px', 
               background: 'var(--bg-card)', 
               boxShadow: 'var(--shadow-md)',
-              border: '1px solid var(--border-medium)'
+              border: '1px solid var(--border-medium)',
+              position: 'relative'
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-              <div style={{ fontSize: '0.74rem', fontFamily: 'var(--font-mono)', color: 'var(--accent-green)', fontWeight: 600, textTransform: 'uppercase' }}>
-                Morphological Specimen Focus
+              <div style={{ fontSize: '0.74rem', fontFamily: 'var(--font-mono)', color: 'var(--accent-green)', fontWeight: 600, textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                <span className="hover-wiggle">🐾</span>
+                <span>Morphological Specimen Focus</span>
               </div>
               
-              {/* Cat vs Dog Toggle Pill */}
-              <div style={{ display: 'flex', background: 'var(--bg-surface)', padding: '2px', borderRadius: 'var(--radius-xs)', border: '1px solid var(--border-subtle)' }}>
+              {/* Cute Cat vs Dog Animated Toggle Pill */}
+              <div style={{ display: 'flex', background: 'var(--bg-surface)', padding: '3px', borderRadius: 'var(--radius-pill)', border: '1px solid var(--border-subtle)' }}>
                 <button
                   type="button"
                   onClick={() => setActiveHeroSpecimen('cat')}
                   style={{
-                    padding: '3px 8px',
-                    fontSize: '0.72rem',
+                    padding: '4px 10px',
+                    fontSize: '0.74rem',
                     fontFamily: 'var(--font-mono)',
-                    borderRadius: '2px',
+                    borderRadius: 'var(--radius-pill)',
                     border: 'none',
                     background: activeHeroSpecimen === 'cat' ? 'var(--bg-card)' : 'transparent',
                     color: activeHeroSpecimen === 'cat' ? 'var(--text-primary)' : 'var(--text-muted)',
-                    fontWeight: activeHeroSpecimen === 'cat' ? 600 : 400,
+                    fontWeight: activeHeroSpecimen === 'cat' ? 700 : 500,
                     cursor: 'pointer',
-                    boxShadow: activeHeroSpecimen === 'cat' ? '0 1px 2px rgba(0,0,0,0.05)' : 'none'
+                    boxShadow: activeHeroSpecimen === 'cat' ? '0 2px 4px rgba(0,0,0,0.06)' : 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    transition: 'all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1)'
                   }}
                 >
-                  Feline
+                  <span className={activeHeroSpecimen === 'cat' ? 'animate-bounce-cute' : ''}>🐱</span>
+                  <span>Feline</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setActiveHeroSpecimen('dog')}
                   style={{
-                    padding: '3px 8px',
-                    fontSize: '0.72rem',
+                    padding: '4px 10px',
+                    fontSize: '0.74rem',
                     fontFamily: 'var(--font-mono)',
-                    borderRadius: '2px',
+                    borderRadius: 'var(--radius-pill)',
                     border: 'none',
                     background: activeHeroSpecimen === 'dog' ? 'var(--bg-card)' : 'transparent',
                     color: activeHeroSpecimen === 'dog' ? 'var(--text-primary)' : 'var(--text-muted)',
-                    fontWeight: activeHeroSpecimen === 'dog' ? 600 : 400,
+                    fontWeight: activeHeroSpecimen === 'dog' ? 700 : 500,
                     cursor: 'pointer',
-                    boxShadow: activeHeroSpecimen === 'dog' ? '0 1px 2px rgba(0,0,0,0.05)' : 'none'
+                    boxShadow: activeHeroSpecimen === 'dog' ? '0 2px 4px rgba(0,0,0,0.06)' : 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    transition: 'all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1)'
                   }}
                 >
-                  Canine
+                  <span className={activeHeroSpecimen === 'dog' ? 'animate-tail-wag' : ''}>🐶</span>
+                  <span>Canine</span>
                 </button>
               </div>
             </div>
 
-            {/* Specimen Photo with Morphological Overlay */}
+            {/* Specimen Photo with Morphological Overlay & Floating Pets */}
             <div 
               style={{ 
                 position: 'relative', 
@@ -242,50 +290,90 @@ export default function HomeTab({ onNavigate, onSelectSpecimen }) {
                 overflow: 'hidden', 
                 background: 'var(--bg-surface)',
                 border: '1px solid var(--border-medium)',
-                marginBottom: '12px'
+                marginBottom: '12px',
+                cursor: 'pointer'
               }}
+              onClick={handleGivePet}
+              title="Click photo to give a pet! 🐾"
             >
               <img 
                 src={currentHeroSpecimen.url} 
                 alt={currentHeroSpecimen.name}
-                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', transition: 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)' }}
               />
 
-              {/* Landmark Pins */}
+              {/* Floating Pet Hearts / Paws */}
+              {floatingPaws.map((fp) => (
+                <div
+                  key={fp.id}
+                  className="animate-float-up"
+                  style={{
+                    left: `${fp.x}%`,
+                    top: `${fp.y}%`,
+                    fontSize: '1.4rem',
+                    zIndex: 20
+                  }}
+                >
+                  {fp.emoji}
+                </div>
+              ))}
+
+              {/* Animated Landmark Pins with Ear Twitching */}
               {currentHeroSpecimen.saliencyRegions?.slice(0, 3).map((pin, i) => (
                 <div
                   key={i}
+                  className={`landmark-pin ${i === 0 ? 'animate-ear-twitch' : ''}`}
                   style={{
                     position: 'absolute',
                     left: `${pin.x}%`,
                     top: `${pin.y}%`,
                     transform: 'translate(-50%, -50%)',
-                    background: 'rgba(37, 40, 33, 0.85)',
+                    background: 'rgba(37, 40, 33, 0.88)',
                     color: '#FFFFFF',
-                    fontSize: '0.62rem',
+                    fontSize: '0.64rem',
                     fontFamily: 'var(--font-mono)',
-                    padding: '2px 6px',
-                    borderRadius: '3px',
+                    padding: '2px 7px',
+                    borderRadius: '4px',
                     backdropFilter: 'blur(4px)',
                     border: '1px solid rgba(255, 255, 255, 0.3)',
-                    pointerEvents: 'none',
-                    whiteSpace: 'nowrap'
+                    cursor: 'pointer',
+                    whiteSpace: 'nowrap',
+                    boxShadow: '0 2px 6px rgba(0,0,0,0.2)'
                   }}
                 >
-                  {pin.label}
+                  <span>
+                    {activeHeroSpecimen === 'cat' 
+                      ? (i === 0 ? '🐱 ' : i === 1 ? '👁️ ' : '🐾 ') 
+                      : (i === 0 ? '🐶 ' : i === 1 ? '👃 ' : '🦴 ')}
+                    {pin.label}
+                  </span>
                 </div>
               ))}
             </div>
 
-            {/* Specimen Spec Sheet */}
+            {/* Specimen Spec Sheet & Cute Pet Me Button */}
             <div style={{ marginBottom: '12px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
-                <span style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+                <span style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                   {currentHeroSpecimen.name}
                 </span>
-                <span className="badge badge-green" style={{ fontSize: '0.68rem' }}>
-                  {activeHeroSpecimen === 'cat' ? 'P(Feline) = 99.7%' : 'P(Canine) = 99.4%'}
-                </span>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  {/* Interactive Cute Pet Button */}
+                  <button
+                    type="button"
+                    className="btn-pet"
+                    onClick={handleGivePet}
+                    title="Pet this cute specimen!"
+                  >
+                    <Heart size={12} className="animate-heartbeat" fill="#8C5212" />
+                    <span>Pet Me! ({petsGiven})</span>
+                  </button>
+
+                  <span className="badge badge-green" style={{ fontSize: '0.68rem', fontWeight: 700 }}>
+                    {activeHeroSpecimen === 'cat' ? 'P(Feline) = 99.7%' : 'P(Canine) = 99.4%'}
+                  </span>
+                </div>
               </div>
               <p style={{ fontSize: '0.76rem', color: 'var(--text-secondary)', lineHeight: 1.4, margin: 0 }}>
                 {currentHeroSpecimen.description}
@@ -296,16 +384,16 @@ export default function HomeTab({ onNavigate, onSelectSpecimen }) {
             <button
               type="button"
               className="btn btn-secondary btn-sm"
-              style={{ width: '100%', justifyContent: 'center', fontSize: '0.78rem', padding: '8px' }}
+              style={{ width: '100%', justifyContent: 'center', fontSize: '0.8rem', padding: '9px', fontWeight: 600 }}
               onClick={() => handleSelectSample(currentHeroSpecimen)}
             >
-              <span>Test This Specimen in Classifier</span>
-              <ArrowRight size={13} />
+              <span>Test {currentHeroSpecimen.name} in Classifier</span>
+              <ArrowRight size={14} />
             </button>
           </div>
         </div>
 
-        {/* Interactive Benchmark Gallery */}
+        {/* Interactive Benchmark Gallery with Cute Animal Badges */}
         <div 
           className="tech-card" 
           style={{ 
@@ -316,19 +404,21 @@ export default function HomeTab({ onNavigate, onSelectSpecimen }) {
         >
           <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: '14px', flexWrap: 'wrap', gap: '8px' }}>
             <div>
-              <div style={{ fontSize: '0.74rem', fontFamily: 'var(--font-mono)', color: 'var(--accent-green)', textTransform: 'uppercase', fontWeight: 600 }}>
-                Interactive Benchmark Gallery
+              <div style={{ fontSize: '0.74rem', fontFamily: 'var(--font-mono)', color: 'var(--accent-green)', textTransform: 'uppercase', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '5px' }}>
+                <span className="hover-wiggle">🐾</span>
+                <span>Interactive Benchmark Gallery</span>
               </div>
               <div style={{ fontSize: '0.86rem', color: 'var(--text-secondary)' }}>
                 Click any specimen below to immediately run real convolutional neural inference:
               </div>
             </div>
-            <span className="badge badge-green">
-              98.55% Validation Accuracy
+            <span className="badge badge-green" style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+              <Sparkles size={11} />
+              <span>98.55% Validation Accuracy</span>
             </span>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '12px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '14px' }}>
             {SAMPLE_IMAGES.slice(0, 4).map((sample) => (
               <div 
                 key={sample.id}
@@ -347,8 +437,7 @@ export default function HomeTab({ onNavigate, onSelectSpecimen }) {
                   border: '1px solid var(--border-medium)',
                   borderRadius: 'var(--radius-sm)',
                   overflow: 'hidden',
-                  cursor: 'pointer',
-                  transition: 'all var(--transition-fast)'
+                  cursor: 'pointer'
                 }}
                 className="specimen-card"
               >
@@ -361,25 +450,28 @@ export default function HomeTab({ onNavigate, onSelectSpecimen }) {
                 </div>
                 <div style={{ padding: '12px 14px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
-                    <div style={{ fontSize: '0.84rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+                    <div style={{ fontSize: '0.86rem', fontWeight: 600, color: 'var(--text-primary)' }}>
                       {sample.name}
                     </div>
                     <span 
                       style={{ 
-                        fontSize: '0.66rem', 
+                        fontSize: '0.68rem', 
                         fontFamily: 'var(--font-mono)', 
                         background: sample.category === 'unsupported' ? '#FBF5EE' : 'var(--bg-card)',
                         color: sample.category === 'unsupported' ? '#8C5212' : 'var(--accent-green)',
-                        padding: '2px 6px',
-                        borderRadius: '3px',
+                        padding: '2px 7px',
+                        borderRadius: 'var(--radius-pill)',
                         border: '1px solid var(--border-subtle)',
-                        fontWeight: 600
+                        fontWeight: 600,
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '3px'
                       }}
                     >
-                      {sample.category === 'cat' ? 'Feline' : sample.category === 'dog' ? 'Canine' : 'OOD Test'}
+                      {sample.category === 'cat' ? '🐱 Feline' : sample.category === 'dog' ? '🐶 Canine' : '🚫 OOD Test'}
                     </span>
                   </div>
-                  <div style={{ fontSize: '0.73rem', color: 'var(--text-muted)', lineHeight: 1.35 }}>
+                  <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)', lineHeight: 1.35 }}>
                     {sample.keyFeatures?.slice(0, 2).join(' • ') || sample.species}
                   </div>
                 </div>
@@ -388,9 +480,10 @@ export default function HomeTab({ onNavigate, onSelectSpecimen }) {
           </div>
 
           {/* Quick test non-animal OOD specimens */}
-          <div style={{ marginTop: '14px', paddingTop: '12px', borderTop: '1px solid var(--border-subtle)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
-            <span style={{ fontSize: '0.76rem', color: 'var(--text-secondary)' }}>
-              Out-of-Distribution rejection benchmark:
+          <div style={{ marginTop: '16px', paddingTop: '14px', borderTop: '1px solid var(--border-subtle)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
+            <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+              <ShieldCheck size={14} color="var(--accent-green)" />
+              <span>Out-of-Distribution rejection benchmark:</span>
             </span>
             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
               {SAMPLE_IMAGES.filter(s => s.category === 'unsupported').map(s => (
@@ -399,20 +492,22 @@ export default function HomeTab({ onNavigate, onSelectSpecimen }) {
                   type="button"
                   onClick={() => handleSelectSample(s)}
                   style={{
-                    fontSize: '0.72rem',
+                    fontSize: '0.74rem',
                     fontFamily: 'var(--font-mono)',
-                    padding: '4px 9px',
-                    borderRadius: 'var(--radius-xs)',
+                    padding: '4px 10px',
+                    borderRadius: 'var(--radius-pill)',
                     background: 'var(--bg-surface)',
                     border: '1px dashed rgba(178, 109, 30, 0.4)',
                     color: '#8C5212',
                     cursor: 'pointer',
                     display: 'inline-flex',
                     alignItems: 'center',
-                    gap: '4px'
+                    gap: '5px',
+                    transition: 'all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)'
                   }}
+                  className="hover-spring"
                 >
-                  <span>Test {s.name}</span>
+                  <span>{s.id === 'ood-01' ? '🚗' : s.id === 'ood-02' ? '🍕' : '🏙️'} Test {s.name}</span>
                   <ArrowRight size={11} />
                 </button>
               ))}
@@ -420,7 +515,7 @@ export default function HomeTab({ onNavigate, onSelectSpecimen }) {
           </div>
         </div>
 
-        {/* Notes from the Research Lab (Authentic Human Engineering Perspective) */}
+        {/* Notes from the Research Lab */}
         <div 
           className="tech-card" 
           style={{ 
@@ -431,8 +526,9 @@ export default function HomeTab({ onNavigate, onSelectSpecimen }) {
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px', marginBottom: '8px' }}>
-            <span style={{ fontSize: '0.74rem', fontFamily: 'var(--font-mono)', color: 'var(--accent-green)', textTransform: 'uppercase', fontWeight: 600 }}>
-              Notes from the Lab · Architectural Rationale
+            <span style={{ fontSize: '0.74rem', fontFamily: 'var(--font-mono)', color: 'var(--accent-green)', textTransform: 'uppercase', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '5px' }}>
+              <span className="hover-wiggle">🐾</span>
+              <span>Notes from the Lab · Architectural Rationale</span>
             </span>
             <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)' }}>
               Pranshu Shikhar (Project Lead) &amp; Team
@@ -446,7 +542,7 @@ export default function HomeTab({ onNavigate, onSelectSpecimen }) {
           </p>
         </div>
 
-        {/* Key Model & Benchmark Metrics Row */}
+        {/* Key Model & Benchmark Metrics Row with Cute Badges */}
         <div 
           style={{
             display: 'grid',
@@ -456,8 +552,11 @@ export default function HomeTab({ onNavigate, onSelectSpecimen }) {
           }}
         >
           <div className="tech-card" style={{ padding: '18px' }}>
-            <div style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '4px' }}>
-              Validation Accuracy
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+              <span style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
+                Validation Accuracy
+              </span>
+              <span style={{ fontSize: '1.1rem' }}>🏆</span>
             </div>
             <div style={{ fontSize: '1.9rem', fontWeight: 700, color: 'var(--accent-green)', lineHeight: 1.1 }}>
               98.55%
@@ -468,8 +567,11 @@ export default function HomeTab({ onNavigate, onSelectSpecimen }) {
           </div>
 
           <div className="tech-card" style={{ padding: '18px' }}>
-            <div style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '4px' }}>
-              Dataset Size
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+              <span style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
+                Dataset Size
+              </span>
+              <span style={{ fontSize: '1.1rem' }} className="hover-wiggle">🐾</span>
             </div>
             <div style={{ fontSize: '1.9rem', fontWeight: 700, color: 'var(--text-primary)', lineHeight: 1.1 }}>
               20,000
@@ -480,8 +582,11 @@ export default function HomeTab({ onNavigate, onSelectSpecimen }) {
           </div>
 
           <div className="tech-card" style={{ padding: '18px' }}>
-            <div style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '4px' }}>
-              Architecture
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+              <span style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
+                Architecture
+              </span>
+              <span style={{ fontSize: '1.1rem' }}>⚡</span>
             </div>
             <div style={{ fontSize: '1.35rem', fontWeight: 700, color: 'var(--text-primary)', lineHeight: 1.2 }}>
               MobileNetV2
@@ -492,8 +597,11 @@ export default function HomeTab({ onNavigate, onSelectSpecimen }) {
           </div>
 
           <div className="tech-card" style={{ padding: '18px' }}>
-            <div style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '4px' }}>
-              Validation Loss
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+              <span style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
+                Validation Loss
+              </span>
+              <span style={{ fontSize: '1.1rem' }}>🎯</span>
             </div>
             <div style={{ fontSize: '1.9rem', fontWeight: 700, color: 'var(--text-primary)', lineHeight: 1.1 }}>
               0.0409
@@ -557,10 +665,11 @@ export default function HomeTab({ onNavigate, onSelectSpecimen }) {
           </pre>
         </div>
 
-        {/* Editorial Project Breakdown (Numbered Steps) */}
+        {/* Editorial Project Breakdown */}
         <div style={{ borderTop: '1px solid var(--border-medium)', paddingTop: '28px' }}>
-          <div style={{ fontSize: '0.74rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '14px' }}>
-            End-to-End Tensor Pipeline
+          <div style={{ fontSize: '0.74rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '5px' }}>
+            <span className="hover-wiggle">🐾</span>
+            <span>End-to-End Tensor Pipeline</span>
           </div>
 
           <div className="grid-3">

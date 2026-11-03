@@ -43,18 +43,19 @@ export default function InferenceResult({
       >
         <div 
           style={{ 
-            width: '40px', 
-            height: '40px', 
+            width: '46px', 
+            height: '46px', 
             borderRadius: '50%', 
-            background: 'var(--bg-surface)', 
+            background: 'var(--accent-sage)', 
             display: 'flex', 
             alignItems: 'center', 
             justifyContent: 'center', 
-            color: 'var(--text-muted)', 
+            fontSize: '1.3rem', 
             marginBottom: '12px' 
           }}
+          className="animate-bounce-cute"
         >
-          <Layers size={20} />
+          🐾
         </div>
         <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', letterSpacing: '0.06em', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '4px' }}>
           Awaiting Input
@@ -88,16 +89,21 @@ export default function InferenceResult({
         }}
       >
         <div 
-          className="animate-spin" 
           style={{ 
-            width: '36px', 
-            height: '36px', 
+            width: '48px', 
+            height: '48px', 
             borderRadius: '50%', 
-            border: '3px solid var(--accent-sage)', 
-            borderTopColor: 'var(--accent-green)', 
-            marginBottom: '16px' 
-          }} 
-        />
+            background: 'var(--accent-sage)', 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center', 
+            fontSize: '1.4rem', 
+            marginBottom: '14px' 
+          }}
+          className="animate-spin"
+        >
+          🐾
+        </div>
         <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', letterSpacing: '0.06em', color: 'var(--accent-green)', textTransform: 'uppercase', marginBottom: '4px' }}>
           Neural Inference
         </div>
@@ -481,18 +487,24 @@ export default function InferenceResult({
             </div>
           </div>
 
-          {/* Large Prediction Wordmark */}
-          <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: '8px' }}>
+          {/* Large Prediction Wordmark with Cute Emoji & Pop Animation */}
+          <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: '8px' }} className="animate-celebrate">
             <div 
               style={{
                 fontSize: '2.5rem',
                 fontWeight: 700,
                 color: 'var(--text-primary)',
                 lineHeight: 1,
-                letterSpacing: '-0.02em'
+                letterSpacing: '-0.02em',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px'
               }}
             >
-              {result.prediction}
+              <span className={isDog ? 'animate-tail-wag' : 'animate-bounce-cute'} style={{ display: 'inline-block', fontSize: '2.2rem' }}>
+                {isDog ? '🐶' : '🐱'}
+              </span>
+              <span>{result.prediction}</span>
             </div>
             <div style={{ textAlign: 'right' }}>
               <div style={{ fontSize: '1.6rem', fontWeight: 700, color: 'var(--accent-green)', lineHeight: 1 }}>
@@ -663,8 +675,9 @@ export default function InferenceResult({
             {/* Cat Probability Row */}
             <div style={{ marginBottom: '14px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', marginBottom: '5px' }}>
-                <span style={{ fontWeight: !isDog ? 600 : 400, color: 'var(--text-primary)' }}>
-                  Cat (Class 0)
+                <span style={{ fontWeight: !isDog ? 600 : 400, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                  <span>🐱</span>
+                  <span>Cat (Class 0)</span>
                 </span>
                 <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 600, color: 'var(--text-primary)' }}>
                   {catProbPct}%
@@ -676,7 +689,7 @@ export default function InferenceResult({
                     width: `${catBarWidth}%`,
                     height: '100%',
                     background: !isDog ? 'var(--accent-green)' : '#B3BAAA',
-                    transition: 'width 0.3s ease'
+                    transition: 'width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)'
                   }} 
                 />
               </div>
@@ -685,8 +698,9 @@ export default function InferenceResult({
             {/* Dog Probability Row */}
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', marginBottom: '5px' }}>
-                <span style={{ fontWeight: isDog ? 600 : 400, color: 'var(--text-primary)' }}>
-                  Dog (Class 1)
+                <span style={{ fontWeight: isDog ? 600 : 400, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                  <span>🐶</span>
+                  <span>Dog (Class 1)</span>
                 </span>
                 <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 600, color: 'var(--text-primary)' }}>
                   {dogProbPct}%
@@ -698,7 +712,7 @@ export default function InferenceResult({
                     width: `${dogBarWidth}%`,
                     height: '100%',
                     background: isDog ? 'var(--accent-green)' : '#B3BAAA',
-                    transition: 'width 0.3s ease'
+                    transition: 'width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)'
                   }} 
                 />
               </div>

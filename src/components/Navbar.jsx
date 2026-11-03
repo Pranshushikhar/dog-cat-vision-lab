@@ -55,16 +55,23 @@ export default function Navbar({ onOpenApiModal, activeTab = 'home', onSelectTab
           className="navbar-brand"
           onClick={(e) => handleTabClick('home', e)}
         >
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-            <span style={{ fontSize: '1.1rem', fontWeight: 700, letterSpacing: '-0.02em', color: 'var(--text-primary)' }}>
-              PawVision AI
-            </span>
-            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 400 }}>
-              · Cat vs Dog Vision
-            </span>
-          </div>
-          <div className="navbar-team-credit">
-            Developed by <span className="team-lead">Pranshu Shikhar &amp; Team</span> — Rishabh Vaish, Ankit Raj, Kanika Rani and Ishita Goel
+          <div style={{ display: 'flex', alignItems: 'center', gap: '9px' }}>
+            <div className="brand-paw-badge" title="PawVision AI — Click to go home">
+              <span className="hover-wiggle" style={{ display: 'inline-block' }}>🐾</span>
+            </div>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
+                <span style={{ fontSize: '1.12rem', fontWeight: 700, letterSpacing: '-0.02em', color: 'var(--text-primary)' }}>
+                  PawVision AI
+                </span>
+                <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 400 }}>
+                  · Cat vs Dog Vision
+                </span>
+              </div>
+              <div className="navbar-team-credit">
+                Developed by <span className="team-lead">Pranshu Shikhar &amp; Team</span> — Rishabh Vaish, Ankit Raj, Kanika Rani and Ishita Goel
+              </div>
+            </div>
           </div>
         </a>
 

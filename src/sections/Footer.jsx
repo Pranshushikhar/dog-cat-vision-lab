@@ -12,7 +12,8 @@ export default function Footer({ onOpenConfigModal, onSelectTab }) {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '32px', marginBottom: '32px' }}>
           {/* Project Identity */}
           <div style={{ maxWidth: '380px' }}>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+              <span className="hover-wiggle" style={{ fontSize: '1.15rem' }}>🐾</span>
               <span style={{ fontWeight: 700, fontSize: '1.05rem', color: 'var(--text-primary)' }}>
                 PawVision AI
               </span>
@@ -72,8 +73,9 @@ export default function Footer({ onOpenConfigModal, onSelectTab }) {
 
         {/* Bottom Bar */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', paddingTop: '20px', borderTop: '1px solid var(--border-subtle)', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-          <div>
-            PawVision AI · Computer Vision Research Laboratory
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span className="animate-wiggle" style={{ display: 'inline-block' }}>🐾</span>
+            <span>PawVision AI · Computer Vision Research Laboratory</span>
           </div>
           <div>
             Built with React 18, TensorFlow & FastAPI
