@@ -354,9 +354,32 @@ class ClassifierService {
 
       const data = await response.json();
 
+      // Independent OOD Screening Check
+      const isSupported = data.is_supported !== false && data.prediction?.toUpperCase() !== 'UNSUPPORTED';
+
+      if (!isSupported) {
+        return {
+          success: true,
+          isModelConnected: true,
+          isSupported: false,
+          status: 'UNSUPPORTED_IMAGE',
+          mode: CLASSIFIER_MODES.REAL_API,
+          prediction: 'UNSUPPORTED',
+          message: data.message || 'Unsupported Image — Please upload a photograph of a cat or dog.',
+          confidence: null,
+          rawProbabilities: null,
+          detectedCategory: data.ood_metrics?.top1_label || 'Unrelated Object',
+          oodMetrics: data.ood_metrics || null,
+          processingTimeMs: Math.round(endTime - startTime),
+          modelVersion: data.model_version || 'DogCat_CNN_v1_with_OOD_Guard',
+          timestamp: new Date().toISOString()
+        };
+      }
+
       return {
         success: true,
         isModelConnected: true,
+        isSupported: true,
         status: 'CONNECTED',
         mode: CLASSIFIER_MODES.REAL_API,
         prediction: data.prediction ? data.prediction.toUpperCase() : 'UNKNOWN',
@@ -365,6 +388,7 @@ class ClassifierService {
           dog: data.prediction?.toLowerCase() === 'dog' ? data.confidence : 1 - data.confidence,
           cat: data.prediction?.toLowerCase() === 'cat' ? data.confidence : 1 - data.confidence
         },
+        oodMetrics: data.ood_metrics || null,
         processingTimeMs: Math.round(endTime - startTime),
         modelVersion: data.model_version || 'DogCat_CNN_v1',
         timestamp: new Date().toISOString()
@@ -386,6 +410,36 @@ class ClassifierService {
    */
   async _executeSimulatedPipeline(imageFile, threshold = 0.5, startTime) {
     await new Promise(resolve => setTimeout(resolve, 900));
+
+    const lowerName = (imageFile?.name || (typeof imageFile === 'string' ? imageFile : '')).toLowerCase();
+    const nonCatDogKeywords = ['car', 'vehicle', 'auto', 'truck', 'airplane', 'boat', 'person', 'human', 'man', 'woman', 'portrait', 'pizza', 'food', 'fruit', 'building', 'house', 'city', 'landscape', 'mountain', 'noise', 'unrelated'];
+    const matchedKeyword = nonCatDogKeywords.find(kw => lowerName.includes(kw));
+
+    if (matchedKeyword) {
+      const endTime = performance.now();
+      const capitalizedLabel = matchedKeyword.charAt(0).toUpperCase() + matchedKeyword.slice(1);
+      return {
+        success: true,
+        isModelConnected: false,
+        isDemoMode: true,
+        isSupported: false,
+        status: 'UNSUPPORTED_IMAGE',
+        mode: CLASSIFIER_MODES.DEMO_MODE,
+        warning: 'DEMO MODE — NOT REAL MODEL INFERENCE',
+        prediction: 'UNSUPPORTED',
+        message: 'Unsupported Image — Please upload a photograph of a cat or dog.',
+        confidence: null,
+        rawProbabilities: null,
+        detectedCategory: capitalizedLabel,
+        oodMetrics: {
+          is_cat_or_dog: false,
+          top1_label: capitalizedLabel,
+          reason: `Simulated OOD screening: visual pattern aligns with '${capitalizedLabel}'.`
+        },
+        processingTimeMs: Math.round(endTime - startTime),
+        timestamp: new Date().toISOString()
+      };
+    }
 
     let nameHash = 42;
     if (imageFile && imageFile.name) {
@@ -410,6 +464,7 @@ class ClassifierService {
       success: true,
       isModelConnected: false,
       isDemoMode: true,
+      isSupported: true,
       mode: CLASSIFIER_MODES.DEMO_MODE,
       warning: 'DEMO MODE — NOT REAL MODEL INFERENCE',
       prediction,

@@ -47,10 +47,14 @@ export default function AboutTab({ onOpenConfigModal }) {
        ▼
 Python Backend (FastAPI on Port 8000)
        │
-       ├─► Validation Gate: PIL decode check (rejects non-images, corrupt files, <10x10 px)
-       ├─► Preprocessing: Bilinear resize to 224×224 RGB, float32 normalization
+       ├─► Validation Gate 1: Format & corrupt file check (<10x10 px rejected)
        │
-       ▼
+       ├─► Validation Gate 2: Independent OOD Screening (ImageNet MobileNetV2)
+       │       ├─► 143 feline & canine classes (indices 151..293)
+       │       ├─► 857 open-domain classes (vehicles, food, architecture, portraits, etc.)
+       │       └─► Rejects unrelated images with "Unsupported Image" advisory
+       │
+       ▼ (Only verified feline/canine images proceed)
 TensorFlow Engine (models/dog_cat_cnn.keras)
        │
        ├─► MobileNetV2 Feature Extractor (frozen weights, 2.26M parameters)
@@ -58,7 +62,7 @@ TensorFlow Engine (models/dog_cat_cnn.keras)
        └─► Binary Classification: Dense perceptron + Sigmoid activation [0, 1]
        │
        ▼
-Inference Response: { prediction: "cat"|"dog", confidence: 0.9985, probabilities: { cat, dog } }`}
+Inference Response: { is_supported: true, prediction: "cat"|"dog", confidence, probabilities }`}
               </pre>
             </div>
           </div>
@@ -79,15 +83,19 @@ Inference Response: { prediction: "cat"|"dog", confidence: 0.9985, probabilities
               <ul style={{ listStyle: 'none', padding: 0, margin: 0, fontSize: '0.82rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '10px', lineHeight: 1.5 }}>
                 <li style={{ display: 'flex', gap: '8px' }}>
                   <span style={{ color: '#8C5212', fontWeight: 700 }}>•</span>
-                  <span><strong>Closed-World Assumption:</strong> The classifier is trained specifically on domestic cats and dogs. Uploading unrelated objects (e.g. cars, fruit, humans) will force a binary projection onto feline/canine coordinates.</span>
+                  <span><strong>Independent OOD Screening:</strong> Non-cat/non-dog images (cars, portraits, food, architecture, landscapes) are screened by an independent ImageNet-1K validator and rejected rather than forced onto a binary decision.</span>
                 </li>
                 <li style={{ display: 'flex', gap: '8px' }}>
                   <span style={{ color: '#8C5212', fontWeight: 700 }}>•</span>
-                  <span><strong>Occlusion & Lighting:</strong> Heavy obstruction, motion blur, or abstract artistic renderings may diminish classification confidence.</span>
+                  <span><strong>OOD Calibration Tradeoffs:</strong> The screening threshold is conservatively tuned to minimize false rejections of genuine pets. Edge cases like plush pet toys, cartoons, or ambiguous animal hybrids may challenge boundary discrimination.</span>
                 </li>
                 <li style={{ display: 'flex', gap: '8px' }}>
                   <span style={{ color: '#8C5212', fontWeight: 700 }}>•</span>
-                  <span><strong>Raster Constraints:</strong> The neural tensor pipeline requires raster images (JPEG, PNG, WebP) with minimum 10 × 10 pixel resolution.</span>
+                  <span><strong>Occlusion & Lighting:</strong> Severe obstruction, extreme motion blur, or abstract artistic renderings may lower classification confidence.</span>
+                </li>
+                <li style={{ display: 'flex', gap: '8px' }}>
+                  <span style={{ color: '#8C5212', fontWeight: 700 }}>•</span>
+                  <span><strong>Raster Constraints:</strong> The neural tensor pipeline requires standard raster formats (JPEG, PNG, WebP) with minimum 10 × 10 pixel resolution.</span>
                 </li>
               </ul>
             </div>

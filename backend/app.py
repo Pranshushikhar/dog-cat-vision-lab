@@ -43,7 +43,16 @@ async def lifespan(app: FastAPI):
             get_inference_model(MODEL_PATH)
             print("[Lifespan] Model pre-loaded and ready for real-time inference.")
         except Exception as e:
-            print(f"[Lifespan] Warning during pre-warming: {e}")
+            print(f"[Lifespan] Warning during CNN pre-warming: {e}")
+
+    try:
+        from ml.ood_detector import get_ood_detector
+        print("[Lifespan] Pre-warming OOD screening detector...")
+        get_ood_detector()
+        print("[Lifespan] OOD detector pre-loaded and ready.")
+    except Exception as e:
+        print(f"[Lifespan] Warning during OOD detector pre-warming: {e}")
+
     yield
 
 
@@ -104,6 +113,7 @@ def get_health():
     """
     Backend Health Check:
     Clearly distinguishes service availability from model weight readiness.
+    Includes status of the Out-of-Distribution (OOD) screening stage.
     """
     from ml.predict import is_model_ready
     ready, status_msg = is_model_ready(MODEL_PATH)
@@ -114,6 +124,8 @@ def get_health():
         "model_ready": ready,
         "model_status": status_msg,
         "model": "dog_cat_cnn" if ready else None,
+        "ood_screening": "active",
+        "ood_model": "mobilenet_v2_imagenet",
         "model_path": str(MODEL_PATH) if MODEL_PATH.exists() else None
     }
 

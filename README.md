@@ -28,11 +28,18 @@ Cloudflare Pages (React + Vite Static SPA)
    ▼
 FastAPI Python Service (Uvicorn on Port 8000)
    │
-   ▼
+   ├─► Stage 1: File integrity check (rejects non-images, corrupt files, <10x10 px)
+   │
+   ├─► Stage 2: Independent OOD Screening (ImageNet-1K MobileNetV2)
+   │     ├─► Valid domain: 143 Canidae & Felidae classes (indices 151..293)
+   │     ├─► 857 open-domain categories (vehicles, human portraits, food, architecture, landscapes)
+   │     └─► Rejects unrelated images with: "Unsupported Image — Please upload a photograph of a cat or dog."
+   │
+   ▼ (Verified feline/canine input only)
 TensorFlow CNN Checkpoint (models/dog_cat_cnn.keras)
    │
    ▼
-Binary Classification Decision: DOG (1) or CAT (0)
+Binary Classification Decision: DOG (1) or CAT (0) with exact confidence
 ```
 
 ---

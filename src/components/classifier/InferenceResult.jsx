@@ -1,5 +1,5 @@
 import React from 'react';
-import { AlertCircle, AlertTriangle, Clock, Settings, Layers } from 'lucide-react';
+import { AlertCircle, AlertTriangle, Clock, Settings, Layers, ShieldAlert } from 'lucide-react';
 
 export default function InferenceResult({ 
   result, 
@@ -211,7 +211,157 @@ export default function InferenceResult({
     );
   }
 
-  // 5. RESULT STATE (Real Model OR Labeled Demo Mode)
+  // 5. UNSUPPORTED IMAGE STATE (Independent OOD screening rejected non-cat/non-dog)
+  const isUnsupported = result && (
+    result.isSupported === false || 
+    result.status === 'UNSUPPORTED_IMAGE' || 
+    result.prediction === 'UNSUPPORTED'
+  );
+
+  if (isUnsupported) {
+    return (
+      <div 
+        className="tech-card"
+        style={{
+          background: 'var(--bg-card)',
+          border: '1px solid var(--border-medium)',
+          borderRadius: 'var(--radius-md)',
+          padding: '24px',
+          boxSizing: 'border-box',
+          maxWidth: '100%'
+        }}
+      >
+        {/* Labeled Demo Mode Banner */}
+        {result.isDemoMode && (
+          <div 
+            style={{
+              background: '#F8F1E4',
+              border: '1px solid rgba(178, 109, 30, 0.3)',
+              borderRadius: 'var(--radius-xs)',
+              padding: '8px 12px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              marginBottom: '18px'
+            }}
+          >
+            <AlertTriangle size={14} color="#8C5212" />
+            <div style={{ fontSize: '0.75rem', color: '#8C5212', fontFamily: 'var(--font-mono)' }}>
+              <strong>Demo Mode:</strong> Client-side simulation running without connected model backend.
+            </div>
+          </div>
+        )}
+
+        {/* Top Eyebrow & Inference Timing */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginBottom: '14px' }}>
+          <span 
+            style={{ 
+              fontSize: '0.72rem', 
+              fontFamily: 'var(--font-mono)', 
+              color: '#8C5212', 
+              background: '#FBF5EE',
+              border: '1px solid rgba(178, 109, 30, 0.25)',
+              padding: '3px 8px',
+              borderRadius: 'var(--radius-xs)',
+              textTransform: 'uppercase',
+              fontWeight: 600
+            }}
+          >
+            Input Validation · Unsupported Image
+          </span>
+
+          {result.processingTimeMs !== undefined && result.processingTimeMs !== null && (
+            <div 
+              style={{ 
+                fontSize: '0.75rem', 
+                fontFamily: 'var(--font-mono)', 
+                color: 'var(--accent-green)', 
+                background: 'var(--accent-sage)', 
+                padding: '3px 8px', 
+                borderRadius: 'var(--radius-xs)', 
+                display: 'inline-flex', 
+                alignItems: 'center', 
+                gap: '5px',
+                fontWeight: 600
+              }}
+              title="Measured screening execution latency"
+            >
+              <Clock size={12} />
+              <span>Inference Time: {result.processingTimeMs} ms</span>
+            </div>
+          )}
+        </div>
+
+        {/* Primary Headline & Required Message */}
+        <div style={{ marginBottom: '16px' }}>
+          <h3 
+            style={{
+              fontSize: '1.9rem',
+              fontWeight: 700,
+              color: 'var(--text-primary)',
+              lineHeight: 1.15,
+              letterSpacing: '-0.02em',
+              margin: '0 0 8px 0'
+            }}
+          >
+            Unsupported Image
+          </h3>
+          <p 
+            style={{ 
+              fontSize: '0.98rem', 
+              fontWeight: 600, 
+              color: '#8C5212', 
+              margin: 0,
+              lineHeight: 1.45 
+            }}
+          >
+            {result.message || 'Unsupported Image — Please upload a photograph of a cat or dog.'}
+          </p>
+        </div>
+
+        {/* Diagnostic Feedback Card */}
+        <div 
+          style={{ 
+            background: 'var(--bg-surface)', 
+            border: '1px solid var(--border-medium)', 
+            borderRadius: 'var(--radius-sm)', 
+            padding: '14px 16px', 
+            marginBottom: '16px' 
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+            <ShieldAlert size={16} color="#8C5212" />
+            <span style={{ fontSize: '0.84rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+              Non-Canine / Non-Feline Content Detected
+            </span>
+          </div>
+          <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.5 }}>
+            Identified visual pattern aligns with <strong>{result.detectedCategory || 'an unrelated category'}</strong> rather than feline or canine anatomy.
+          </p>
+          {result.oodMetrics?.reason && (
+            <div style={{ fontSize: '0.74rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', marginTop: '8px' }}>
+              Screening Note: {result.oodMetrics.reason}
+            </div>
+          )}
+        </div>
+
+        {/* Responsible AI Decision Safeguard Note */}
+        <div 
+          style={{ 
+            borderTop: '1px solid var(--border-subtle)', 
+            paddingTop: '14px',
+            fontSize: '0.78rem', 
+            color: 'var(--text-secondary)', 
+            lineHeight: 1.5 
+          }}
+        >
+          <strong style={{ color: 'var(--text-primary)' }}>Integrity Safeguard:</strong> Binary cat/dog classification and confidence scoring were withheld to prevent arbitrary forced projection on an out-of-domain input.
+        </div>
+      </div>
+    );
+  }
+
+  // 6. RESULT STATE (Real Model OR Labeled Demo Mode)
   if (result && result.success) {
     const isDog = result.prediction === 'DOG';
     const confVal = typeof result.confidence === 'number' ? result.confidence : parseFloat(result.confidence) || 0;
