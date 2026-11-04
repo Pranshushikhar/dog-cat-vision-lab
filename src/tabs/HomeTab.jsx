@@ -80,7 +80,7 @@ export default function HomeTab({ onNavigate, onSelectSpecimen }) {
                 maxWidth: '560px'
               }}
             >
-              Upload a photograph and let PawVision AI identify whether your furry friend is a cat or a dog using deep learning and computer vision. Powered by a fine-tuned MobileNetV2 architecture with independent Out-of-Distribution validation.
+              Discover the power of computer vision. Upload a photograph and let PawVision AI identify whether it contains a cat or a dog. Powered by fine-tuned MobileNetV2 transfer learning with dual-stage Out-of-Distribution validation.
             </p>
 
             {/* Primary Action Buttons */}

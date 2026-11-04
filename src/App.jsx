@@ -9,6 +9,7 @@ import AboutTab from './tabs/AboutTab';
 import Footer from './sections/Footer';
 import ApiConfigModal from './components/ApiConfigModal';
 import FeedbackModal from './components/FeedbackModal';
+import PrivacyModal from './components/PrivacyModal';
 
 const VALID_TABS = ['home', 'classifier', 'dataset', 'model-lab', 'model-info', 'how-it-works', 'about'];
 
@@ -22,6 +23,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useState(getTabFromHash);
   const [isApiModalOpen, setIsApiModalOpen] = useState(false);
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
+  const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
   const [preselectedImage, setPreselectedImage] = useState(null);
 
   // Sync tab with browser hash and history navigation
@@ -107,6 +109,7 @@ export default function App() {
         onSelectTab={handleTabChange}
         onOpenConfigModal={() => setIsApiModalOpen(true)} 
         onOpenFeedbackModal={() => setIsFeedbackModalOpen(true)}
+        onOpenPrivacyModal={() => setIsPrivacyModalOpen(true)}
       />
 
       {/* API / Backend Config Modal */}
@@ -119,6 +122,12 @@ export default function App() {
       <FeedbackModal
         isOpen={isFeedbackModalOpen}
         onClose={() => setIsFeedbackModalOpen(false)}
+      />
+
+      {/* Privacy & Data Ethics Modal */}
+      <PrivacyModal
+        isOpen={isPrivacyModalOpen}
+        onClose={() => setIsPrivacyModalOpen(false)}
       />
     </div>
   );

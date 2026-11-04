@@ -17,6 +17,7 @@ import time
 import json
 from pathlib import Path
 from contextlib import asynccontextmanager
+import numpy as np
 from fastapi import FastAPI, File, UploadFile, Form, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, FileResponse

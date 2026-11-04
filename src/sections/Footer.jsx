@@ -1,7 +1,7 @@
 import React from 'react';
-import { ShieldCheck, Code2, MessageSquare, ExternalLink } from 'lucide-react';
+import { ShieldCheck, Code2, MessageSquare, ExternalLink, Lock } from 'lucide-react';
 
-export default function Footer({ onOpenConfigModal, onOpenFeedbackModal, onSelectTab }) {
+export default function Footer({ onOpenConfigModal, onOpenFeedbackModal, onOpenPrivacyModal, onSelectTab }) {
   const handleNav = (tabId, e) => {
     e.preventDefault();
     if (onSelectTab) onSelectTab(tabId);
@@ -93,6 +93,16 @@ export default function Footer({ onOpenConfigModal, onOpenFeedbackModal, onSelec
                 </button>
               </li>
               <li>
+                <button
+                  type="button"
+                  onClick={onOpenPrivacyModal}
+                  style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', padding: 0, font: 'inherit', textAlign: 'left', display: 'inline-flex', alignItems: 'center', gap: '5px' }}
+                >
+                  <Lock size={13} />
+                  <span>Privacy Information &amp; Ethics</span>
+                </button>
+              </li>
+              <li>
                 <a
                   href="https://www.kaggle.com/c/dogs-vs-cats"
                   target="_blank"
@@ -130,8 +140,16 @@ export default function Footer({ onOpenConfigModal, onOpenFeedbackModal, onSelec
 
         {/* Bottom Bar */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', paddingTop: '20px', borderTop: '1px solid var(--border-subtle)', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <span>&copy; {new Date().getFullYear()} PAWVISION AI · All rights reserved.</span>
+            <span>·</span>
+            <button
+              type="button"
+              onClick={onOpenPrivacyModal}
+              style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: 0, font: 'inherit', textDecoration: 'underline' }}
+            >
+              Privacy Information
+            </button>
           </div>
           <div>
             Built with React 18, TensorFlow 2.15 &amp; FastAPI

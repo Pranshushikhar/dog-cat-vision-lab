@@ -3,7 +3,7 @@
 > **"See the Difference. Let AI Decide."**  
 > *Developed by Pranshu Shikhar & Team (Pranshu Shikhar, Rishabh Vaish, Ankit Raj, Kanika Rani, Ishita Goel)*
 
-[![Pytest Suite](https://img.shields.io/badge/pytest-35%20passed-brightgreen.svg)](https://pytest.org)
+[![Pytest Suite](https://img.shields.io/badge/pytest-37%20passed-brightgreen.svg)](https://pytest.org)
 [![Validation Accuracy](https://img.shields.io/badge/Validation%20Accuracy-98.55%25-teal.svg)](https://pawvision-ai.pages.dev)
 [![Test Holdout](https://img.shields.io/badge/Test%20Holdout-99.00%25-blue.svg)](https://pawvision-ai.pages.dev)
 [![Architecture](https://img.shields.io/badge/Model-MobileNetV2%20(2.26M%20params)-orange.svg)](https://keras.io)

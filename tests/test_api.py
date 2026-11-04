@@ -196,3 +196,27 @@ def test_api_feedback():
     assert response.json()["success"] is True
 
 
+def test_app_lifespan_startup():
+    """Verifies that the FastAPI lifespan context runs smoothly without startup crashes."""
+    import asyncio
+
+    async def run_lifespan():
+        async with app.router.lifespan_context(app):
+            pass
+
+    asyncio.run(run_lifespan())
+
+
+def test_predict_rejects_corrupted_image_payload():
+    """Verifies that invalid/corrupt image bytes are safely caught with HTTP 400."""
+    corrupt_bytes = b"NOT_A_REAL_IMAGE_DATA_XYZ_12345"
+    response = client.post(
+        "/api/predict",
+        files={"image": ("corrupted.jpg", corrupt_bytes, "image/jpeg")},
+        data={"threshold": "0.5"}
+    )
+    assert response.status_code == 400
+    assert "Invalid or unreadable image file" in response.json()["detail"]
+
+
+

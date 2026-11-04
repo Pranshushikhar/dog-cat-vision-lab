@@ -148,6 +148,11 @@ function getInitialApiUrl() {
     return normalizeBackendUrl(envUrl);
   }
 
+  // Auto-detect local development: if hostname is localhost or 127.0.0.1, default to local port 8000
+  if (typeof window !== 'undefined' && window.location && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+    return LOCAL_BACKEND_URL;
+  }
+
   return PRODUCTION_BACKEND_URL;
 }
 
