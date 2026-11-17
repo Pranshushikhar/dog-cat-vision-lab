@@ -4,13 +4,11 @@ import {
   MessageSquare, 
   Menu, 
   X, 
-  ExternalLink,
   ChevronRight,
-  ShieldCheck,
-  CheckCircle2,
-  AlertCircle
+  ShieldCheck
 } from 'lucide-react';
-import { classifierService, CLASSIFIER_MODES } from '../services/classifierService';
+import { classifierService } from '../services/classifierService';
+import ModelStatusBadge from './ModelStatusBadge';
 
 export const NAV_TABS = [
   { id: 'home', label: 'Home' },
@@ -32,9 +30,10 @@ export default function Navbar({
     isConfigured: classifierService.isConfigured()
   });
 
-  // Health check status states: 'checking' | 'online' | 'offline' | 'error'
+  // Truthful health status states: 'checking' | 'online' | 'offline' | 'error'
   const [healthStatus, setHealthStatus] = useState('checking');
   const [healthData, setHealthData] = useState(null);
+  const [validatedAccuracy, setValidatedAccuracy] = useState(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const checkHealth = async () => {
@@ -45,16 +44,25 @@ export default function Navbar({
         if (res.modelLoaded === true) {
           setHealthStatus('online');
           setHealthData(res);
+          let acc = res.accuracy;
+          if (acc === null || acc === undefined) {
+            acc = await classifierService.getValidatedAccuracy();
+          }
+          setValidatedAccuracy(acc);
         } else {
           setHealthStatus('error');
           setHealthData(res);
+          setValidatedAccuracy(null);
         }
       } else {
         setHealthStatus('offline');
         setHealthData(res);
+        setValidatedAccuracy(null);
       }
     } catch (e) {
       setHealthStatus('offline');
+      setHealthData(null);
+      setValidatedAccuracy(null);
     }
   };
 
@@ -67,7 +75,7 @@ export default function Navbar({
       checkHealth();
     });
 
-    // Periodically refresh health status every 30 seconds
+    // Refresh health status periodically every 30 seconds
     const interval = setInterval(() => {
       if (isMounted) checkHealth();
     }, 30000);
@@ -129,12 +137,13 @@ export default function Navbar({
                 <span style={{ fontSize: '1.18rem', fontWeight: 800, letterSpacing: '-0.025em', color: 'var(--text-primary)' }}>
                   PAWVISION AI
                 </span>
-                <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 500 }}>
+                <span className="navbar-subtitle desktop-only" style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 500 }}>
                   Cat vs Dog Vision
                 </span>
               </div>
               <div className="navbar-team-credit">
-                Developed by <span className="team-lead">Pranshu Shikhar &amp; Team</span> — Rishabh Vaish, Ankit Raj, Kanika Rani, Ishita Goel
+                Developed by <span className="team-lead">Pranshu Shikhar &amp; Team</span>
+                <span className="team-members desktop-only"> — Rishabh Vaish, Ankit Raj, Kanika Rani, Ishita Goel</span>
               </div>
             </div>
           </div>
@@ -161,55 +170,13 @@ export default function Navbar({
 
         {/* Right Status Indicator, API & Feedback Buttons */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          {/* Dynamic Real Backend Health Status Indicator */}
-          {healthStatus === 'checking' && (
-            <div 
-              className="badge badge-neutral nav-status-badge"
-              style={{ cursor: 'pointer', padding: '5px 10px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
-              onClick={onOpenApiModal}
-              title="Pinging backend health..."
-            >
-              <span className="pulse-dot idle" />
-              <span>Connecting...</span>
-            </div>
-          )}
-
-          {healthStatus === 'online' && (
-            <div 
-              className="badge badge-green nav-status-badge" 
-              style={{ cursor: 'pointer', padding: '5px 10px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
-              onClick={onOpenApiModal}
-              title={`MobileNetV2 Online · 98.55% Val Accuracy (${healthData?.latencyMs ?? 30}ms latency)`}
-              aria-label="Model status: Online, Validation Accuracy: 98.55%"
-            >
-              <span className="pulse-dot success" />
-              <span>Model Online · 98.55% Acc</span>
-            </div>
-          )}
-
-          {healthStatus === 'offline' && (
-            <div 
-              className="badge badge-neutral nav-status-badge" 
-              style={{ cursor: 'pointer', padding: '5px 10px', display: 'inline-flex', alignItems: 'center', gap: '6px', color: 'var(--text-muted)' }}
-              onClick={onOpenApiModal}
-              title="Backend Dormant / Offline — Click to configure or wake server"
-            >
-              <span className="pulse-dot idle" />
-              <span>Backend Offline</span>
-            </div>
-          )}
-
-          {healthStatus === 'error' && (
-            <div 
-              className="badge badge-error nav-status-badge" 
-              style={{ cursor: 'pointer', padding: '5px 10px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
-              onClick={onOpenApiModal}
-              title="Model Weights Missing or Connection Error"
-            >
-              <span className="pulse-dot error" />
-              <span>Weights Missing</span>
-            </div>
-          )}
+          {/* Redesigned Model Online & Validated Accuracy Status Component */}
+          <ModelStatusBadge
+            healthStatus={healthStatus}
+            accuracy={validatedAccuracy}
+            latencyMs={healthData?.latencyMs}
+            onClick={onOpenApiModal}
+          />
 
           {/* API Info / Docs Button */}
           <button 
@@ -261,18 +228,39 @@ export default function Navbar({
 
       {/* Mobile Navigation Drawer */}
       {isMobileMenuOpen && (
-        <div 
-          className="mobile-nav-drawer"
-          style={{
-            background: 'var(--bg-card)',
-            borderBottom: '1px solid var(--border-medium)',
-            padding: '16px 24px',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '8px',
-            boxShadow: 'var(--shadow-md)'
-          }}
-        >
+        <div className="mobile-nav-drawer" style={{ background: 'var(--bg-card)', borderBottom: '1px solid var(--border-medium)', padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: '8px', boxShadow: 'var(--shadow-md)' }}>
+          {/* Mobile Status Overview Card */}
+          <div 
+            className="mobile-drawer-status-card"
+            onClick={() => {
+              setIsMobileMenuOpen(false);
+              onOpenApiModal();
+            }}
+            role="button"
+            tabIndex={0}
+            title="Click to view backend configuration"
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span className={`pulse-dot ${healthStatus === 'online' ? 'success' : healthStatus === 'checking' ? 'warning' : healthStatus === 'error' ? 'error' : 'idle'}`} />
+                <span style={{ fontWeight: 700, fontSize: '0.84rem', color: 'var(--text-primary)' }}>
+                  {healthStatus === 'online' ? 'MODEL ONLINE' : healthStatus === 'checking' ? 'CHECKING MODEL' : healthStatus === 'error' ? 'WEIGHTS MISSING' : 'MODEL OFFLINE'}
+                </span>
+              </div>
+              <span 
+                className={`badge ${healthStatus === 'online' && validatedAccuracy ? 'badge-green' : 'badge-neutral'}`}
+                style={{ fontSize: '0.72rem', fontWeight: 600 }}
+              >
+                {healthStatus === 'online' && validatedAccuracy ? `${Number(validatedAccuracy).toFixed(2)}% ACCURACY` : 'Accuracy unavailable'}
+              </span>
+            </div>
+            <div style={{ fontSize: '0.74rem', color: 'var(--text-secondary)', display: 'flex', justifyContent: 'space-between' }}>
+              <span>MobileNetV2 CNN · 143 OOD Synsets</span>
+              {healthData?.latencyMs ? <span>{healthData.latencyMs}ms</span> : null}
+            </div>
+          </div>
+
+          {/* Navigation Tabs */}
           {NAV_TABS.map((tab) => {
             const isActive = activeTab === tab.id || (tab.id === 'model-info' && activeTab === 'model-lab');
             return (
@@ -295,6 +283,7 @@ export default function Navbar({
             );
           })}
 
+          {/* Mobile Drawer Action Buttons */}
           <div style={{ paddingTop: '10px', borderTop: '1px solid var(--border-subtle)', display: 'flex', gap: '8px' }}>
             <button
               type="button"
@@ -321,6 +310,12 @@ export default function Navbar({
               <MessageSquare size={13} />
               <span>Feedback</span>
             </button>
+          </div>
+
+          {/* Mobile Drawer Full Team Attribution */}
+          <div style={{ paddingTop: '8px', fontSize: '0.72rem', color: 'var(--text-muted)', textAlign: 'center', lineHeight: 1.4 }}>
+            Developed by <strong>Pranshu Shikhar &amp; Team</strong><br/>
+            Rishabh Vaish · Ankit Raj · Kanika Rani · Ishita Goel
           </div>
         </div>
       )}

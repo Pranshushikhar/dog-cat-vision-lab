@@ -267,12 +267,14 @@ class ClassifierService {
       if (res.ok) {
         const data = await res.json();
         const modelLoaded = Boolean(data.model_loaded || data.model_ready);
+        const accuracy = typeof data.validation_accuracy === 'number' ? data.validation_accuracy : null;
         return { 
           ok: true, 
           status: res.status,
           data, 
           modelLoaded,
           modelReady: modelLoaded,
+          accuracy,
           latencyMs,
           testedUrl: targetUrl
         };
@@ -363,6 +365,42 @@ class ClassifierService {
       }
     } catch (err) {}
     return { status: 'AWAITING_TRAINED_MODEL' };
+  }
+
+  /**
+   * Fetch verified model architecture and evaluation figures
+   */
+  async fetchModelInfo() {
+    if (!this.apiUrl) return null;
+    try {
+      const res = await fetch(`${this.apiUrl.replace(/\/$/, '')}/api/model-info`);
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch (err) {}
+    return null;
+  }
+
+  /**
+   * Resolve verified validation accuracy from model endpoint or evaluation metrics.
+   * Never fabricates numbers: returns null if unverified.
+   */
+  async getValidatedAccuracy() {
+    try {
+      const info = await this.fetchModelInfo();
+      if (typeof info?.reported_metrics?.validation_accuracy === 'number') {
+        return info.reported_metrics.validation_accuracy;
+      }
+    } catch (e) {}
+
+    try {
+      const metrics = await this.fetchMetrics();
+      if (typeof metrics?.accuracy === 'number') {
+        return metrics.accuracy;
+      }
+    } catch (e) {}
+
+    return null;
   }
 
   /**

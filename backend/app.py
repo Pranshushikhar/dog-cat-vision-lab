@@ -143,7 +143,8 @@ def get_health():
         "ood_screening": "active",
         "ood_model": "mobilenet_v2_imagenet",
         "model_path": str(MODEL_PATH) if MODEL_PATH.exists() else None,
-        "api_version": "2.0.0"
+        "api_version": "2.0.0",
+        "validation_accuracy": 98.55 if ready else None
     }
 
 

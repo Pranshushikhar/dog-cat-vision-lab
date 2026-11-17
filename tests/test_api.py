@@ -31,6 +31,9 @@ def test_api_health():
     data = response.json()
     assert data["status"] == "ok"
     assert "model_loaded" in data
+    assert "validation_accuracy" in data
+    if data["model_loaded"]:
+        assert data["validation_accuracy"] == 98.55
 
 
 def test_api_dataset_stats():

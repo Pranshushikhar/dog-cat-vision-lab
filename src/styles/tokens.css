@@ -24,11 +24,14 @@
 
   /* Primary Brand Accent (Teal / Emerald Computer Vision Tone) */
   --accent-teal: #0D9488;          /* Vibrant teal-600 */
+  --accent-teal-subtle: #E6F4F1;   /* Soft tinted teal surface */
   --accent-green: #0F766E;         /* Deep emerald teal-700 (Primary Action) */
   --accent-green-hover: #115E59;   /* Hover state teal-800 */
   --accent-green-active: #134E4A;  /* Active state teal-900 */
   --accent-sage: #E6F4F1;          /* Soft tinted teal background */
   --accent-cream: #F1F5F9;
+  --accent-red: #DC2626;           /* Red-600 */
+  --accent-red-subtle: #FEE2E2;    /* Soft tinted rose surface */
 
   /* Aliased System Colors */
   --accent-blue: #0F766E;

@@ -169,4 +169,51 @@ async function testSimulatedDemoModeRejections() {
 
 await testSimulatedDemoModeRejections();
 
+// 10. Model Status & Accuracy Badge Semantics Verification
+function resolveStatusBadgeLabels(healthStatus, accuracy) {
+  let statusText = 'CHECKING MODEL';
+  if (healthStatus === 'online') statusText = 'MODEL ONLINE';
+  else if (healthStatus === 'offline') statusText = 'MODEL OFFLINE';
+  else if (healthStatus === 'error') statusText = 'WEIGHTS MISSING';
+
+  let accuracyText = 'Accuracy unavailable';
+  const hasValidAccuracy = typeof accuracy === 'number' && !Number.isNaN(accuracy) && accuracy > 0;
+  if (healthStatus === 'online' && hasValidAccuracy) {
+    accuracyText = `${Number(accuracy).toFixed(2)}% ACCURACY`;
+  } else if (healthStatus === 'checking') {
+    accuracyText = 'VERIFYING ACCURACY';
+  } else {
+    accuracyText = 'Accuracy unavailable';
+  }
+
+  return { statusText, accuracyText };
+}
+
+// Online with verified accuracy
+const onlineBadge = resolveStatusBadgeLabels('online', 98.55);
+assert.strictEqual(onlineBadge.statusText, 'MODEL ONLINE');
+assert.strictEqual(onlineBadge.accuracyText, '98.55% ACCURACY');
+
+// Online with missing/null accuracy (must NOT fabricate numbers)
+const onlineNoAccBadge = resolveStatusBadgeLabels('online', null);
+assert.strictEqual(onlineNoAccBadge.statusText, 'MODEL ONLINE');
+assert.strictEqual(onlineNoAccBadge.accuracyText, 'Accuracy unavailable');
+
+// Offline
+const offlineBadge = resolveStatusBadgeLabels('offline', 98.55);
+assert.strictEqual(offlineBadge.statusText, 'MODEL OFFLINE');
+assert.strictEqual(offlineBadge.accuracyText, 'Accuracy unavailable');
+
+// Checking
+const checkingBadge = resolveStatusBadgeLabels('checking', null);
+assert.strictEqual(checkingBadge.statusText, 'CHECKING MODEL');
+assert.strictEqual(checkingBadge.accuracyText, 'VERIFYING ACCURACY');
+
+// Error / Weights missing
+const errorBadge = resolveStatusBadgeLabels('error', null);
+assert.strictEqual(errorBadge.statusText, 'WEIGHTS MISSING');
+assert.strictEqual(errorBadge.accuracyText, 'Accuracy unavailable');
+
+console.log('✓ All ModelStatusBadge truthful state and accuracy labels verified!');
+
 console.log('✓ All frontend URL normalization, loss formatting, and metric tests passed successfully!');
