@@ -456,15 +456,15 @@ export default function HomeTab({ onNavigate, onSelectSpecimen }) {
           <div className="tech-card" style={{ padding: '20px' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
               <span style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                Test Holdout Accuracy
+                Precision (Canine)
               </span>
-              <span className="badge badge-cyan" style={{ fontSize: '0.65rem' }}>HOLDOUT</span>
+              <span className="badge badge-cyan" style={{ fontSize: '0.65rem' }}>PRECISION</span>
             </div>
             <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--text-primary)', lineHeight: 1.1 }}>
-              99.00%
+              97.50%
             </div>
             <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '6px' }}>
-              Independent 1,000 test images
+              TP / (TP + FP) validation metric
             </div>
           </div>
 

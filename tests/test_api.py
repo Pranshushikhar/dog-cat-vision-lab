@@ -181,8 +181,11 @@ def test_api_model_info():
     data = response.json()
     assert "MobileNetV2" in data["architecture"]
     assert data["reported_metrics"]["validation_accuracy"] == 98.55
-    assert data["reported_metrics"]["test_holdout_accuracy"] == 99.00
+    assert data["reported_metrics"]["precision"] == 97.50
+    assert data["reported_metrics"]["recall"] == 99.65
+    assert data["reported_metrics"]["f1_score"] == 98.57
     assert data["reported_metrics"]["validation_loss"] == 0.0409
+    assert "test_holdout_accuracy" not in data["reported_metrics"], "Must not fabricate unverified test holdout accuracy"
 
 
 def test_api_feedback():
@@ -220,6 +223,53 @@ def test_predict_rejects_corrupted_image_payload():
     )
     assert response.status_code == 400
     assert "Invalid or unreadable image file" in response.json()["detail"]
+
+
+def test_health_metric_integrity_when_metrics_missing(monkeypatch):
+    """
+    Proves that model readiness does NOT automatically imply 98.55% accuracy.
+    If the evaluation artifact is missing or invalid, validation_accuracy MUST be null.
+    """
+    import backend.app as backend_app
+    monkeypatch.setattr(backend_app, "get_trusted_metrics", lambda: None)
+
+    response = client.get("/api/health")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["model_loaded"] is True
+    assert data["validation_accuracy"] is None, "Missing evaluation artifact must return null, never fabricate a number"
+
+
+def test_model_info_integrity_when_metrics_missing(monkeypatch):
+    """Proves that /api/model-info returns null reported_metrics when evaluation artifact is missing."""
+    import backend.app as backend_app
+    monkeypatch.setattr(backend_app, "get_trusted_metrics", lambda: None)
+
+    response = client.get("/api/model-info")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["reported_metrics"] is None, "Missing evaluation artifact must return null reported_metrics"
+
+
+def test_metrics_endpoint_integrity_when_metrics_missing(monkeypatch):
+    """Proves that /api/metrics returns accuracy null when evaluation artifact is missing."""
+    import backend.app as backend_app
+    monkeypatch.setattr(backend_app, "get_trusted_metrics", lambda: None)
+
+    response = client.get("/api/metrics")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["accuracy"] is None
+    assert data["status"] == "METRICS_NOT_AVAILABLE"
+
+
+def test_health_reads_computed_metrics_from_actual_artifact():
+    """Proves that /api/health reads real computed metrics from evaluation artifact."""
+    response = client.get("/api/health")
+    assert response.status_code == 200
+    data = response.json()
+    if data["model_loaded"]:
+        assert data["validation_accuracy"] == 98.55
 
 
 

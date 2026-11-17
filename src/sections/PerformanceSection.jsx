@@ -198,7 +198,7 @@ export default function PerformanceSection() {
               </div>
               <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <span className="pulse-dot idle" style={{ width: '6px', height: '6px', flexShrink: 0 }} />
-                <span><strong>Test-Holdout Accuracy:</strong> 99.0% (evaluated on unseen test holdout split)</span>
+                <span><strong>F1 Score:</strong> 98.57% (harmonic mean of precision and recall)</span>
               </div>
             </div>
           </div>

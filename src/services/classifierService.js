@@ -330,7 +330,8 @@ class ClassifierService {
   }
 
   /**
-   * Fetch real evaluation metrics and charts
+   * Fetch real evaluation metrics from API endpoint.
+   * Never silently falls back to static files when backend is offline.
    */
   async fetchMetrics() {
     if (!this.apiUrl) return { connected: false, status: 'DATA_NOT_CONNECTED' };
@@ -339,16 +340,7 @@ class ClassifierService {
       if (res.ok) {
         return await res.json();
       }
-    } catch (err) {
-      // Fallback to static public metrics if backend is offline
-    }
-
-    try {
-      const staticRes = await fetch('/metrics.json');
-      if (staticRes.ok) {
-        return await staticRes.json();
-      }
-    } catch (e) {}
+    } catch (err) {}
 
     return { connected: false, status: 'DATA_NOT_CONNECTED' };
   }
@@ -382,10 +374,12 @@ class ClassifierService {
   }
 
   /**
-   * Resolve verified validation accuracy from model endpoint or evaluation metrics.
-   * Never fabricates numbers: returns null if unverified.
+   * Resolve verified validation accuracy from live model endpoint or evaluation metrics.
+   * Returns null if backend is offline, unconfigured, or metrics are pending/missing.
+   * Never fabricates numbers or silently falls back to static hardcoded metrics.
    */
   async getValidatedAccuracy() {
+    if (!this.apiUrl) return null;
     try {
       const info = await this.fetchModelInfo();
       if (typeof info?.reported_metrics?.validation_accuracy === 'number') {

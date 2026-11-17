@@ -3,9 +3,9 @@
 > **"See the Difference. Let AI Decide."**  
 > *Developed by Pranshu Shikhar & Team (Pranshu Shikhar, Rishabh Vaish, Ankit Raj, Kanika Rani, Ishita Goel)*
 
-[![Pytest Suite](https://img.shields.io/badge/pytest-37%20passed-brightgreen.svg)](https://pytest.org)
+[![Pytest Suite](https://img.shields.io/badge/pytest-41%20passed-brightgreen.svg)](https://pytest.org)
 [![Validation Accuracy](https://img.shields.io/badge/Validation%20Accuracy-98.55%25-teal.svg)](https://pawvision-ai.pages.dev)
-[![Test Holdout](https://img.shields.io/badge/Test%20Holdout-99.00%25-blue.svg)](https://pawvision-ai.pages.dev)
+[![F1 Score](https://img.shields.io/badge/F1%20Score-98.57%25-blue.svg)](https://pawvision-ai.pages.dev)
 [![Architecture](https://img.shields.io/badge/Model-MobileNetV2%20(2.26M%20params)-orange.svg)](https://keras.io)
 [![FastAPI](https://img.shields.io/badge/FastAPI-v2.0.0-009688.svg)](https://fastapi.tiangolo.com)
 [![Cloudflare Pages](https://img.shields.io/badge/Cloudflare%20Pages-Live-F38020.svg)](https://pawvision-ai.pages.dev)
@@ -59,11 +59,11 @@ Inference Response: { is_supported: true, prediction: "CAT"|"DOG", confidence, p
 | Metric | Measured Value | Evaluation Context |
 | :--- | :--- | :--- |
 | **Validation Accuracy** | **98.55%** | 3,942 / 4,000 correct on Kaggle validation partition |
-| **Test Holdout Accuracy** | **99.00%** | Independent 1,000 holdout test images |
 | **Validation Loss** | **0.0409** | Binary Cross-Entropy loss |
 | **Precision** | **97.50%** | TP / (TP + FP) on canine predictions |
 | **Recall / Sensitivity**| **99.65%** | TP / (TP + FN) on actual canines |
 | **F1 Score** | **98.57%** | Harmonic mean of precision and recall |
+| **Validation Samples** | **4,000** | Empirically evaluated holdout partition |
 | **Inference Latency** | **~25–45 ms** | Standard single-core CPU execution time |
 | **Model Parameters** | **2,259,265** | 2.26M parameters (depthwise separable convolutions) |
 

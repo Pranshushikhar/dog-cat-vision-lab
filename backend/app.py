@@ -36,6 +36,60 @@ RESULTS_DIR = Path(os.environ.get("RESULTS_DIR", str(PROJECT_ROOT / "ml" / "resu
 PROCESSED_DIR = Path(os.environ.get("PROCESSED_DIR", str(PROJECT_ROOT / "data" / "processed")))
 
 
+def get_trusted_metrics():
+    """
+    Reads and validates actual computed evaluation metrics from evaluation artifacts.
+    Enforces metric integrity: returns None if no trustworthy artifact exists,
+    or if the artifact is missing, unreadable, incomplete, or corrupted.
+    Never fabricates metrics or falls back to static hardcoded numbers.
+    """
+    candidate_paths = [METRICS_PATH, PROJECT_ROOT / "public" / "metrics.json"]
+    for path in candidate_paths:
+        if path and path.is_file():
+            try:
+                with open(path, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+
+                if not isinstance(data, dict):
+                    continue
+                if data.get("status") != "EVALUATION_COMPLETE":
+                    continue
+
+                acc = data.get("accuracy")
+                if not isinstance(acc, (int, float)) or isinstance(acc, bool):
+                    continue
+                if not (0.0 <= acc <= 100.0):
+                    continue
+
+                val_loss = data.get("val_loss")
+                if val_loss is not None and (not isinstance(val_loss, (int, float)) or isinstance(val_loss, bool)):
+                    continue
+
+                total_eval = data.get("total_evaluated")
+                if total_eval is not None and (not isinstance(total_eval, (int, float)) or isinstance(total_eval, bool)):
+                    continue
+
+                model_name = data.get("model", "")
+                if model_name and not any(kw in str(model_name).lower() for kw in ["dogcat", "mobilenet", "cnn"]):
+                    continue
+
+                return {
+                    "accuracy": float(acc),
+                    "precision": float(data["precision"]) if isinstance(data.get("precision"), (int, float)) and not isinstance(data.get("precision"), bool) else None,
+                    "recall": float(data["recall"]) if isinstance(data.get("recall"), (int, float)) and not isinstance(data.get("recall"), bool) else None,
+                    "f1_score": float(data["f1_score"]) if isinstance(data.get("f1_score"), (int, float)) and not isinstance(data.get("f1_score"), bool) else None,
+                    "val_loss": float(val_loss) if val_loss is not None else None,
+                    "total_evaluated": int(total_eval) if total_eval is not None else None,
+                    "confusion_matrix": data.get("confusion_matrix"),
+                    "status": "EVALUATION_COMPLETE",
+                    "model": model_name or "DogCat_MobileNetV2_Classifier"
+                }
+            except Exception as e:
+                print(f"[Metrics] Warning inspecting metric artifact at {path}: {e}")
+                continue
+    return None
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Pre-warm models and execute forward pass to compile TF execution graphs on startup
@@ -130,9 +184,14 @@ def get_health():
     Backend Health Check:
     Clearly distinguishes service availability from model weight readiness.
     Includes status of the Out-of-Distribution (OOD) screening stage.
+    Reports validated accuracy ONLY from trustworthy computed evaluation artifacts;
+    returns None (null in JSON) if no validated artifact is present.
     """
     from ml.predict import is_model_ready
     ready, status_msg = is_model_ready(MODEL_PATH)
+    metrics = get_trusted_metrics() if ready else None
+    val_acc = metrics["accuracy"] if metrics else None
+
     return {
         "status": "ok",
         "service": "operational",
@@ -144,7 +203,7 @@ def get_health():
         "ood_model": "mobilenet_v2_imagenet",
         "model_path": str(MODEL_PATH) if MODEL_PATH.exists() else None,
         "api_version": "2.0.0",
-        "validation_accuracy": 98.55 if ready else None
+        "validation_accuracy": val_acc
     }
 
 
@@ -170,6 +229,19 @@ def get_model_info():
     """Returns comprehensive verified model architecture and evaluation figures."""
     from ml.predict import is_model_ready
     ready, _ = is_model_ready(MODEL_PATH)
+    metrics = get_trusted_metrics() if ready else None
+
+    reported_metrics = None
+    if metrics:
+        reported_metrics = {
+            "validation_accuracy": metrics.get("accuracy"),
+            "precision": metrics.get("precision"),
+            "recall": metrics.get("recall"),
+            "f1_score": metrics.get("f1_score"),
+            "validation_loss": metrics.get("val_loss"),
+            "validation_samples": metrics.get("total_evaluated"),
+            "confusion_matrix": metrics.get("confusion_matrix")
+        }
 
     return {
         "model_name": "PawVision MobileNetV2 Transfer Learning",
@@ -182,15 +254,7 @@ def get_model_info():
         "loss_function": "Binary Cross-Entropy",
         "optimizer": "Adam (initial learning_rate=1e-4)",
         "status": "ready" if ready else "weights_not_found",
-        "reported_metrics": {
-            "validation_accuracy": 98.55,
-            "test_holdout_accuracy": 99.00,
-            "precision": 97.50,
-            "recall": 99.65,
-            "validation_loss": 0.0409,
-            "validation_samples": 4000,
-            "dataset_total_samples": 20000
-        },
+        "reported_metrics": reported_metrics,
         "ood_screening": {
             "name": "ImageNet-1K MobileNetV2 Screening Gate",
             "status": "active",
@@ -318,19 +382,20 @@ def get_dataset_stats():
 
 @app.get("/api/metrics")
 def get_metrics():
-    """Returns actual evaluation metrics from ml/results/metrics.json if available."""
-    if METRICS_PATH.exists():
-        try:
-            with open(METRICS_PATH, "r", encoding="utf-8") as f:
-                data = json.load(f)
-            return data
-        except Exception as e:
-            return {"connected": False, "status": "ERROR_READING_METRICS", "detail": str(e)}
+    """Returns actual evaluation metrics from verified evaluation artifact if available."""
+    metrics = get_trusted_metrics()
+    if metrics:
+        return metrics
 
     return {
         "connected": False,
         "status": "METRICS_NOT_AVAILABLE",
-        "message": "Model performance metrics awaiting trained model evaluation."
+        "message": "Model performance metrics awaiting trained model evaluation.",
+        "accuracy": None,
+        "precision": None,
+        "recall": None,
+        "f1_score": None,
+        "val_loss": None
     }
 
 

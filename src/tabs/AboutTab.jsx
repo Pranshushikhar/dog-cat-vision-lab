@@ -193,7 +193,7 @@ Inference Response: { is_supported: true, prediction: "cat"|"dog", confidence, p
               <ul style={{ listStyle: 'none', padding: 0, margin: 0, fontSize: '0.82rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '10px', lineHeight: 1.5 }}>
                 <li style={{ display: 'flex', gap: '8px' }}>
                   <span style={{ color: 'var(--accent-green)', fontWeight: 700 }}>•</span>
-                  <span><strong>Zero Fabricated Metrics:</strong> All reported evaluation metrics (98.55% validation accuracy, 99.0% test-holdout accuracy, 97.50% precision, 99.65% recall) originate from empirical evaluation on real unseen test splits.</span>
+                  <span><strong>Zero Fabricated Metrics:</strong> All reported evaluation metrics (98.55% validation accuracy, 97.50% precision, 99.65% recall, 98.57% F1 score) originate from empirical evaluation on the 4,000-image validation partition.</span>
                 </li>
                 <li style={{ display: 'flex', gap: '8px' }}>
                   <span style={{ color: 'var(--accent-green)', fontWeight: 700 }}>•</span>

@@ -64,7 +64,7 @@ export default function ModelStatusBadge({
   }
 
   const fullTooltip = `${statusTitle} · ${
-    hasValidAccuracy ? `Validated Holdout Accuracy: ${Number(accuracy).toFixed(2)}%` : 'Accuracy unavailable'
+    hasValidAccuracy ? `Validation Accuracy: ${Number(accuracy).toFixed(2)}%` : 'Accuracy unavailable'
   }. Click for endpoint settings.`;
 
   return (

@@ -198,11 +198,14 @@ assert.strictEqual(onlineBadge.accuracyText, '98.55% ACCURACY');
 const onlineNoAccBadge = resolveStatusBadgeLabels('online', null);
 assert.strictEqual(onlineNoAccBadge.statusText, 'MODEL ONLINE');
 assert.strictEqual(onlineNoAccBadge.accuracyText, 'Accuracy unavailable');
+assert.notStrictEqual(onlineNoAccBadge.accuracyText, '98.55% ACCURACY', 'Must never fabricate accuracy when metric artifact is missing');
 
-// Offline
+// Offline backend never displays online accuracy
 const offlineBadge = resolveStatusBadgeLabels('offline', 98.55);
 assert.strictEqual(offlineBadge.statusText, 'MODEL OFFLINE');
+assert.notStrictEqual(offlineBadge.statusText, 'MODEL ONLINE');
 assert.strictEqual(offlineBadge.accuracyText, 'Accuracy unavailable');
+assert.notStrictEqual(offlineBadge.accuracyText, '98.55% ACCURACY', 'Offline state must never display online accuracy');
 
 // Checking
 const checkingBadge = resolveStatusBadgeLabels('checking', null);
@@ -213,6 +216,14 @@ assert.strictEqual(checkingBadge.accuracyText, 'VERIFYING ACCURACY');
 const errorBadge = resolveStatusBadgeLabels('error', null);
 assert.strictEqual(errorBadge.statusText, 'WEIGHTS MISSING');
 assert.strictEqual(errorBadge.accuracyText, 'Accuracy unavailable');
+
+// 11. ClassifierService metric integrity check when backend is disconnected
+classifierService.setApiUrl('', false);
+const disconnectedAcc = await classifierService.getValidatedAccuracy();
+assert.strictEqual(disconnectedAcc, null, 'Disconnected backend must return null accuracy, never static fallback');
+
+const disconnectedMetrics = await classifierService.fetchMetrics();
+assert.strictEqual(disconnectedMetrics.connected, false, 'Disconnected metrics must report connected: false');
 
 console.log('✓ All ModelStatusBadge truthful state and accuracy labels verified!');
 

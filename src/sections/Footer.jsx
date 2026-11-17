@@ -130,8 +130,8 @@ export default function Footer({ onOpenConfigModal, onOpenFeedbackModal, onOpenP
               <span style={{ fontWeight: 600 }}>MobileNetV2 (Transfer)</span>
               <span style={{ color: 'var(--text-muted)' }}>Validation Acc:</span>
               <span style={{ fontWeight: 600, color: 'var(--accent-teal)' }}>98.55%</span>
-              <span style={{ color: 'var(--text-muted)' }}>Test Holdout:</span>
-              <span style={{ fontWeight: 600, color: 'var(--accent-teal)' }}>99.00%</span>
+              <span style={{ color: 'var(--text-muted)' }}>F1 Score:</span>
+              <span style={{ fontWeight: 600, color: 'var(--accent-teal)' }}>98.57%</span>
               <span style={{ color: 'var(--text-muted)' }}>Val Loss:</span>
               <span style={{ fontFamily: 'var(--font-mono)' }}>0.0409</span>
             </div>
