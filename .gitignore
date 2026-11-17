@@ -19,6 +19,7 @@ models/*.weights.h5
 dist/
 dist-ssr/
 *.local
+screenshots/
 
 # Environment & Credentials
 .env

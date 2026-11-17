@@ -13,8 +13,8 @@ import ModelStatusBadge from './ModelStatusBadge';
 export const NAV_TABS = [
   { id: 'home', label: 'Home' },
   { id: 'classifier', label: 'Classifier' },
-  { id: 'how-it-works', label: 'How It Works' },
-  { id: 'model-info', label: 'Model Information' },
+  { id: 'how-it-works', label: 'How It Works', compactLabel: 'How It Works' },
+  { id: 'model-info', label: 'Model Information', compactLabel: 'Model Info' },
   { id: 'about', label: 'About' }
 ];
 
@@ -97,31 +97,18 @@ export default function Navbar({
 
   return (
     <nav className="navbar" role="navigation" aria-label="Main Navigation">
-      <div className="container navbar-inner">
-        {/* Modern PawVision AI Logo & Subtitle */}
-        <a 
-          href="#/home" 
-          className="navbar-brand"
-          onClick={(e) => handleTabClick('home', e)}
-          aria-label="PawVision AI Home"
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            {/* Modern Geometric Paw Icon */}
-            <div 
-              style={{
-                width: '36px',
-                height: '36px',
-                borderRadius: '9px',
-                background: 'linear-gradient(135deg, var(--accent-green) 0%, #0D9488 100%)',
-                color: '#FFFFFF',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                boxShadow: '0 2px 8px rgba(15, 118, 110, 0.25)',
-                flexShrink: 0
-              }}
-            >
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+      <div className="navbar-container">
+        {/* Left Section: Modern Brand & Attribution */}
+        <div className="navbar-brand-section">
+          <a 
+            href="#/home" 
+            className="navbar-brand-link"
+            onClick={(e) => handleTabClick('home', e)}
+            aria-label="PawVision AI Home"
+          >
+            {/* Geometric Paw Icon */}
+            <div className="navbar-logo-box">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                 {/* 4 Toes */}
                 <ellipse cx="6" cy="7" rx="2" ry="2.8" />
                 <ellipse cx="10.2" cy="4.5" rx="2" ry="2.8" />
@@ -132,44 +119,44 @@ export default function Navbar({
               </svg>
             </div>
 
-            <div>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', lineHeight: 1.15 }}>
-                <span style={{ fontSize: '1.18rem', fontWeight: 800, letterSpacing: '-0.025em', color: 'var(--text-primary)' }}>
-                  PAWVISION AI
-                </span>
-                <span className="navbar-subtitle desktop-only" style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 500 }}>
-                  Cat vs Dog Vision
-                </span>
-              </div>
-              <div className="navbar-team-credit">
+            <div className="navbar-brand-text">
+              <div className="navbar-brand-title">PAWVISION AI</div>
+              <div className="navbar-brand-subtitle">Cat vs Dog Vision</div>
+              <div 
+                className="navbar-team-credit" 
+                title="Developed by Pranshu Shikhar, Rishabh Vaish, Ankit Raj, Kanika Rani, Ishita Goel"
+              >
                 Developed by <span className="team-lead">Pranshu Shikhar &amp; Team</span>
-                <span className="team-members desktop-only"> — Rishabh Vaish, Ankit Raj, Kanika Rani, Ishita Goel</span>
+                <span className="team-members sr-only"> — Rishabh Vaish, Ankit Raj, Kanika Rani, Ishita Goel</span>
               </div>
             </div>
-          </div>
-        </a>
-
-        {/* Desktop Navigation Tabs */}
-        <div className="nav-tabs desktop-only" role="tablist">
-          {NAV_TABS.map((tab) => {
-            const isActive = activeTab === tab.id || (tab.id === 'model-info' && activeTab === 'model-lab');
-            return (
-              <button
-                key={tab.id}
-                role="tab"
-                aria-selected={isActive}
-                type="button"
-                className={`nav-tab-btn ${isActive ? 'active' : ''}`}
-                onClick={(e) => handleTabClick(tab.id, e)}
-              >
-                <span>{tab.label}</span>
-              </button>
-            );
-          })}
+          </a>
         </div>
 
-        {/* Right Status Indicator, API & Feedback Buttons */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        {/* Center Section: Desktop Navigation Tabs */}
+        <nav className="navbar-nav-section desktop-only" role="navigation" aria-label="Sections">
+          <div className="nav-tabs" role="tablist">
+            {NAV_TABS.map((tab) => {
+              const isActive = activeTab === tab.id || (tab.id === 'model-info' && activeTab === 'model-lab');
+              return (
+                <button
+                  key={tab.id}
+                  role="tab"
+                  aria-selected={isActive}
+                  type="button"
+                  className={`nav-tab-btn ${isActive ? 'active' : ''}`}
+                  onClick={(e) => handleTabClick(tab.id, e)}
+                >
+                  <span className="tab-label-full">{tab.label}</span>
+                  <span className="tab-label-compact">{tab.compactLabel || tab.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </nav>
+
+        {/* Right Section: Compact Status Badge & Actions */}
+        <div className="navbar-actions-section">
           {/* Redesigned Model Online & Validated Accuracy Status Component */}
           <ModelStatusBadge
             healthStatus={healthStatus}
@@ -181,45 +168,33 @@ export default function Navbar({
           {/* API Info / Docs Button */}
           <button 
             type="button" 
-            className="btn btn-secondary btn-sm"
+            className="navbar-action-btn navbar-action-btn-secondary"
             onClick={onOpenApiModal}
             aria-label="Open API Documentation & Endpoint Settings"
-            style={{ padding: '6px 12px', fontSize: '0.8rem', display: 'inline-flex', alignItems: 'center', gap: '5px' }}
           >
-            <Code2 size={13} />
-            <span className="desktop-only">API Docs</span>
-            <span className="mobile-only">API</span>
+            <Code2 size={13} aria-hidden="true" />
+            <span className="action-btn-desktop">API Docs</span>
+            <span className="action-btn-mobile">API</span>
           </button>
 
           {/* Feedback Button */}
           <button 
             type="button" 
-            className="btn btn-ghost btn-sm desktop-only"
+            className="navbar-action-btn navbar-action-btn-ghost desktop-only"
             onClick={onOpenFeedbackModal}
             aria-label="Submit Feedback to the Research Team"
-            style={{ padding: '6px 10px', fontSize: '0.8rem', display: 'inline-flex', alignItems: 'center', gap: '5px' }}
           >
-            <MessageSquare size={13} />
+            <MessageSquare size={13} aria-hidden="true" />
             <span>Feedback</span>
           </button>
 
           {/* Mobile Hamburger Toggle */}
           <button
             type="button"
-            className="mobile-nav-toggle mobile-only"
+            className="navbar-mobile-toggle mobile-only"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             aria-label={isMobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
-            style={{
-              background: 'transparent',
-              border: '1px solid var(--border-medium)',
-              borderRadius: 'var(--radius-xs)',
-              padding: '6px',
-              color: 'var(--text-primary)',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
+            aria-expanded={isMobileMenuOpen}
           >
             {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
